@@ -1,0 +1,83 @@
+
+.main __web-inspector-hide-shortcut__{
+  display: none;
+}
+
+.main _n_h{
+  display: none;
+}
+
+.note {
+	padding: 20px; 
+	position: absolute; 
+	top: 46px; 
+	left: 0px;
+	width:286px;
+	height:303px; 
+	background: #ECE5DD;
+	font-family: Ubuntu;
+    background-image: url('img/clipboard.png');
+    background-position: bottom right;
+    background-repeat: no-repeat;
+}
+
+
+.heading {
+	padding: 10px; 
+	position: absolute; 
+	top: 04px; 
+	left: 0px;
+	font-family: Ubuntu;
+	width:318px;
+	height:20px; 
+	background: #ECE5DD;
+	color: #128C7E;
+	font-size: 20px;
+}
+
+.note, .heading:focus {
+    outline: none !important;
+    border:0px solid red;
+    box-shadow: 0 0 10px #719ECE;
+}
+
+
+.hidden{
+	display: none;
+}
+
+.menu{
+	position: absolute; 
+	top: 6px; 
+	right: 0px; 
+	float: right; 
+	height: 24px; 
+	width: auto; 
+	z-index: 10;
+}
+
+.menu_icon{
+	margin-left: 0px;
+	padding: 10px;
+}
+
+.color_picker{
+	position: absolute;
+	bottom: 10px;
+	right: 10px;
+	z-index: 10;
+}
+
+.rotate {
+    position: absolute;
+    bottom: 100;
+    right: 100;
+	opacity: .08;
+    margin:-60px 0 0 -60px;
+    -webkit-animation:spin 3s linear infinite;
+    -moz-animation:spin 3s linear infinite;
+    animation:spin 3s linear infinite;
+}
+@-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
+@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
+@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }

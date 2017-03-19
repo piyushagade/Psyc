@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>WhatsApp for Linux</title><!-- Custom Fonts -->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css" type="text/css">
+    <link rel="stylesheet" href="assets/main.css" type="text/css">
+    <link rel="stylesheet" href="assets/spectrum.css" type="text/css">
+
+  </head>
+  <body style="overflow: hidden;">
+    <!-- Accent Bar -->
+    <div id="accentBar" style="position: absolute; top: 0px; left: 0px; height: 6px; width: 325px; background: #128C7E; -webkit-app-region: drag;"></div>
+
+    <!-- Menu -->
+    <div class="menu" id="menu">
+      <input class="menu_icon" class="menu_icon" type="image" src="img/sync.png" id="b_sync" height="20px" />
+      <input class="menu_icon" class="menu_icon" type="image" src="img/edit.png" id="b_edit" height="20px" />
+      <input class="menu_icon" class="menu_icon" type="image" src="img/add.png" id="b_add" height="20px" />
+    </div>
+
+    <!-- Edit -->
+    <div class="color_picker hidden" id="color_picker_div">
+      <input type="color" class="menu_icon" id="b_edit_menu_color" class="color_picker" height="12px" /> 
+    </div>
+    <div class="menu hidden" id="edit_menu_div">
+      <input type="image" class="menu_icon" src="img/delete.png" id="b_edit_menu_delete"  height="20px"/> 
+      <input type="image" class="menu_icon" src="img/save.png" id="b_edit_menu_save"  height="20px"/> 
+    </div>
+
+    <!-- TextArea -->
+    <textarea id="heading" class="heading" style="z-index: 5" placeholder="Title"></textarea>
+    <textarea id="edit_note" name="edit_note" class="note hidden" style="z-index: 3" placeholder="Markdown enabled."></textarea>
+
+    <!-- Rendered Note -->
+    <div id="rendered_note" style="z-index: 2;" class="note"><font size='2px'  color="#AAA">To edit, you can click here, press 'Enter', or use the 'Edit' icon to enter edit mode.</font></div>
+  </body>
+
+  <script src="assets/jquery.min.js"></script>
+  <script src="assets/spectrum.js"></script>
+  <script type="text/javascript" src="assets/scripts.js"></script>
+  <script src="assets/markdown.js"></script>
+
+
+  <script>
+  function setColor(picker) {
+    document.getElementsByTagName('div')[0].style.color = '#' + picker.toString()
+  }
+  </script>
+
+<!--   <script type="text/javascript">
+    $(document).ready(function() {
+      $('#whatsapp_div').load('https://web.whatsapp.com/');
+    });
+  </script> -->
+</html>
