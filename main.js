@@ -11,8 +11,8 @@ var firebase = require('firebase');
 
 const Menu = electron.Menu;
 const Tray = electron.Tray;
-const globalShortcut = electron.globalShortcut;
 const storage = require('electron-json-storage');
+const globalShortcut = electron.globalShortcut;
 
 var lastWindowPosition;
 var lastWindowState;
@@ -32,6 +32,9 @@ global.note_update = {note_string: null};
 global.note_retrieve = {note_string: null, id: null};
 global.note_delete = {id: null};
 global.sync = {note_string: null, id: null};
+global.login = {eemail: null, email: null};
+global.logout = {initiate: false};
+global.open_url = {url: null};
 
 
 
@@ -45,14 +48,34 @@ var f_config = {
 };
 firebase.initializeApp(f_config);
 
+var fb = firebase.database().ref().child("cloud");
+var fb_user = null;
+var fb_notes = null;
+var retrieve_data_array = null;
+var retrieve_data = null;
+var cloud_flag = true;
+var cloud_timestamp = 0;
+var local_timestamp = 0;
+var cloud_notes_string = 0;
+
+var isLoggedIn = false;
+var isBusy = false;
+
 
 
 var messageCount;
 
 var reset = false;
+var debug = false;
+
+var verbose = true;
+
+var debug_add = 0;
 
 if(reset){
-	storage.set('notes', { number_notes: "0" });
+	storage.set('notes', { number_notes: null, notes_string: null, timestamp: null });
+
+	storage.set('user', { user_name : null, eemail: null, email: null});
 
 }
 
@@ -78,6 +101,8 @@ app.on('ready', function() {
     createWindow();
   });
 });	
+
+
 
 
 function updateBadge(title) {
@@ -115,20 +140,24 @@ function createWindow () {
   lastWindowPosition = config.get('lastWindowPosition');
 
   // Create the browser window.
+  if(debug) debug_add = 500;
+
   mainWindow = new BrowserWindow({width: lastWindowState.width, 
       height: lastWindowState.height, 
       x: x, 
       y: y, 
-	  width: 325, 
-      height: 325, 
+	  width: debug_add + 525, 
+      height: debug_add + 525, 
+      minWidth: 330,
+      minHeight: 330,
       frame: false, 
       'titleBarStyle': 'hidden', 
-      resizable: false, 
+      resizable: true, 
       alwaysOnTop: false, 
       fullscreenable: false,
       fullscreen: false, 
       skipTaskbar: true,
-      title: 'Psyc', 
+      title: 'Psyc',
       icon : __dirname + '/img/icon_color.png', movable: true,
       maximizable: false,
     });
@@ -146,6 +175,7 @@ function createWindow () {
 	  y = y + 60;
   }
 
+  if(debug) mainWindow.webContents.openDevTools();
   mainWindow.setMenu(null);
   mainWindow.loadURL('file://'+__dirname+'/index.html');
 
@@ -163,37 +193,156 @@ function createWindow () {
 
 
 
+
+// login window
+let loginWindow;
+
+function createLoginWindow () {
+
+  // Create the browser window.
+  loginWindow = new BrowserWindow({
+      x: x, 
+      y: y, 
+	  width: 325, 
+      height: 325, 
+      frame: false, 
+      'titleBarStyle': 'hidden', 
+      resizable: false, 
+      alwaysOnTop: false, 
+      fullscreenable: false,
+      fullscreen: false, 
+      skipTaskbar: true,
+      title: 'Psyc', 
+      icon : __dirname + '/img/icon_color.png', movable: true,
+      maximizable: false,
+    });
+
+  
+  // loginWindow.webContents.openDevTools();
+  loginWindow.setMenu(null);
+  loginWindow.loadURL('file://'+__dirname+'/login.html');
+
+  loginWindow.on('close', (e, cmd) => {
+    // createWindow();
+  });
+
+}
+
+
+var user_name = "";
+
 // preferences
 app.on('ready', function(){
-	storage.get('notes', function(error, data) {
+	storage.get('user', function(error, data) {
 
-		var d = new Date();
-    	var n = d.getTime();
-
-	    if(data.number_notes === null){
-	    	console.log("First run.");
-	    	createWindow();
-	    	var empty_note = ["0!@#empty!@#empty!@#128C7E"];
-
-    		storage.set('notes', { number_notes: 1, notes_string: JSON.stringify(empty_note), timestamp: n});
+		//if not logged in or logged out
+	    if(data.eemail === null || data.eemail === undefined){
+	    	user_name = "not_set";
+			global.login = {eemail: "not_set", email: "not_set"};	    	
 	    }
-	    else if(parseInt(data.number_notes) == '0'){
-	    	console.log("No notes found.");
-	    	createWindow();
-    		var empty_note = ["0!@#empty!@#empty!@#128C7E"];
-    		storage.set('notes', { number_notes: 1, notes_string: JSON.stringify(empty_note), timestamp: n});
-    	}
+	    //if login skipped
+	    else if(data.eemail === 'skipped'){
+	    	user_name = 'skipped';
+			global.login = {eemail: "skipped", email: "skipped"};
+	    }
+	    //if logged in
 	    else{
-			console.log(parseInt(data.number_notes) + " notes found.");
-	    	for(var i = 0; i < parseInt(data.number_notes); i++){
-	    		setTimeout(function(){
-	    			createWindow();
-	    		}, 700 * i); 
-	    	}
+	    	user_name = data.eemail;
+	    	isLoggedIn = true;
+    		storage.set('user', { user_name : data.eemail, eemail : data.eemail, email : data.email});
 
-	    	notes_string = data.notes_string;
-	    }  
+			global.login = {eemail:  data.eemail, email: data.email};
+    		fb_user = fb.child(data.eemail);
+    	} 
+
+    	storage.get('notes', function(error, data) {
+
+			var d = new Date();
+	    	var n = d.getTime();
+
+    		//if first run
+		    if(data.number_notes === null || data.number_notes === undefined || user_name === "not_set"){
+  				l("Welcome new user.");
+
+		    	var object = {data: []};
+
+				object.data.push({
+					"id" : r(),
+					"note" : "empty",
+					"title" : "empty",
+					"accent" : "#128C7E",
+					"timestamp" : n
+				});
+
+
+
+				storage.set('notes', { number_notes: 1, notes_string: JSON.stringify(object), timestamp: n});
+
+
+    			l(data.number_notes,"Notes found");
+
+    			if(data.number_notes > 0){
+	    			for(var i = 0; i < parseInt(data.number_notes); i++){
+			    		setTimeout(function(){
+	  						loginWindow = null;
+			    			createWindow();
+			    		}, 700 * i); 
+			    	}
+			    }
+
+
+	    		//show login window
+	    		if(user_name !== 'skipped'){
+			    	setTimeout(function(){
+				    	mainWindow = null;
+				    	createLoginWindow();
+			    	}, 700 * data.number_notes);
+		    	}
+	    		
+
+
+		    	//Set global object
+		    	global.notes_string = data.notes_string;
+	    		
+		    }
+		    //if no notes saved
+		    else if(parseInt(data.number_notes) == '0'){
+		    	l("No notes found.");
+  				loginWindow = null;
+		    	createWindow();
+				var object = {data: []};
+
+				object.data.push({
+					"id" : r(),
+					"note" : "empty",
+					"title" : "empty",
+					"accent" : "#128C7E",
+					"timestamp" : n
+				});
+
+	    		storage.set('notes', { number_notes: 1, notes_string: JSON.stringify(object), timestamp: n});
+	    	}
+	    	//few notes saved && logged in
+		    else{
+		    	for(var i = 0; i < parseInt(data.number_notes); i++){
+	    			l(data.number_notes,"Notes found");
+
+		    		setTimeout(function(){
+  						loginWindow = null;
+		    			createWindow();
+		    		}, 700 * i); 
+		    	}
+
+		    	//Set global object
+		    	notes_string = data.notes_string;
+		    }  
+
+		});
+
 	});
+
+
+	
 });
 
 app.on('ready', function(){
@@ -215,6 +364,7 @@ app.on('activate', function () {
   // On OS X it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   if (mainWindow === null) {
+  	loginWindow = null;
     createWindow();
   }
 });
@@ -237,7 +387,7 @@ app.on('will-quit', function() {
 });
 
 
-// Update note data
+// update note data
 ipcMain.on('ren_to_main_data', function(event) {
 	var note_string = global.note_update.note_string;
 
@@ -248,58 +398,45 @@ ipcMain.on('ren_to_main_data', function(event) {
 
 function updateNote(ns){
 	storage.get('notes', function(error, data) {
-		var notes_array = JSON.parse(data.notes_string);
 		if(ns!=null){
-			var id = ns.split("!@#")[0];
-			notes_array[id] = ns;
-
 
 			var d = new Date();
 	    	var n = d.getTime();
+	    	var object = JSON.parse(data.notes_string);
 
-			storage.set('notes', {number_notes: data.number_notes, notes_string: JSON.stringify(notes_array), timestamp: n});
+	    	var id = ns.id;
+	    	l(id, "Note updated");
+
+	    	var array = object.data;
+	    	for(var i = 0; i < array.length; i++){
+	    		if(array[i].id === id){
+	    			array[i].note = ns.note;
+	    			array[i].title = ns.title;
+	    			array[i].accent = ns.accent;
+	    			array[i].timestamp = n;
+	    		}
+	    	}
+
+			storage.set('notes', {number_notes: data.number_notes, notes_string: JSON.stringify(object), timestamp: n});
+
 		}
 	});
 }
 
 
 
-var fb = firebase.database().ref().child("cloud").child("piyushagade").child('notes');
-var retrieve_data_array = null;
-var retrieve_data = null;
-var cloud_flag = true;
-var cloud_timestamp = 0;
-var local_timestamp = 0;
-var cloud_notes_string = 0;
 
-fb.on("value", function(snapshot) {
-	cloud_timestamp = snapshot.val().split("!@!@!")[0];
-	cloud_notes_string = snapshot.val().split("!@!@!")[1];
 
-	storage.get('notes', function(error, data) {
-		local_timestamp = data.timestamp;
-
-		if(cloud_timestamp > local_timestamp){
-			retrieve_data_array = JSON.parse(cloud_notes_string);
-			retrieve_data = retrieve_data_array[clients_served];
-			cloud_flag = true;
-		}
-		else{
-			cloud_flag = false;
-		}	
-	});
-
-	
-
-}, function (errorObject) {
-});
-
-var isBusy = false;
-
-// Retrieve note data
+// retrieve note data
 ipcMain.on('main_to_ren_data', function(event) {
 	storage.get('notes', function(error, data) {
+		storage.get('user', function(error, data) {
+			global.login = {eemail:  data.eemail, email: data.email};
+		});
 
+		
+  		// retrieve locally
+		
 		if(isBusy){
 			setTimeout(function(){
 				
@@ -308,73 +445,154 @@ ipcMain.on('main_to_ren_data', function(event) {
 		isBusy = true;
 
 		setTimeout(function(){
+			var object = JSON.parse(data.notes_string);
 
-			if(!cloud_flag){				
-				retrieve_data_array = JSON.parse(data.notes_string);
-
+			if(object !== undefined || object !== null){
+				 retrieve_data = object.data[clients_served++];
 			}
-			retrieve_data = retrieve_data_array[clients_served];
 
-			if(retrieve_data!==undefined) global.note_retrieve = {note_string: retrieve_data, id: retrieve_data.split("!@#")[0]};
-			clients_served++;
+			if(retrieve_data!==undefined  && retrieve_data !== null) 
+				global.note_retrieve = {note_string: retrieve_data, id: retrieve_data.id};
+			
+			
 
 			setTimeout(function(){
 				event.sender.send('main_to_ren_data', 1);
 				isBusy = false;
 			}, 50);
 		}, 600);
-
   		
 	});
 });
 
+function retreive_from_cloud(){
+	// retrieve from cloud
+		if(isLoggedIn){
+			fb_notes = fb_user.child("notes");
+			
+			fb_notes.on("value", function(snapshot) {
+				cloud_timestamp = (snapshot.val()).toString().split("!@!@!")[0];
+				cloud_notes_string = (snapshot.val()).toString().split("!@!@!")[1];
+
+				var object = JSON.parse(cloud_notes_string);
+
+				storage.get('notes', function(error, data) {
+					local_timestamp = data.timestamp;
+
+					if(cloud_timestamp > local_timestamp){
+						retrieve_data = retrieve_data_array[clients_served];
+
+						if(retrieve_data!==undefined && retrieve_data !== null) {
+							global.note_retrieve = {note_string: retrieve_data, id: retrieve_data.split("!@#")[0]};
+							clients_served++;
+						}
 
 
-// New note
+						l("Note: " + retrieve_data);
+
+						setTimeout(function(){
+							event.sender.send('main_to_ren_data', 1);
+							isBusy = false;
+						}, 50);
+
+						cloud_flag = true;
+					}
+					else{
+						cloud_flag = false;
+					}	
+				});
+
+			}, function (errorObject) {
+			});
+
+			if(isBusy){
+				setTimeout(function(){
+					
+				}, 650);
+			}
+			isBusy = true;
+
+			setTimeout(function(){
+
+				if(!cloud_flag){				
+					retrieve_data_array = JSON.parse(data.notes_string);
+					l("Local notes: " + retrieve_data_array);
+					
+
+					if(retrieve_data_array !== undefined || retrieve_data_array !== null){
+						retrieve_data = retrieve_data_array[clients_served];
+						clients_served++;
+					}
+
+					if(retrieve_data!==undefined && retrieve_data !== null) 
+						global.note_retrieve = {note_string: retrieve_data, id: retrieve_data.split("!@#")[0]};
+					
+
+					setTimeout(function(){
+						event.sender.send('main_to_ren_data', 1);
+						isBusy = false;
+					}, 50);
+				
+				}
+			}, 600);
+
+  		}
+}
+
+
+
+// new note
 ipcMain.on('new_note', function(event) {
 	
 	if(clients_served <= 7){
-	 createWindow();
+		loginWindow = null;
+		createWindow();
 	
 		storage.get('notes', function(error, data) {
 			var nn = parseInt(data.number_notes) + 1;
 
 
-			var empty_note = [clients_served + "!@#empty!@#empty!@#128C7E"];
-			note_retrieve = {note_string: JSON.stringify(empty_note), id: clients_served};
-
-			var notes_array = JSON.parse(data.notes_string);
-			notes_array[clients_served] = empty_note[0];
-
-
+			var object = JSON.parse(data.notes_string);
+			
 			var d = new Date();
 	    	var n = d.getTime();
 
-			storage.set('notes', {number_notes: nn, notes_string: JSON.stringify(notes_array), timestamp: n});
+	    	var id = r();
+			object.data.push({
+				"id" : id,
+				"note" : "empty",
+				"title" : "empty",
+				"accent" : "#128C7E",
+				"timestamp" : n
+			});
+
+
+			note_retrieve = {note_string: JSON.stringify(object.data[0]), id: id};
+
+			storage.set('notes', {number_notes: nn, notes_string: JSON.stringify(object), timestamp: n});
+
 		});
 	}
 });
 
 
-// Delete note
+// delete note
 ipcMain.on('delete_note', function(event) {
 	
 	if(clients_served + 1 !== '0'){
 		storage.get('notes', function(error, data) {
 			setTimeout(function(){
 				var id = global.note_delete.id;
-				console.log("Note deleted: " + id);
+
+				l("Note deleted: " + id);
 
 				var nn = parseInt(data.number_notes) - 1;
-				var notes_array = JSON.parse(data.notes_string);
+				var object = JSON.parse(data.notes_string);
+				object.data.splice(id--, 1);
 
-				var empty_note = [clients_served + "!@#empty!@#empty!@#128C7E"];
-				notes_array.splice(id--, 1);
-
-				storage.set('notes', {number_notes: nn, notes_string: JSON.stringify(notes_array)});
+				storage.set('notes', {number_notes: nn, notes_string: JSON.stringify(object)});
 
 				fb.child(id).set(null);
-
 				event.sender.send('delete_note', 1);
 				note_delete = {id: null};
 			}, 0);
@@ -385,23 +603,261 @@ ipcMain.on('delete_note', function(event) {
 });
 
 
+
+
+var cloud_flag = false;
+
+var cloud_array = [];
+var cloud_string = "";
+
+var cloud_listener_active = false;
+
+function cloud_listener(id, ns, ls){
+	storage.get('user', function(error, data) {
+		if(data.eemail !== null && data.eemail !== undefined) {
+			fb_notes = fb.child(data.eemail).child('notes');
+		}
+		else 
+			cloud_listener_active = false;
+
+
+		fb_notes.on("value", function(snapshot) {
+
+			if(snapshot.exists() && snapshot.val().toString !== '' && cloud_listener_active){
+
+				cloud_string = (snapshot.val()).toString();
+				cloud_array = JSON.parse(cloud_string);
+				var found = false;
+				for(var i = 0; i < cloud_array.data.length; i++){
+		    		//replace if note backup already existed
+		    		if(cloud_array.data[i].id === id){
+		    			cloud_array.data[i].timestamp = ns.timestamp;
+		    			cloud_array.data[i].note = ns.note;
+		    			cloud_array.data[i].title = ns.title;
+		    			cloud_array.data[i].accent = ns.accent;
+		    			found = true;
+
+		    			l("Cloud entry replaced.");
+		    		}
+		    	}
+
+		    	//node backup not present in the cloud
+				if(!found){    	
+    				cloud_array.data.push({
+						"id" : id,
+						"note" : ns.note,
+						"title" : ns.title,
+						"accent" : ns.accent,
+						"timestamp" : ns.timestamp
+					});
+
+	    			l("New cloud entry created.");
+	    		}
+	    	
+				cloud_string = JSON.stringify(cloud_array);
+				cloud_flag = true;
+
+
+				if(cloud_flag && cloud_listener_active){
+					cloud_listener_active = false;
+					setTimeout(function(){
+						fb_notes.set(cloud_string);
+					},300);
+				}
+
+				//first cloud backup
+			    else {
+			    	fb_notes.set(ls);
+			    	l("Local copy uploaded to cloud");
+			    }
+			}
+
+		});
+
+		
+
+		cloud_flag = false;
+
+	});
+
+}
+
+
 // sync
 ipcMain.on('sync', function(event) {
-	
-	setTimeout(function(){
+	storage.get('user', function(error, data) {
 		var d = new Date();
     	var n = d.getTime();
 
-		storage.get('notes', function(error, data) {
-			console.log("All notes synced.");
 
-			fb.set(n + "!@!@!" + data.notes_string);
+		storage.get('notes', function(error, data) {
+			var ns = global.sync.note_string;
+			var id = global.sync.id;
+
+			cloud_listener_active = true;
+			cloud_listener(id, ns, data.notes_string);
 
 			event.sender.send('sync', 1);
+
 		});
-	}, 0);
 		
+		
+	});
 	
 	
 });
 
+
+// login
+ipcMain.on('login', function(event) {
+	fb_user = fb.child(global.login.eemail);
+	fb_notes = fb_user.child("notes");
+	setTimeout(function(){
+		storage.set('user', {eemail: global.login.eemail, email: global.login.email});
+		l("Logged in as: " + global.login.eemail);
+
+		event.sender.send('login', 1);
+		
+		loginWindow = null;
+
+		storage.get('notes', function(error, data) {
+			if(data.number_notes == 0) createWindow();
+		});
+
+		fb_notes.on("value", function(snapshot) {
+			if(snapshot.exists()){
+				cloud_timestamp = (snapshot.val()).toString().split("!@!@!")[0];
+				cloud_notes_string = (snapshot.val()).toString().split("!@!@!")[1];
+
+				storage.get('notes', function(error, data) {
+
+					local_timestamp = data.timestamp;
+
+					if(cloud_timestamp > local_timestamp){
+						retrieve_data_array = JSON.parse(cloud_notes_string);
+						retrieve_data = retrieve_data_array[clients_served];
+						cloud_flag = true;
+					}
+					else{
+						cloud_flag = false;
+					}	
+				});
+			}
+
+			
+
+		}, function (errorObject) {
+		});
+	}, 500);
+});
+
+
+// skip login
+ipcMain.on('skip_login', function(event) {
+	cloud_listener_active = false;
+	setTimeout(function(){
+		storage.set('user', {user_name: "skipped", eemail: "skipped", email: "skipped"});
+		l("Log in skipped");
+
+		var d = new Date();
+    	var n = d.getTime();
+
+		event.sender.send('skip_login', 1);
+
+		loginWindow = null;
+		storage.get('notes', function(error, data) {
+			if(data.number_notes == 0) {
+				createWindow();
+			
+				var object = {data: []};
+				var id = r();
+				object.data.push({
+					"id" : id,
+					"note" : "empty",
+					"title" : "empty",
+					"accent" : "#128C7E",
+					"timestamp" : n
+				});
+
+				global.note_retrieve = {note_string: JSON.stringify(object.data[0]), id: id};
+
+
+				storage.set('notes', { number_notes: 1, notes_string: JSON.stringify(object), timestamp: n});
+			}
+		});
+
+	}, 500);
+
+});
+
+
+// login post
+ipcMain.on('login_post', function(event) {
+	mainWindow = null;
+	if(loginWindow === null || loginWindow === undefined) createLoginWindow();
+	else {
+		loginWindow.restore();
+        loginWindow.show();
+        loginWindow.focus();
+	}
+
+	storage.set('user', {user_name: null, eemail: null, email: null});
+	global.login = {eemail: null, email: null};
+
+
+});
+
+// logout
+ipcMain.on('logout', function(event) {
+	if(global.logout.initiate){
+
+		// mainWindow = null;
+		// createLoginWindow();
+		storage.set('user', {user_name: null, eemail: null, email: null});
+		global.login = {eemail: null, email: null};
+		cloud_listener_active = false;
+
+		event.sender.send('logout', 1);
+		l("Logout successful.");
+	}
+
+});
+
+// open url
+ipcMain.on('open_url', function(event) {
+	if(global.open_url.url !== ''){
+		require('child_process').exec('xdg-open ' + global.open_url.url);
+
+		global.open_url = {url: null};
+
+		event.sender.send('open_url', 1);
+	}
+
+});
+
+function l(data, label){
+	if(verbose) console.log(label + ": " + data);
+}
+
+function r(){
+	return Math.floor(Math.random() * (9999999 - 1000000 + 1)) + 1000000;
+}
+
+
+
+
+app.on('ready', function() {
+	//Ctrl + Shift + C
+	var ret_accept = globalShortcut.register('ctrl+shift+a', function() {
+		if(mainWindow !== undefined && mainWindow !== null){
+			mainWindow.restore();
+	        mainWindow.show();
+	        mainWindow.focus();
+    	}
+    	if(loginWindow !== undefined && loginWindow !== null){
+			loginWindow.restore();
+	        loginWindow.show();
+	        loginWindow.focus();
+    	}
+	});
+});

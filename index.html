@@ -10,43 +10,171 @@
     <link rel="stylesheet" href="assets/spectrum.css" type="text/css">
 
   </head>
-  <body style="overflow: hidden;">
-    <!-- Accent Bar -->
-    <div id="accentBar" style="position: absolute; top: 0px; left: 0px; height: 6px; width: 325px; background: #128C7E; -webkit-app-region: drag;"></div>
+  <body>
+    <div class="container">
+      <!-- Accent Bar -->
+      <div id="accentBar" style="position: absolute; top: -10px; left: 0px; height: 16px; width: 100%; background: #128C7E; z-index: 198; -webkit-app-region: drag;"></div>
 
-    <!-- Menu -->
-    <div class="menu" id="menu">
-      <input class="menu_icon" class="menu_icon" type="image" src="img/sync.png" id="b_sync" height="20px" />
-      <input class="menu_icon" class="menu_icon" type="image" src="img/edit.png" id="b_edit" height="20px" />
-      <input class="menu_icon" class="menu_icon" type="image" src="img/add.png" id="b_add" height="20px" />
+  <div id="accentBarMover" style="position: absolute; padding: 6px; font-family: Ubuntu; display:none; top: 6px; opacity: 0.92; left: 0px; height: 40px; width: 100%;  box-sizing: border-box; z-index: 198; -webkit-app-region: drag;">
+      <font  size="6px" color="#111111">Pysc</font>&nbsp;&nbsp;&nbsp;
+      <font size="1px" color="#444444">v1.0</font>
+      <span style="float: right;">
+        <font color="#eeeeee" size="2px">Drag here to move this note around.</font>
+      </span>
+  </div>
+
+      <!-- Menu -->
+      <div class="menu" id="menu">
+        <input class="menu_icon" type="image" src="img/more.png" id="b_more" height="18px" />
+        <input class="menu_icon" type="image" src="img/add.png" id="b_add" height="20px" />
+        <input class="menu_icon" type="image" src="img/edit.png" id="b_edit" height="20px" />
+      </div>
+
+      <!-- Expanded Menu -->
+      <div class="expanded_menu" id="expanded_menu">
+
+        <input class="menu_icon" type="image" src="img/more.png" id="b_more_expanded_menu" height="18px" />
+        <input class="menu_icon" type="image" src="img/add.png" id="b_add_expanded_menu" height="20px" />
+        <input class="menu_icon" type="image" src="img/edit.png" id="b_edit_expanded_menu" height="20px" />
+        <input class="menu_icon" type="image" src="img/sync.png" id="b_sync_expanded_menu" height="20px" />
+        <input type="image" class="menu_icon" src="img/keys.png" id="b_keys_expanded_menu"  height="20px"/> 
+        <input type="image" class="menu_icon" src="img/delete.png" id="b_edit_menu_delete_expanded_menu"  height="20px"/> 
+        <input type="image" class="menu_icon" src="img/user.png" id="b_edit_menu_user"  height="20px"/> 
+
+
+
+      </div>
+
+      <!-- Edit -->
+      <div class="color_picker hidden" id="color_picker_div">
+        <input type="color" class="menu_icon" id="b_edit_menu_color" class="color_picker" height="12px" /> 
+      </div>
+      <div class="menu hidden" id="edit_menu_div">
+        <input type="image" class="menu_icon" src="img/save.png" id="b_edit_menu_save"  height="20px"/> 
+        <input type="image" class="menu_icon" src="img/delete.png" id="b_edit_menu_delete"  height="20px"/> 
+        <input class="menu_icon" type="image" src="img/sync.png" id="b_sync" height="20px" />
+      </div>
+
+      <!-- TextArea -->
+      <textarea id="heading" class="heading" onkeydown="return limitLines(this, event)" style="z-index: 5" placeholder="Title"></textarea>
+      <textarea id="edit_note" name="edit_note"  class="note scollbar hidden" style="z-index: 3" placeholder="Markdown enabled."></textarea>
+
+      <!-- Rendered Note -->
+      <div id="rendered_note" style="z-index: 2;" class="note"><font size='2px'  color="#AAA">To edit, you can click here, press 'Enter', or use the 'Edit' icon to enter edit mode.</font></div>
+
+
+      <div id="user_menu" class="user_menu hidden">
+          <center>
+              <br><br>
+              <img src="img/user.png" height="140px" width="140px"><br><br>
+              <i><font size="2px" color="#DDDDDD">logged in as:</font></i><br>
+              <span style="font-weight: bold;" id="user_id">user@usermail.com</span><br><br>
+              <button class="alt_button" id="b_user_menu_log_out">Log Out</button>
+              <button class="alt_button" id="b_user_menu_back">Back</button>
+          </center>
+      </div>
+
+      <div id="user_login_menu" class="user_menu hidden">
+          <center>
+              <br><br>
+              <img src="img/user.png" height="140px" width="140px"><br><br>
+              <i><font size="2px" color="#DDDDDD">Click below to sign in with your account. Signing in enables syncing to the cloud.</font></i><br>
+              <button class="alt_button" id="b_user_login_menu_log_in">Sign In</button>
+              <button class="alt_button" id="b_user_login_menu_back">Later</button>
+          </center>
+      </div>
+
+      <div id="loading" class="loading hidden"><br><br><center><img class="rotate" style="position: absolute; top: 0; left: 0; opacity: 0.1;" src="img/busy.png"></center></div>
+      <div id="popup" class="popup"></div>
+
     </div>
-
-    <!-- Edit -->
-    <div class="color_picker hidden" id="color_picker_div">
-      <input type="color" class="menu_icon" id="b_edit_menu_color" class="color_picker" height="12px" /> 
-    </div>
-    <div class="menu hidden" id="edit_menu_div">
-      <input type="image" class="menu_icon" src="img/delete.png" id="b_edit_menu_delete"  height="20px"/> 
-      <input type="image" class="menu_icon" src="img/save.png" id="b_edit_menu_save"  height="20px"/> 
-    </div>
-
-    <!-- TextArea -->
-    <textarea id="heading" class="heading" style="z-index: 5" placeholder="Title"></textarea>
-    <textarea id="edit_note" name="edit_note" class="note hidden" style="z-index: 3" placeholder="Markdown enabled."></textarea>
-
-    <!-- Rendered Note -->
-    <div id="rendered_note" style="z-index: 2;" class="note"><font size='2px'  color="#AAA">To edit, you can click here, press 'Enter', or use the 'Edit' icon to enter edit mode.</font></div>
   </body>
 
   <script src="assets/jquery.min.js"></script>
   <script src="assets/spectrum.js"></script>
   <script type="text/javascript" src="assets/scripts.js"></script>
   <script src="assets/markdown.js"></script>
+  <script src="assets/mousetrap.min.js"></script>
 
 
   <script>
   function setColor(picker) {
     document.getElementsByTagName('div')[0].style.color = '#' + picker.toString()
+  }
+
+
+  </script>
+
+
+  <script>
+    // single keys
+
+    // map multiple combinations to the same callback
+    Mousetrap.bind(['command+k', 'ctrl+k'], function() {
+        alert('command k or control k');
+
+        // return false to prevent default browser behavior
+        // and stop event from bubbling
+        return false;
+    });
+
+
+
+    //new note
+    Mousetrap.bind('alt+a', function() { 
+      var remote = require('electron').remote;
+      var ipcRenderer = require('electron').ipcRenderer;   
+      ipcRenderer.send('new_note');
+    });
+
+    //edit
+    var edit_toggle = true;
+
+    Mousetrap.bind('alt+enter', function() { 
+      if(edit_toggle){
+        setTimeout(function() { 
+            $('#menu').fadeOut(200);
+        }, 200);
+        $('#edit_menu_div').fadeIn(200);
+        $('#color_picker_div').fadeIn(200);
+        $('#edit_note').fadeIn(200);
+      }
+      else{
+        setTimeout(function() { 
+          $('#edit_menu_div').fadeOut(200);
+          $('#color_picker_div').fadeOut(200);
+          $('#edit_note').fadeOut(200);
+        }, 200);
+        
+        $('#menu').fadeIn(200);
+        if($('#edit_note').val() !== "") $('#rendered_note').html(md.render($('#edit_note').val()));
+        else  $('#rendered_note').html("<font size='2px' color='#AAA'>To edit, you can click here, or use the 'Edit' icon to enter edit mode.</font>");
+        }
+        edit_toggle = !edit_toggle;
+      });
+
+</script>
+
+
+  <script type="text/javascript">
+  var keynum, lines = 1;
+
+  function limitLines(obj, e) {
+    // IE
+    if(window.event) {
+      keynum = e.keyCode;
+    // Netscape/Firefox/Opera
+    } else if(e.which) {
+      keynum = e.which;
+    }
+
+    if(keynum == 13) {
+      if(lines == obj.rows) {
+        return false;
+      }else{
+        lines++;
+      }
+    }
   }
   </script>
 

@@ -24,6 +24,8 @@
     "electron-config": "^0.2.1",
     "electron-json-storage": "^3.0.1",
     "firebase": "^3.7.2",
-    "menubar": "^5.2.3"
+    "markdown-it": "^8.3.1",
+    "menubar": "^5.2.3",
+    "open": "0.0.5"
   }
 }

@@ -3,20 +3,50 @@
   display: none;
 }
 
+body{
+	overflow: hidden;
+}
+
 .main _n_h{
   display: none;
 }
 
-.note {
-	padding: 20px; 
-	position: absolute; 
-	top: 46px; 
+.container{
+	position: absolute;
+	top: 0px;
 	left: 0px;
-	width:286px;
-	height:303px; 
+	width: 100%;
+	height: 100%;
+}
+
+.note {
+	padding: 20px;
+	padding-top: 60px;
+	margin-top: 46px;
+	position: absolute;
+	box-sizing: border-box;
+
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	width: 100%;
+	height: 100%; 
 	background: #ECE5DD;
 	font-family: Ubuntu;
-    background-image: url('img/clipboard.png');
+    background-position: bottom right;
+    background-repeat: no-repeat;
+}
+
+
+.login {
+	padding: 20px; 
+	position: absolute; 
+	top: 64px; 
+	left: 0px;
+	width:286px;
+	height:325px; 
+	background: #ECE5DD;
+	font-family: Ubuntu;
     background-position: bottom right;
     background-repeat: no-repeat;
 }
@@ -28,7 +58,7 @@
 	top: 04px; 
 	left: 0px;
 	font-family: Ubuntu;
-	width:318px;
+	width: 100%;	/*318*/
 	height:20px; 
 	background: #ECE5DD;
 	color: #128C7E;
@@ -56,9 +86,23 @@
 	z-index: 10;
 }
 
+.expanded_menu{
+	position: absolute;  
+	top: 6px;
+	right: 0px; 
+	float: right; 
+	height: 44px; 
+	background-color: #ECE5DD;
+	opacity: 0.92;
+	width: 100%; 
+	z-index: 10;
+}
+
 .menu_icon{
-	margin-left: 0px;
-	padding: 10px;
+	margin-right: 10px;
+	margin-top: 4px;
+	float: right; 
+	padding: 6px;
 }
 
 .color_picker{
@@ -69,15 +113,204 @@
 }
 
 .rotate {
-    position: absolute;
-    bottom: 100;
-    right: 100;
-	opacity: .08;
     margin:-60px 0 0 -60px;
-    -webkit-animation:spin 3s linear infinite;
-    -moz-animation:spin 3s linear infinite;
-    animation:spin 3s linear infinite;
+    -webkit-animation:spin 4s linear infinite;
+    -moz-animation:spin 4s linear infinite;
+    animation:spin 4s linear infinite;
 }
 @-moz-keyframes spin { 100% { -moz-transform: rotate(360deg); } }
 @-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg); } }
 @keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+
+.login_input{
+	font-size:14px;
+	display:block;
+	width:260px;
+	height:22px;
+	padding:5px 6px;
+	margin-top: 12px;
+	background:none;
+	background-image:none;
+	border:1px solid #AAA;
+	color:#128C7E;
+	border-radius:0;
+	transition:border-color .25s ease, box-shadow .25s ease;
+}
+
+.login_input:focus{	
+	border:1px solid #128C7E;
+	outline: 0;
+}
+
+textarea {
+  resize: vertical;
+}
+
+button {
+  border:0;
+  outline:none;
+  border-radius:0;
+  padding:10px;
+  padding-left:18px;
+  padding-right:18px;
+  font-size:12px;
+  text-transform:uppercase;
+  background: #128C7E;
+  margin-top: 16px;
+  margin-right: 12px;
+  color:#eee;
+  transition:all.5s ease;
+  -webkit-appearance: none;
+}
+
+button:hover {
+  background: #40AC8E;
+}
+
+.alt_button {
+  border:0;
+  outline:none;
+  border-radius:0;
+  padding:10px;
+  padding-left:18px;
+  padding-right:18px;
+  font-size:12px;
+  text-transform:uppercase;
+  background: #40AC8E;
+  margin-top: 16px;
+  margin-right: 12px;
+  color:#eee;
+  transition:all.5s ease;
+  -webkit-appearance: none;
+}
+
+.alt_button:hover {
+  background: #66DCBE;
+}
+
+#popup{
+	background: rgba(20,20,20,0.8); 
+	color: #CCC;
+	display: none;
+	font-size: 12px;
+	padding: 16px;
+	font-family: Ubuntu;
+	z-index: 200;
+	position: absolute; 
+	bottom: 0px;
+	left: 0px;
+	height: 12px;
+	width: 100%;
+}
+
+.user_menu{
+	font-family: Ubuntu;
+	position: absolute;
+	background: #128C7E;
+	opacity: 0.9;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 199;
+}
+
+.loading{
+	z-index: 197;
+	background-color: #ECE5DD;
+	opacity: 0.94;
+	position: absolute;
+	bottom: -200px;
+	right: -200px;
+	width: 100%;
+	height: 100%;
+}
+
+.scrollbar
+{
+	margin-left: 20px;
+	float: left;
+	height: 100%;
+	width: 48px;
+	background: rgba(0,0,0,0);
+	overflow-y: scroll;
+	margin-bottom: 25px;
+}
+
+
+#edit_note::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.0);
+	background-color: rgba(0,0,0,0);
+}
+
+#edit_note::-webkit-scrollbar
+{
+	width: 6px;
+	background-color: rgba(0,0,0,0);
+}
+
+#edit_note::-webkit-scrollbar-thumb
+{
+	background-color: rgba(44,44,44,0.5);
+	
+	background-image: -webkit-gradient(linear, 0 0, 0 100%,
+	                   color-stop(.5, rgba(255, 255, 255, 0)),
+					   color-stop(.5, transparent), to(transparent));
+}
+
+table{
+   border: 1px solid;
+   border-color: #444;
+   border-radius: 0px;
+   /*margin-left: auto;
+   margin-right: auto;*/
+   padding: 6px;
+}
+
+td{
+   border: 1px solid;
+   border-color: #aaa;
+   border-radius: 0px;
+   padding: 12px;
+}
+
+a{
+	color: #128C7E;
+    text-decoration: none;
+}
+
+a:visited{
+	color: #128C7E;
+    text-decoration: none;
+}
+
+a:hover{
+    text-decoration: underline;
+}
+
+div.note img{
+	width: 120px;
+	height: 120px;
+	margin: 10px;
+}
+
+
+blockquote{
+	color: #444;
+	border-color: #888;
+	background-color: rgba(210,210,210, 0.5);
+	padding: 10px 14px 10px 30px;
+ 	transition:all 1s ease;
+}
+
+hr{
+	border-style: solid;
+    height: 0px;
+    border-bottom: 0px;
+}
+
+li{
+	padding-left: 10px;
+	font-size: 14px;
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Psyc Login</title><!-- Custom Fonts -->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
+    <link href='http://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="assets/main.css" type="text/css">
+    <link rel="stylesheet" href="assets/spectrum.css" type="text/css">
+
+  </head>
+  <body style="overflow: hidden;">
+    <!-- Accent Bar -->
+    <div id="accentBar" style="z-index: 10; position: absolute; top: 0px; left: 0px; height: 6px; width: 325px; background: #128C7E; -webkit-app-region: drag;"></div>
+
+    <!-- Menu -->
+<!--     <div class="menu" id="menu">
+      <input class="menu_icon" class="menu_icon" type="image" src="img/sync.png" id="b_sync" height="20px" />
+      <input class="menu_icon" class="menu_icon" type="image" src="img/edit.png" id="b_edit" height="20px" />
+      <input class="menu_icon" class="menu_icon" type="image" src="img/add.png" id="b_add" height="20px" />
+    </div>
+ -->
+    <!-- Edit -->
+<!--     <div class="color_picker hidden" id="color_picker_div">
+      <input type="color" class="menu_icon" id="b_edit_menu_color" class="color_picker" height="12px" /> 
+    </div>
+    <div class="menu hidden" id="edit_menu_div">
+      <input type="image" class="menu_icon" src="img/delete.png" id="b_edit_menu_delete"  height="20px"/> 
+      <input type="image" class="menu_icon" src="img/save.png" id="b_edit_menu_save"  height="20px"/> 
+    </div> -->
+
+    <div style="background: #128C7E; position: absolute; top: 4px; left: 0; width: 100%; height: 60px; z-index: 110;font-family: Ubuntu; -webkit-app-region: drag;">
+        <center><font size="5px" color="#EEE">Psyc</font></center>
+        <center><font size="2px" color="#FFF" style="opacity: 0.4">awesome sticky notes for Linux!</font></center>
+    </div>
+
+
+    <div id="login_div" class="login">
+        <font size="2px" color="#128C7E">Login to enable sync</font>
+        <input type="text" id="login_email" class="login_input" style="z-index: 5" placeholder="Email"></input>
+        <input type="Password" id="login_password" class="login_input" style="z-index: 3" placeholder="Password"></input>
+        
+        <button id="b_login">Login</button>
+        <button id="b_sign_up">Sign Up</button><br><br>
+
+        <span id="b_skip_login">
+            
+          <a><font color="#128C7E" size="2px">or, skip this step.</font></a>
+        </span>
+    </div>
+
+    <div id="sign_up_div" class="login hidden">
+      <font size="2px" color="#128C7E">Make an account</font>
+      <input type="text" id="register_email" class="login_input" style="z-index: 5" placeholder="Email"></input>
+      <input type="Password" id="register_password" class="login_input" style="z-index: 3" placeholder="Password"></input>
+      
+      <button id="b_register">Sign Up</button>
+      <button id="b_back">Back</button><br><br>
+
+      <span id="b_skip_login_more" style="cursor: ponter;">
+          <font color="#128C7E" size="2px">or, skip this step.</font>
+      </span>
+    </div>
+
+
+    <div id="loading" class="loading hidden"></div>
+    <div id="popup" class="popup hidden"></div>
+
+  </body>
+
+  <script src="assets/jquery.min.js"></script>
+  <script type="text/javascript" src="assets/login.js"></script>
+  <!-- <script src="https://www.gstatic.com/firebasejs/3.7.2/firebase.js"></script> -->
+<!--   <script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyDG2Dx_VfSLg09u8yQl5Aka7WS-omoNiyk",
+    authDomain: "pysc-60451.firebaseapp.com",
+    databaseURL: "https://pysc-60451.firebaseio.com",
+    storageBucket: "pysc-60451.appspot.com",
+    messagingSenderId: "287121949870"
+  };
+  firebase.initializeApp(config);
+</script>
+ -->
+
+</html>
