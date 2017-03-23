@@ -2,7 +2,7 @@
 
 What is this?
 ---
-Psyc is a minimal note-taking app for Linux based on electron. It is still in its early phases of developement, but it does work pretty well. And yes, Psyc has **markdown parsing capabilities**!
+Psyc is a minimalistic **note-taking app** and a **to-do manager** for Linux based on electron. It is still in its early phases of developement, but it does work pretty well. And yes, Psyc has **markdown parsing capabilities**!
 
 Cloud backup
 ---
@@ -10,7 +10,7 @@ Pysc supports cloud backup and retrieval. And we are working to get other featur
 
 Features planned
 ---
-A todo manager, reminders, and integration of clipboard sharing capabilities ([UniClip](http://piyushagade.xyz/uniclip)).
+A ~~todo manager~~, reminders, and integration of clipboard sharing capabilities ([UniClip](http://piyushagade.xyz/uniclip)).
 
 Keyboard shortcuts
 ---
@@ -32,4 +32,4 @@ Screenshots
 
 <img src="http://i.imgur.com/D9KIxra.png"/>
 
-<img src="http://i.imgur.com/v2WVa.png"/>
+<img src="http://i.imgur.com/U97kkgG.png"/>

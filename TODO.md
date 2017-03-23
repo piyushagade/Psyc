@@ -1,0 +1,1 @@
+1. When delete item mode is on, and user clicks on save button, delete item mode should turn off.
