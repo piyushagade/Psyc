@@ -22,15 +22,6 @@ exports.create = win => {
 
 	const contextMenu = electron.Menu.buildFromTemplate([
 		{
-			label: 'Show/Hide',
-			click() {
-				toggleWin();
-			}
-		},
-		{
-			type: 'separator'
-		},
-		{
 			role: 'quit'
 		}
 	]);
@@ -46,7 +37,7 @@ exports.setBadge = shouldDisplayUnread => {
 		return;
 	}
 
-	const icon = shouldDisplayUnread ? 'icon_unread.png' : 'icon_20.png';
+	const icon = shouldDisplayUnread ? 'icon_20.png' : 'icon_20.png';
 	const iconPath = path.join(__dirname, `img/${icon}`);
 	tray.setImage(iconPath);
 };

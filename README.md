@@ -1,40 +1,35 @@
-# electron-quick-start
+# Psyc
 
-**Clone and run for a quick way to see Electron in action.**
+What is this?
+---
+Psyc is a minimal note-taking app for Linux based on electron. It is still in its early phases of developement, but it does work pretty well. And yes, Psyc has **markdown parsing capabilities**!
 
-This is a minimal Electron application based on the [Quick Start Guide](http://electron.atom.io/docs/tutorial/quick-start) within the Electron documentation.
+Cloud backup
+---
+Pysc supports cloud backup and retrieval. And we are working to get other features like multi-device sync to Psyc.
 
-**Use this app along with the [Electron API Demos](http://electron.atom.io/#get-started) app for API code examples to help you get started.**
+Features planned
+---
+A todo manager, reminders, and integration of clipboard sharing capabilities ([UniClip](http://piyushagade.xyz/uniclip)).
 
-A basic Electron application needs just these files:
+Keyboard shortcuts
+---
+Description            | Keys
+-----------------------| -----------------------
+Add new note            | <kbd>Alt</kbd> <kbd>a</kbd>
+Toggle edit mode   | <kbd>Alt</kbd> <kbd>enter</kbd>
 
-- `package.json` - Points to the app's main file and lists its details and dependencies.
-- `main.js` - Starts the app and creates a browser window to render HTML. This is the app's **main process**.
-- `index.html` - A web page to render. This is the app's **renderer process**.
+Collaboration
+---
+We would love to have collaborators contribute to this project or any other of our projects. Email us at piyushagade@gmail.com
 
-You can learn more about each of these components within the [Quick Start Guide](http://electron.atom.io/docs/tutorial/quick-start).
 
-## To Use
+Screenshots
+---
+<img src="http://i.imgur.com/3VXEoNd.png"/>
 
-To clone and run this repository you'll need [Git](https://git-scm.com) and [Node.js](https://nodejs.org/en/download/) (which comes with [npm](http://npmjs.com)) installed on your computer. From your command line:
+<img src="http://i.imgur.com/fQ9GMMn.png"/>
 
-```bash
-# Clone this repository
-git clone https://github.com/electron/electron-quick-start
-# Go into the repository
-cd electron-quick-start
-# Install dependencies
-npm install
-# Run the app
-npm start
-```
+<img src="http://i.imgur.com/D9KIxra.png"/>
 
-Learn more about Electron and its API in the [documentation](http://electron.atom.io/docs/).
-
-## Other Example Apps
-
-For more example apps, see the
-[list of boilerplates](http://electron.atom.io/community/#boilerplates)
-created by the awesome electron community.
-
-#### License [CC0 1.0 (Public Domain)](LICENSE.md)
+<img src="http://i.imgur.com/v2WVa.png"/>

@@ -29,12 +29,13 @@ var clients_served = 0;
 
 //Global Objects
 global.note_update = {note_string: null};
-global.note_retrieve = {note_string: null, id: null};
+global.note_retrieve = {note_string: null, id: null, mode: 'text'};
 global.note_delete = {id: null};
 global.sync = {note_string: null, id: null};
 global.login = {eemail: null, email: null};
 global.logout = {initiate: false};
 global.open_url = {url: null};
+global.debug = {on: false, reset: false};
 
 
 
@@ -65,12 +66,12 @@ var isBusy = false;
 
 var messageCount;
 
-var reset = false;
-var debug = false;
-
-var verbose = true;
+var reset = global.debug.reset;
+var debug = global.debug.on;
+var verbose = global.debug.on;
 
 var debug_add = 0;
+if(debug) debug_add = 300;
 
 if(reset){
 	storage.set('notes', { number_notes: null, notes_string: null, timestamp: null });
@@ -140,8 +141,6 @@ function createWindow () {
   lastWindowPosition = config.get('lastWindowPosition');
 
   // Create the browser window.
-  if(debug) debug_add = 500;
-
   mainWindow = new BrowserWindow({width: lastWindowState.width, 
       height: lastWindowState.height, 
       x: x, 
@@ -149,7 +148,7 @@ function createWindow () {
 	  width: debug_add + 525, 
       height: debug_add + 525, 
       minWidth: 330,
-      minHeight: 330,
+      minHeight: 490,
       frame: false, 
       'titleBarStyle': 'hidden', 
       resizable: true, 
@@ -271,6 +270,7 @@ app.on('ready', function(){
 					"note" : "empty",
 					"title" : "empty",
 					"accent" : "#128C7E",
+					"mode" : "text",
 					"timestamp" : n
 				});
 
@@ -317,6 +317,7 @@ app.on('ready', function(){
 					"note" : "empty",
 					"title" : "empty",
 					"accent" : "#128C7E",
+					"mode" : "text",
 					"timestamp" : n
 				});
 
@@ -413,6 +414,7 @@ function updateNote(ns){
 	    			array[i].note = ns.note;
 	    			array[i].title = ns.title;
 	    			array[i].accent = ns.accent;
+	    			array[i].mode = ns.mode;
 	    			array[i].timestamp = n;
 	    		}
 	    	}
@@ -452,7 +454,7 @@ ipcMain.on('main_to_ren_data', function(event) {
 			}
 
 			if(retrieve_data!==undefined  && retrieve_data !== null) 
-				global.note_retrieve = {note_string: retrieve_data, id: retrieve_data.id};
+				global.note_retrieve = {note_string: retrieve_data, id: retrieve_data.id, mode: retrieve_data.mode};
 			
 			
 
@@ -563,11 +565,12 @@ ipcMain.on('new_note', function(event) {
 				"note" : "empty",
 				"title" : "empty",
 				"accent" : "#128C7E",
+				"mode" : "text",
 				"timestamp" : n
 			});
 
 
-			note_retrieve = {note_string: JSON.stringify(object.data[0]), id: id};
+			global.note_retrieve = {note_string: JSON.stringify(object.data[0]), id: id, mode: 'text'};
 
 			storage.set('notes', {number_notes: nn, notes_string: JSON.stringify(object), timestamp: n});
 
@@ -635,6 +638,7 @@ function cloud_listener(id, ns, ls){
 		    			cloud_array.data[i].note = ns.note;
 		    			cloud_array.data[i].title = ns.title;
 		    			cloud_array.data[i].accent = ns.accent;
+		    			cloud_array.data[i].mode = ns.mode;
 		    			found = true;
 
 		    			l("Cloud entry replaced.");
@@ -648,7 +652,8 @@ function cloud_listener(id, ns, ls){
 						"note" : ns.note,
 						"title" : ns.title,
 						"accent" : ns.accent,
-						"timestamp" : ns.timestamp
+						"timestamp" : ns.timestamp,
+						"mode" : ns.mode
 					});
 
 	    			l("New cloud entry created.");
@@ -776,10 +781,11 @@ ipcMain.on('skip_login', function(event) {
 					"note" : "empty",
 					"title" : "empty",
 					"accent" : "#128C7E",
+					"mode" : "text",
 					"timestamp" : n
 				});
 
-				global.note_retrieve = {note_string: JSON.stringify(object.data[0]), id: id};
+				global.note_retrieve = {note_string: JSON.stringify(object.data[0]), id: id, mode: 'text'};
 
 
 				storage.set('notes', { number_notes: 1, notes_string: JSON.stringify(object), timestamp: n});
@@ -847,7 +853,7 @@ function r(){
 
 
 app.on('ready', function() {
-	//Ctrl + Shift + C
+	//Ctrl + Shift + a
 	var ret_accept = globalShortcut.register('ctrl+shift+a', function() {
 		if(mainWindow !== undefined && mainWindow !== null){
 			mainWindow.restore();

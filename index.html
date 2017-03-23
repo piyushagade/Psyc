@@ -5,7 +5,6 @@
     <title>WhatsApp for Linux</title><!-- Custom Fonts -->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css" type="text/css">
     <link rel="stylesheet" href="assets/main.css" type="text/css">
     <link rel="stylesheet" href="assets/spectrum.css" type="text/css">
 
@@ -41,8 +40,6 @@
         <input type="image" class="menu_icon" src="img/delete.png" id="b_edit_menu_delete_expanded_menu"  height="20px"/> 
         <input type="image" class="menu_icon" src="img/user.png" id="b_edit_menu_user"  height="20px"/> 
 
-
-
       </div>
 
       <!-- Edit -->
@@ -53,6 +50,15 @@
         <input type="image" class="menu_icon" src="img/save.png" id="b_edit_menu_save"  height="20px"/> 
         <input type="image" class="menu_icon" src="img/delete.png" id="b_edit_menu_delete"  height="20px"/> 
         <input class="menu_icon" type="image" src="img/sync.png" id="b_sync" height="20px" />
+        <input class="menu_icon" type="image" src="img/delete_item.png" id="b_todo_delete_item" height="20px" />
+      </div>
+
+      <!-- mode menu -->
+      <div class="mode_menu" id="mode_menu">
+
+        <input class="menu_icon" type="image" src="img/text.png" id="b_text_mode" height="18px" />
+        <input class="menu_icon" type="image" src="img/todo.png" id="b_todo_mode" height="20px" />
+
       </div>
 
       <!-- TextArea -->
@@ -61,6 +67,16 @@
 
       <!-- Rendered Note -->
       <div id="rendered_note" style="z-index: 2;" class="note"><font size='2px'  color="#AAA">To edit, you can click here, press 'Enter', or use the 'Edit' icon to enter edit mode.</font></div>
+
+      <!-- Todo Note -->
+      <div id="todo_note" style="z-index: 2;" class="note">
+        <font size='2px'  color="#AAA">
+        <ol id="ol" class="todo_ol"></ol>
+        <div id="empty_ol" class="empty_ol"><center><br><br>Hurray! nothing to do today.<br><br><br><br><img style="width: 200px; height: 200px;" src="img/yay.png"></center></div>
+        <input type="text" name="new_li" id="new_li" class="todo_input" placeholder="Type here to add new item."></input>
+        <input type="image" name="add_li" id="add_li" class="todo_button" src="img/add_item.png" width="20px"></input>
+        </font>
+      </div>
 
 
       <div id="user_menu" class="user_menu hidden">
@@ -84,7 +100,9 @@
           </center>
       </div>
 
-      <div id="loading" class="loading hidden"><br><br><center><img class="rotate" style="position: absolute; top: 0; left: 0; opacity: 0.1;" src="img/busy.png"></center></div>
+      <div id="loading" class="loading"><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
+        <center><img class="rotate" width="100px" style="margin-left: 20px; opacity: 0.1;" src="img/busy.png"></center>
+      </div>
       <div id="popup" class="popup"></div>
 
     </div>
@@ -94,7 +112,7 @@
   <script src="assets/spectrum.js"></script>
   <script type="text/javascript" src="assets/scripts.js"></script>
   <script src="assets/markdown.js"></script>
-  <script src="assets/mousetrap.min.js"></script>
+  <script src="assets/mousetrap.js"></script>
 
 
   <script>

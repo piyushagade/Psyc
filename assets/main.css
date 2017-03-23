@@ -98,6 +98,16 @@ body{
 	z-index: 10;
 }
 
+.mode_menu{
+	position: absolute; 
+	bottom: 16px; 
+	left: 6px; 
+	float: left; 
+	height: 24px; 
+	width: auto; 
+	z-index: 10;
+}
+
 .menu_icon{
 	margin-right: 10px;
 	margin-top: 4px;
@@ -107,8 +117,8 @@ body{
 
 .color_picker{
 	position: absolute;
-	bottom: 10px;
-	right: 10px;
+	bottom: 4px;
+	right: 0px;
 	z-index: 10;
 }
 
@@ -142,6 +152,48 @@ body{
 	outline: 0;
 }
 
+.todo_input{
+	font-size:14px;
+	position: absolute;
+	display:block;
+	bottom: 40px;
+	left: 0px;
+
+	width:98%;
+	height:22px;
+	padding:5px 6px;
+	padding-left: 10px;
+	margin-top: 12px;
+	background:none;
+	background-image:none;
+	border: 0px;
+	border-bottom: 1px solid #aaa;
+	color:#222;
+	border-radius:4;
+	transition:border-color .25s ease, box-shadow .25s ease;
+}
+
+::-webkit-input-placeholder { /* WebKit, Blink, Edge */
+    color:    #888;
+}
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+   color:    #888;
+   opacity:  1;
+}
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+   color:    #888;
+   opacity:  1;
+}
+::-ms-input-placeholder { /* Internet Explorer 10-11 */
+   color:    #888;
+}
+
+.todo_input:focus{	
+	border: 0px;
+	border-bottom:1px solid #222;
+	outline: 0;
+}
+
 textarea {
   resize: vertical;
 }
@@ -167,6 +219,33 @@ button:hover {
   background: #40AC8E;
 }
 
+
+.todo_button {
+	border:0;
+	position: absolute;
+	display:block;
+	bottom: 40px;
+	right: 0;
+
+	outline:none;
+	border-radius:0;
+	padding:10px;
+	padding-left:18px;
+	padding-right:18px;
+	font-size:12px;
+	text-transform:uppercase;
+	background: #128C7E;
+	margin-top: 16px;
+	margin-right: 0;
+	color:#eee;
+	transition:all.5s ease;
+	-webkit-appearance: none;
+}
+
+.todo_button:hover {
+  background: #40AC8E;
+}
+
 .alt_button {
   border:0;
   outline:none;
@@ -189,7 +268,7 @@ button:hover {
 }
 
 #popup{
-	background: rgba(20,20,20,0.8); 
+	background: rgba(20,20,20,0.96); 
 	color: #CCC;
 	display: none;
 	font-size: 12px;
@@ -220,8 +299,8 @@ button:hover {
 	background-color: #ECE5DD;
 	opacity: 0.94;
 	position: absolute;
-	bottom: -200px;
-	right: -200px;
+	bottom: 00px;
+	right: 00px;
 	width: 100%;
 	height: 100%;
 }
@@ -310,7 +389,91 @@ hr{
     border-bottom: 0px;
 }
 
+ol{
+	margin: 10px;
+	padding: 6px;
+	padding-left: 30px;
+	padding-right: 30px;
+	width: auto;
+	border: 1px dashed #BBB;
+}
+
 li{
-	padding-left: 10px;
+	padding-left: 6px;
+	padding: 4px;
+	padding-bottom: 4px;
 	font-size: 14px;
+}
+
+h1{
+	margin-bottom: 0px;
+}
+
+h2{
+	margin-bottom: 0px;
+}
+
+h3{
+	margin-bottom: 0px;
+}
+
+h4{
+	margin-bottom: 0px;
+}
+
+h5{
+	margin-bottom: 0px;
+}
+
+h6{
+	margin-bottom: 0px;
+}
+
+p{
+	padding-left: 6px;
+	padding-right: 6px; 
+}
+
+
+
+.empty_ol{
+	margin: 10px;
+	padding: 6px;
+	padding-left: 30px;
+	padding-right: 30px;
+	width: auto;
+	color: #555;
+	font-size: 14px;
+	border: 1px dashed #BBB;
+}
+.empty_ol:img{
+	width: 200px;
+}
+
+
+.todo_ol{
+	color: #333;
+	list-style: none;
+	height: auto;
+	border: 0px dashed #BBB;
+}
+
+.todo_ol li{
+	margin: 10px;
+	font-size: 16px;
+	padding: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+	width: auto;
+	height: auto;
+	border: 1px dashed #BBB;
+}
+
+.marked_item{
+	background: url('../img/done.png') no-repeat top right;
+	background-size: 16px 16px;
+	width: 100%;
+	height: auto;
+	opacity: 0.6;
+	display: inline-block;
 }
