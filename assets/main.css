@@ -44,8 +44,11 @@ body{
 	margin-top: 46px;
 	position: absolute;
 	box-sizing: border-box;
+	overflow-y: scroll;
+	overflow-x: hidden;
 
 	bottom: 0px;
+	padding-bottom: 90px; 			/*adjustment so that absolute elemets can stay at bottom*/
 	left: 0px;
 	right: 0px;
 	width: 100%;
@@ -88,6 +91,7 @@ body{
     outline: none !important;
     border:0px solid red;
     box-shadow: 0 0 10px #719ECE;
+	overflow:auto;		
 }
 
 
@@ -98,9 +102,11 @@ body{
 .menu{
 	position: absolute; 
 	top: 6px; 
+	background-color: #ECE5DD;
 	right: 0px; 
+	opacity: 0.92;
 	float: right; 
-	height: 24px; 
+	height: 36px; 
 	width: auto; 
 	z-index: 10;
 }
@@ -119,11 +125,13 @@ body{
 
 .mode_menu{
 	position: absolute; 
-	bottom: 16px; 
-	left: 6px; 
+	bottom: 0; 
+	left: 0px; 
+	background-color:  #ECE5DD;
 	float: left; 
-	height: 24px; 
-	width: auto; 
+	opacity: 0.88;
+	height: 40px; 
+	width: 100%; 
 	z-index: 10;
 }
 
@@ -142,20 +150,33 @@ body{
 	border: 1px solid #BBB;
 	background-color: #ECE5DD;
 	display: none;
+
+	border-top: 1px solid #ccc;
+	-webkit-box-shadow: 0px -4px 6px rgba(50, 50, 50, 0.20);
+    -moz-box-shadow:    0px -4px 6px rgba(50, 50, 50, 0.20);
+    box-shadow:         0px -4px 6px rgba(50, 50, 50, 0.20);
 }
 
 .menu_icon{
-	margin-right: 10px;
+	margin-right: 6px;
+	margin-left: 6px;
 	margin-top: 4px;
 	float: right; 
 	padding: 6px;
+}
+
+.mode_menu_icon{
+	margin-right: 10px;
+	margin-top: 4px;
+	float: left; 
+	padding: 10px;
 }
 
 .color_picker{
 	position: absolute;
 	bottom: 4px;
 	right: 0px;
-	z-index: 10;
+	z-index: 11;
 }
 
 .rotate {
@@ -188,16 +209,28 @@ body{
 	outline: 0;
 }
 
-.todo_input{
-	font-size:14px;
+.todo_input_div{
 	position: absolute;
-	display:block;
+	width: 100%; 
+	opacity: 0.90;
+	background-color:  #ECE5DD;
+	z-index: 10;
 	bottom: 40px;
 	left: 0px;
+	border-top: 1px solid #ccc;
+	-webkit-box-shadow: 0px -4px 6px rgba(50, 50, 50, 0.20);
+    -moz-box-shadow:    0px -4px 6px rgba(50, 50, 50, 0.20);
+    box-shadow:         0px -4px 6px rgba(50, 50, 50, 0.20);
+}
 
+.todo_input{
+	font-size:14px;
+	z-index: 10;
+
+	position: absolute;
 	width:98%;
-	height:22px;
-	padding:5px 6px;
+	height:18px;
+	padding:4px 6px;
 	padding-left: 10px;
 	margin-top: 12px;
 	background:none;
@@ -208,6 +241,35 @@ body{
 	border-radius:4;
 	transition:border-color .25s ease, box-shadow .25s ease;
 }
+
+
+
+.todo_button {
+	border:0;
+	height: 18px;
+	display:block;
+	bottom: 0px;
+	right: 0;
+	position: relative;
+	float: right;
+	z-index: 11;
+
+	outline:none;
+	border-radius:0;
+	padding:10px;
+	padding-left:14px;
+	padding-right:14px;
+	text-transform:uppercase;
+	background: #128C7E;
+	color:#eee;
+	transition:all.5s ease;
+	-webkit-appearance: none;
+}
+
+.todo_button:hover {
+  background: #40AC8E;
+}
+
 
 ::-webkit-input-placeholder { /* WebKit, Blink, Edge */
     color:    #888;
@@ -255,32 +317,6 @@ button:hover {
   background: #40AC8E;
 }
 
-
-.todo_button {
-	border:0;
-	position: absolute;
-	display:block;
-	bottom: 40px;
-	right: 0;
-
-	outline:none;
-	border-radius:0;
-	padding:10px;
-	padding-left:18px;
-	padding-right:18px;
-	font-size:12px;
-	text-transform:uppercase;
-	background: #128C7E;
-	margin-top: 16px;
-	margin-right: 0;
-	color:#eee;
-	transition:all.5s ease;
-	-webkit-appearance: none;
-}
-
-.todo_button:hover {
-  background: #40AC8E;
-}
 
 .alt_button {
   border:0;
@@ -343,15 +379,8 @@ button:hover {
 
 .scrollbar
 {
-	margin-left: 20px;
-	float: left;
-	height: 100%;
-	width: 48px;
-	background: rgba(0,0,0,0);
 	overflow-y: scroll;
-	margin-bottom: 25px;
 }
-
 
 #edit_note::-webkit-scrollbar-track
 {
@@ -369,7 +398,29 @@ button:hover {
 {
 	background-color: rgba(44,44,44,0.5);
 	
-	background-image: -webkit-gradient(linear, 0 0, 0 100%,
+	background-image: -webkit-gradient(linear, 0 0, 0 100%),
+	                   color-stop(.5, rgba(255, 255, 255, 0)),
+					   color-stop(.5, transparent), to(transparent));
+}
+
+
+#todo_note::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.0);
+	background-color: rgba(0,0,0,0);
+}
+
+#todo_note::-webkit-scrollbar
+{
+	width: 6px;
+	background-color: rgba(0,0,0,0);
+}
+
+#todo_note::-webkit-scrollbar-thumb
+{
+	background-color: rgba(44,44,44,0.5);
+	
+	background-image: -webkit-gradient(linear, 0 0, 0 100%),
 	                   color-stop(.5, rgba(255, 255, 255, 0)),
 					   color-stop(.5, transparent), to(transparent));
 }
@@ -520,7 +571,6 @@ p{
 	padding-left: 2px;
 	padding-right: 2px;
 	width: auto;
-
 
 	border: 0px dashed #BBB;
 }

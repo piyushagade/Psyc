@@ -104,6 +104,9 @@ $(document).ready(function() {
 						//enable template menu
 						$("#b_insert").removeClass('hidden');
 
+						//disable todo input div
+						$('#todo_input_div').addClass('hidden');
+
 						//disable todo item delete button
 						$('#b_todo_delete_item').addClass('hidden');
 					}
@@ -111,6 +114,9 @@ $(document).ready(function() {
 
 						//disable template menu
 						$("#b_insert").addClass('hidden');
+
+						//enable todo input div
+						$('#todo_input_div').removeClass('hidden');
 
 						//enable todo item delete button
 						$('#b_todo_delete_item').removeClass('hidden');
@@ -184,6 +190,9 @@ $(document).ready(function() {
 			//enable template menu
 			$("#b_insert").removeClass('hidden');
 
+			//disable todo input div
+			$('#todo_input_div').addClass('hidden');
+
 			//disable todo item delete button
 			$('#b_todo_delete_item').addClass('hidden');
 
@@ -235,6 +244,9 @@ $(document).ready(function() {
 			$("#b_insert").addClass('hidden');
 			$("#template_menu").slideUp();
 			template_menu_toggle = false;
+
+			//enable todo input div
+			$('#todo_input_div').removeClass('hidden');
 
 			//enable todo item delete button
 			$('#b_todo_delete_item').removeClass('hidden');
@@ -356,6 +368,8 @@ $(document).ready(function() {
 
 			var ipcRenderer = require('electron').ipcRenderer;   
 			ipcRenderer.send('ren_to_main_data');
+
+			$("#new_li").focus();
 		}
 	});
 
@@ -487,6 +501,11 @@ $(document).ready(function() {
 			$('#edit_note').fadeOut(0);
 			$('#edit_note').fadeIn(200);
 
+
+			//disable todo input div
+			$('#todo_input_div').addClass('hidden');
+
+			//disable todo delete item button
 			$('#b_todo_delete_item').addClass('hidden');
 		}
 		else if(mode === 'todo') $('#edit_note').addClass('hidden');
@@ -507,6 +526,11 @@ $(document).ready(function() {
 			$('#edit_note').fadeOut(0);
 			$('#edit_note').fadeIn(200);
 
+
+			//disable todo input div
+			$('#todo_input_div').addClass('hidden');
+
+			//disable todo delete item button
 			$('#b_todo_delete_item').addClass('hidden');
 		}
 		else if(mode === 'todo') $('#edit_note').addClass('hidden');
@@ -530,7 +554,14 @@ $(document).ready(function() {
 					
 				}, 200);
 
-				if(mode === 'text') $('#b_todo_delete_item').addClass('hidden');
+				if(mode === 'text'){
+
+					//disable todo input div
+					$('#todo_input_div').addClass('hidden');
+					
+					//disable todo delete item button
+					$('#b_todo_delete_item').addClass('hidden');
+				}
 			}
 		}, 200);
 		link_clicked = false;
