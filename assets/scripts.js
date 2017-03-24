@@ -176,7 +176,7 @@ $(document).ready(function() {
 					$("h4").css("color", accent);
 					$("h5").css("color", accent);
 					$("hr").css("border-color", accent);
-					$("th").css("color", accent);
+					$(".note th").css("color", accent);
     				$("tr:odd").css("background-color", "rgba(220,220,220, 0.5468)");
 					$(".todo_button").css("background", accent);
 
@@ -543,10 +543,13 @@ $(document).ready(function() {
 	});
 
 
+
+
 	//switch to edit mode by clicking on rendered note
 	$('#rendered_note').click(function (e) {
+		var local_keyboard_menu_toggle = keyboard_menu_toggle;
 		setTimeout(function() {	
-			if(!link_clicked){	
+			if(!link_clicked && !local_keyboard_menu_toggle){	
 				setTimeout(function() {	
 					$('#menu').fadeOut(200);
 					$('#expanded_menu').fadeOut(200);
@@ -570,6 +573,17 @@ $(document).ready(function() {
 				}
 			}
 		}, 200);
+
+		if(template_menu_toggle) {
+			$('#template_menu').slideUp();
+			template_menu_toggle = false;
+		}
+
+		if(keyboard_menu_toggle){
+			$('#keyboard_menu').slideUp();
+			keyboard_menu_toggle = false;
+		}
+
 		link_clicked = false;
 	});
 
@@ -590,9 +604,11 @@ $(document).ready(function() {
 			$('#color_picker_div').fadeOut(200);
 		}
 		toggle_menu = !toggle_menu;
+
+
 	});
 
-	// show more options
+	// close more options
 	$('#b_more_expanded_menu').click(function (e) {
 		if(toggle_menu){
 			setTimeout(function() {	
@@ -607,6 +623,12 @@ $(document).ready(function() {
 			$('#color_picker_div').fadeOut(200);
 		}
 		toggle_menu = !toggle_menu;
+
+
+		if(keyboard_menu_toggle){
+			$('#keyboard_menu').slideUp();
+			keyboard_menu_toggle = false;
+		}
 	});
 
 
@@ -686,6 +708,12 @@ $(document).ready(function() {
 			template_menu_toggle = false;
 		}
 
+		if(keyboard_menu_toggle){
+			$('#keyboard_menu').slideUp();
+			keyboard_menu_toggle = false;
+		}
+
+
 		if(mode === 'todo'){
 			delete_item_mode = false;
 			$('#b_todo_delete_item').attr("src","img/delete_item.png");
@@ -698,7 +726,7 @@ $(document).ready(function() {
 		$("h4").css("color", accent);
 		$("h5").css("color", accent);
 		$("hr").css("border-color", accent);
-		$("th").css("color", accent);
+		$(".note th").css("color", accent);
 		$("tr:odd").css("background-color", "rgba(220,220,220, 0.5468)");
 		$(".todo_button").css("background", accent);
 
@@ -720,6 +748,11 @@ $(document).ready(function() {
 		if(template_menu_toggle){
 			$('#template_menu').slideUp();
 			template_menu_toggle = false;
+		}
+
+		if(keyboard_menu_toggle){
+			$('#keyboard_menu').slideUp();
+			keyboard_menu_toggle = false;
 		}
 
 		if(mode === 'todo'){
@@ -1029,7 +1062,7 @@ $(document).ready(function() {
 			$("h4").css("color", accent);
 			$("h5").css("color", accent);
 			$("hr").css("border-color", accent);
-			$("th").css("color", accent);
+			$(".note th").css("color", accent);
 			$("tr:odd").css("background-color", "rgba(220,220,220, 0.5468)");
 			$(".todo_button").css("background", accent);
 
@@ -1184,6 +1217,7 @@ $(document).ready(function() {
 	}
 
 
+	// template menu
 	var template_menu_toggle = false;
 	$("#b_insert").click(function(){
 		if(!template_menu_toggle) $('#template_menu').slideDown();
@@ -1193,31 +1227,37 @@ $(document).ready(function() {
 
 	$("#b_href").click(function(){
 		$('#edit_note').val($('#edit_note').val() + getTemplate('href'));
+		sendUpdateIPC();
 	});
 
 	$("#b_heading").click(function(){
 		$('#edit_note').val($('#edit_note').val() + getTemplate('heading'));
+		sendUpdateIPC();
 	});
 
 
 	$("#b_image").click(function(){
 		$('#edit_note').val($('#edit_note').val() + getTemplate('image'));
+		sendUpdateIPC();
 	});
 
 	$("#b_hr").click(function(){
-		$('#edit_note').val($('#edit_note').val() + getTemplate('hr'));
+		sendUpdateIPC();
 	});
 
 	$("#b_text_format").click(function(){
 		$('#edit_note').val($('#edit_note').val() + getTemplate('text_format'));
+		sendUpdateIPC();
 	});
 
 	$("#b_table").click(function(){
 		$('#edit_note').val($('#edit_note').val() + getTemplate('table'));
+		sendUpdateIPC();
 	});
 
 	$("#b_blockquote").click(function(){
 		$('#edit_note').val($('#edit_note').val() + getTemplate('blockquote'));
+		sendUpdateIPC();
 	});
 
 	$('#edit_note').click(function(){
@@ -1225,7 +1265,42 @@ $(document).ready(function() {
 			$('#template_menu').slideUp();
 			template_menu_toggle = false;
 		}
-	})
+
+		if(keyboard_menu_toggle){
+			$('#keyboard_menu').slideUp();
+			keyboard_menu_toggle = false;
+		}
+	});
+
+
+	function sendUpdateIPC(){
+		// Send IPC
+		var remote = require('electron').remote;
+
+		var d = new Date();
+		var n = d.getTime();
+
+			var object = {};
+
+		object.id = id;
+		object.note = $('#edit_note').val();
+		object.title = $('#heading').val();
+		object.accent = accent;
+		object.mode = 'text';
+		object.timestamp = n;
+
+
+		remote.getGlobal('note_update').note_string = object;
+
+		var ipcRenderer = require('electron').ipcRenderer;   
+		ipcRenderer.send('ren_to_main_data');
+
+		ipcRenderer.on('ren_to_main_data', function(event, arg) {
+			if(arg==1){
+
+			}	
+		});
+	}
 
 	function getTemplate(category){
 		if(category === 'table') template = `
@@ -1238,7 +1313,7 @@ $(document).ready(function() {
 [Google](https://www.google.com)
 `;
 		else if(category === 'image') template = `
-![alt_text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png)
+![alt_text](https://github.com/piyushagade/Psyc/blob/master/img/icon_color.png?raw=true)
 `;
 		else if(category === 'hr') template = `
 ---
@@ -1262,29 +1337,32 @@ $(document).ready(function() {
 		return template;
 	}
 
+	// keyboard menu
+	var keyboard_menu_toggle = false;
+	$("#b_keys_expanded_menu").click(function(){
+		if(!keyboard_menu_toggle) $('#keyboard_menu').slideDown();
+		else $('#keyboard_menu').slideUp();
+		keyboard_menu_toggle = !keyboard_menu_toggle;
+	});
+
 
 
 
 
 	// mouse trap
-	// single keys
-
-    // map multiple combinations to the same callback
-    Mousetrap.bind(['command+k', 'ctrl+k'], function() {
-        alert('command k or control k');
-
-        // return false to prevent default browser behavior
-        // and stop event from bubbling
-        return false;
-    });
-
-
-
+	
     //new note
     Mousetrap.bind('alt+a', function() { 
       var remote = require('electron').remote;
       var ipcRenderer = require('electron').ipcRenderer;   
       ipcRenderer.send('new_note');
+    });
+
+    //show keyboard shortcuts
+    Mousetrap.bind('alt+k', function() { 
+      if(!keyboard_menu_toggle) $('#keyboard_menu').slideDown();
+		else $('#keyboard_menu').slideUp();
+		keyboard_menu_toggle = !keyboard_menu_toggle;
     });
 
     //edit

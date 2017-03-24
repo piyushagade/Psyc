@@ -77,6 +77,53 @@
 
       </div>
 
+      <!-- keyboard menu -->
+      <div class="keyboard_menu" id="keyboard_menu"><span style="font-size: 12px; margin: 2px; font-family: Ubuntu; color: #888">Keyboard shortcuts:</span><br>
+        <table border="0" padding="10">
+          <thead>
+            <th>General Actions</th><th>Shortcut</th>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Add new note</td>
+              <td>Alt + A</td>
+            </tr>
+            <tr>
+              <td>Toggle edit mode</td>
+              <td>Alt + Enter</td>
+            </tr>
+            <tr>
+              <td>Show shortcuts</td>
+              <td>Alt + K</td>
+            </tr>
+            <tr>
+              <td>Show help</td>
+              <td>Alt + H</td>
+            </tr>
+            <tr>
+              <td>Quit**</td>
+              <td>Ctrl + Alt + Q</td>
+            </tr>
+          </tbody>
+          <thead>
+            <th>Todo Actions</th><th>Shortcut</th>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Focus on textbox</td>
+              <td>Tab</td>
+            </tr>
+            <tr>
+              <td>Enter new item</td>
+              <td>Enter</td>
+            </tr>
+          </tbody>
+        </table>
+        <span style="font-size: 10px; margin: 0px; font-family: Ubuntu; color: #888; text-align: center;"><center>Shortcuts marked with ** are global shortcuts. It means that they can be used even with other application running in the foreground. </center>
+        </span>
+
+      </div>
+
       <!-- TextArea -->
       <textarea id="heading" class="heading" onkeydown="return limitLines(this, event)" style="z-index: 5" placeholder="Title"></textarea>
       <textarea id="edit_note" name="edit_note"  class="note scollbar hidden" style="z-index: 3" placeholder="Markdown enabled."></textarea>

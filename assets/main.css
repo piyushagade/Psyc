@@ -87,11 +87,20 @@ body{
 	font-size: 20px;
 }
 
-.note, .heading:focus {
+.heading:focus {
     outline: none !important;
     border:0px solid red;
     box-shadow: 0 0 10px #719ECE;
 	overflow:auto;		
+}
+
+
+.note {
+    outline: none !important;
+    border:0px solid red;
+    box-shadow: 0 0 10px #719ECE;
+	overflow:auto;		
+	padding-bottom: 50px;
 }
 
 
@@ -126,13 +135,18 @@ body{
 .mode_menu{
 	position: absolute; 
 	bottom: 0; 
-	left: 0px; 
+	left: 2px; 
 	background-color:  #ECE5DD;
 	float: left; 
 	opacity: 0.88;
-	height: 40px; 
+	height: 44px; 
 	width: 100%; 
 	z-index: 10;
+
+	border-top: 1px solid #ccc;
+	-webkit-box-shadow: 0px -4px 10px rgba(50, 50, 50, 0.20);
+    -moz-box-shadow:    0px -4px 10px rgba(50, 50, 50, 0.20);
+    box-shadow:         0px -4px 10px rgba(50, 50, 50, 0.20);
 }
 
 
@@ -152,9 +166,54 @@ body{
 	display: none;
 
 	border-top: 1px solid #ccc;
-	-webkit-box-shadow: 0px -4px 6px rgba(50, 50, 50, 0.20);
-    -moz-box-shadow:    0px -4px 6px rgba(50, 50, 50, 0.20);
-    box-shadow:         0px -4px 6px rgba(50, 50, 50, 0.20);
+	-webkit-box-shadow: 4px 4px 10px rgba(50, 50, 50, 0.20);
+    -moz-box-shadow:    4px 4px 10px rgba(50, 50, 50, 0.20);
+    box-shadow:         4px 4px 10px rgba(50, 50, 50, 0.20);
+}
+
+
+.keyboard_menu{
+	position: absolute; 
+	padding : 4px 4px 6px 6px;
+	top: 45px;
+ 	right: 10px; 
+	float: left; 
+	height: auto; 
+	width: 224px; 
+	z-index: 10;
+	opacity: 0.94;
+	border: 1px solid #BBB;
+	background-color: #ECE5DD;
+	display: none;
+
+	border-top: 1px solid #ccc;
+	-webkit-box-shadow: 4px 4px 10px rgba(50, 50, 50, 0.20);
+    -moz-box-shadow:    4px 4px 10px rgba(50, 50, 50, 0.20);
+    box-shadow:         4px 4px 10px rgba(50, 50, 50, 0.20);
+}
+
+.keyboard_menu table{
+	font-family: Ubuntu;
+	border: 0px solid;
+	border-color: #444;
+	border-radius: 0px;
+	padding: 8px;
+}
+
+.keyboard_menu td{
+   border: 1px solid;
+   font-size: 12px;
+   border-color: #aaa;
+   border-radius: 0px;
+   padding: 6px;
+}
+
+.keyboard_menu th{
+   text-align: left;
+   font-size: 10px;
+   color: #888;
+   padding: 4px;
+   padding-top: 14px;
 }
 
 .menu_icon{
@@ -168,14 +227,15 @@ body{
 .mode_menu_icon{
 	margin-right: 10px;
 	margin-top: 4px;
+	margin-bottom: 4px;
 	float: left; 
 	padding: 10px;
 }
 
 .color_picker{
 	position: absolute;
-	bottom: 4px;
-	right: 0px;
+	bottom: 6px;
+	right: 6px;
 	z-index: 11;
 }
 
@@ -229,12 +289,11 @@ body{
 
 	position: absolute;
 	width:98%;
-	height:18px;
-	padding:4px 6px;
+	height:30px;
+	padding:4px;
 	padding-left: 10px;
-	margin-top: 12px;
-	background:none;
-	background-image:none;
+	margin-top: 0;
+	background: none;
 	border: 0px;
 	border-bottom: 1px solid #aaa;
 	color:#222;
@@ -425,7 +484,29 @@ button:hover {
 					   color-stop(.5, transparent), to(transparent));
 }
 
-table{
+
+#note::-webkit-scrollbar-track
+{
+	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.0);
+	background-color: rgba(0,0,0,0);
+}
+
+#note::-webkit-scrollbar
+{
+	width: 6px;
+	background-color: rgba(0,0,0,0);
+}
+
+#note::-webkit-scrollbar-thumb
+{
+	background-color: rgba(44,44,44,0.5);
+	
+	background-image: -webkit-gradient(linear, 0 0, 0 100%),
+	                   color-stop(.5, rgba(255, 255, 255, 0)),
+					   color-stop(.5, transparent), to(transparent));
+}
+
+.note table{
    border: 1px solid;
    border-color: #444;
    border-radius: 0px;
@@ -434,7 +515,7 @@ table{
    padding: 6px;
 }
 
-td{
+.note td{
    border: 1px solid;
    border-color: #aaa;
    border-radius: 0px;
