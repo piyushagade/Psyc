@@ -12,12 +12,20 @@ Features planned
 ---
 A ~~todo manager~~, reminders, and integration of clipboard sharing capabilities ([UniClip](http://piyushagade.xyz/uniclip)).
 
-Keyboard shortcuts
+General keyboard shortcuts
 ---
 Description            | Keys
 -----------------------| -----------------------
-Add new note            | <kbd>Alt</kbd> <kbd>a</kbd>
-Toggle edit mode   | <kbd>Alt</kbd> <kbd>enter</kbd>
+Add new note            | <kbd>Alt</kbd> <kbd>A</kbd>
+Toggle edit mode   | <kbd>Alt</kbd> <kbd>Enter</kbd>
+Quit Pysc   | <kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Q</kbd>
+
+To-Do mode shortcuts
+---
+Description            | Keys
+-----------------------| -----------------------
+Focus on the input textbox            | <kbd>Tab</kbd>
+Add new item   | <kbd>Enter</kbd>
 
 Collaboration
 ---

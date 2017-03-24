@@ -8,6 +8,11 @@
     <link rel="stylesheet" href="assets/main.css" type="text/css">
     <link rel="stylesheet" href="assets/spectrum.css" type="text/css">
 
+    <script src="assets/jquery.min.js"></script>
+    <script type="text/javascript" src="assets/scripts.js"></script>
+    <script src="assets/spectrum.js"></script>
+    <script src="assets/markdown.js"></script>
+    <script src="assets/mousetrap.js"></script>
   </head>
   <body>
     <div class="container">
@@ -93,7 +98,7 @@
 
       <!-- todo input div -->
       <div class="todo_input_div" id="todo_input_div">
-          <input type="text" name="new_li" id="new_li" class="todo_input" placeholder="Type here to add new item."></input>
+          <input type="text" name="new_li" onkeydown="return enterKeyEvent(this, event)" id="new_li" class="todo_input" placeholder="Type here to add new item."></input>
           <input type="image" name="add_li" id="add_li" class="todo_button" src="img/add_item.png" width="18px" height="20px"></input>
       </div>
 
@@ -127,11 +132,6 @@
     </div>
   </body>
 
-  <script src="assets/jquery.min.js"></script>
-  <script src="assets/spectrum.js"></script>
-  <script type="text/javascript" src="assets/scripts.js"></script>
-  <script src="assets/markdown.js"></script>
-  <script src="assets/mousetrap.js"></script>
 
 
   <script>
@@ -141,56 +141,6 @@
 
 
   </script>
-
-
-  <script>
-    // single keys
-
-    // map multiple combinations to the same callback
-    Mousetrap.bind(['command+k', 'ctrl+k'], function() {
-        alert('command k or control k');
-
-        // return false to prevent default browser behavior
-        // and stop event from bubbling
-        return false;
-    });
-
-
-
-    //new note
-    Mousetrap.bind('alt+a', function() { 
-      var remote = require('electron').remote;
-      var ipcRenderer = require('electron').ipcRenderer;   
-      ipcRenderer.send('new_note');
-    });
-
-    //edit
-    var edit_toggle = true;
-
-    Mousetrap.bind('alt+enter', function() { 
-      if(edit_toggle){
-        setTimeout(function() { 
-            $('#menu').fadeOut(200);
-        }, 200);
-        $('#edit_menu_div').fadeIn(200);
-        $('#color_picker_div').fadeIn(200);
-        $('#edit_note').fadeIn(200);
-      }
-      else{
-        setTimeout(function() { 
-          $('#edit_menu_div').fadeOut(200);
-          $('#color_picker_div').fadeOut(200);
-          $('#edit_note').fadeOut(200);
-        }, 200);
-        
-        $('#menu').fadeIn(200);
-        if($('#edit_note').val() !== "") $('#rendered_note').html(md.render($('#edit_note').val()));
-        else  $('#rendered_note').html("<font size='2px' color='#AAA'>To edit, you can click here, or use the 'Edit' icon to enter edit mode.</font>");
-        }
-        edit_toggle = !edit_toggle;
-      });
-
-</script>
 
 
   <script type="text/javascript">

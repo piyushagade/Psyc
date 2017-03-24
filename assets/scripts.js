@@ -82,6 +82,12 @@ $(document).ready(function() {
 				}
 				else if(mode === 'todo'){
 					$("#todo_note").fadeIn(0);
+
+					//request focus
+					window.setTimeout(function ()
+			    	{
+			    		$("#new_li").focus();
+			    	},0);
 				}
 
 				//check if user is logged in or not
@@ -322,7 +328,7 @@ $(document).ready(function() {
 
 
 
-	// add a new list item
+	// add new list item
 	$('#add_li').click(function (e) {
 
 		var d = new Date();
@@ -1255,4 +1261,121 @@ $(document).ready(function() {
 		
 		return template;
 	}
+
+
+
+
+
+	// mouse trap
+	// single keys
+
+    // map multiple combinations to the same callback
+    Mousetrap.bind(['command+k', 'ctrl+k'], function() {
+        alert('command k or control k');
+
+        // return false to prevent default browser behavior
+        // and stop event from bubbling
+        return false;
+    });
+
+
+
+    //new note
+    Mousetrap.bind('alt+a', function() { 
+      var remote = require('electron').remote;
+      var ipcRenderer = require('electron').ipcRenderer;   
+      ipcRenderer.send('new_note');
+    });
+
+    //edit
+    var edit_toggle = true;
+    Mousetrap.bind('alt+enter', function() { 
+      if(edit_toggle && mode === 'text'){
+        setTimeout(function() { 
+            $('#menu').fadeOut(200);
+        }, 200);
+        $('#edit_menu_div').fadeIn(200);
+        $('#color_picker_div').fadeIn(200);
+        $('#edit_note').fadeIn(200);
+      }
+      else{
+        setTimeout(function() { 
+          $('#edit_menu_div').fadeOut(200);
+          $('#color_picker_div').fadeOut(200);
+          $('#edit_note').fadeOut(200);
+        }, 200);
+        
+        $('#menu').fadeIn(200);
+        if($('#edit_note').val() !== "") $('#rendered_note').html(md.render($('#edit_note').val()));
+        else  $('#rendered_note').html("<font size='2px' color='#AAA'>To edit, you can click here, or use the 'Edit' icon to enter edit mode.</font>");
+        }
+        edit_toggle = !edit_toggle;
+      });
+
+    // get focus to text box
+    Mousetrap.bind('tab', function() { 
+        //request focus
+		window.setTimeout(function ()
+    	{
+    		$("#new_li").focus();
+    	},0);
+    });
+
+    window.enterKeyEvent = function(obj, e) {
+	  	var keynum, lines = 1;
+	    // IE
+	    if(window.event) {
+	      keynum = e.keyCode;
+	    // Netscape/Firefox/Opera
+	    } else if(e.which) {
+	      keynum = e.which;
+	    }
+
+	    if(keynum == 13) {
+	        if(mode === 'todo' && $("#new_li").val().trim() !== ''){
+		      	todo_count++;
+
+				todo_object.data.push({
+					'id' : r(),
+					'item' : $('#new_li').val(),
+					'marked' : false
+				});
+
+				l($('#new_li').val(), "New item added");
+
+				$('#ol').append('<li>' + $('#new_li').val() + '</li>');
+				$('#new_li').val('');
+
+				$("#empty_ol").addClass('hidden');
+				$("#ol").removeClass('hidden');
+
+				// Send IPC
+			 	var remote = require('electron').remote;
+				var d = new Date();
+		    	var n = d.getTime();
+
+			 	var object = {};
+				object.id = id;
+				object.note = JSON.stringify(todo_object);
+				object.title = $('#heading').val();
+				object.accent = accent;
+				object.mode = mode;
+				object.timestamp = n;
+
+				l(JSON.stringify(todo_object), "Object persisted");
+
+				remote.getGlobal('note_update').note_string = object;
+
+				var ipcRenderer = require('electron').ipcRenderer;   
+				ipcRenderer.send('ren_to_main_data');
+
+				$("#new_li").focus();
+				return true;
+		    }
+    	}
+  	}
 });
+
+
+
+
