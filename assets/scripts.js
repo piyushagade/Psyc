@@ -99,9 +99,20 @@ $(document).ready(function() {
 					
 					if(mode === 'text' && note !== 'empty') {
 						$('#edit_note').val(note);
+
+
+						//enable template menu
+						$("#b_insert").removeClass('hidden');
+
+						//disable todo item delete button
 						$('#b_todo_delete_item').addClass('hidden');
 					}
 					else if(mode === 'todo'){
+
+						//disable template menu
+						$("#b_insert").addClass('hidden');
+
+						//enable todo item delete button
 						$('#b_todo_delete_item').removeClass('hidden');
 
 						todo_object = JSON.parse(note);		//object
@@ -169,6 +180,13 @@ $(document).ready(function() {
 		if(mode !== 'text'){
 			hideAllModes();
 
+
+			//enable template menu
+			$("#b_insert").removeClass('hidden');
+
+			//disable todo item delete button
+			$('#b_todo_delete_item').addClass('hidden');
+
 			//switch back to main menu
 			setTimeout(function() {	
 				$('#edit_menu_div').fadeOut(200);
@@ -176,7 +194,6 @@ $(document).ready(function() {
 				$('#color_picker_div').fadeOut(200);
 			}, 200);
 			$('#menu').fadeIn(200);
-			$('#b_todo_delete_item').removeClass('hidden');
 
 			$('#rendered_note').fadeIn(200);
 			mode = 'text';
@@ -213,6 +230,13 @@ $(document).ready(function() {
 	$('#b_todo_mode').click(function (e) {
 		if(mode !== 'todo'){
 			hideAllModes();
+
+			//disable template menu
+			$("#b_insert").addClass('hidden');
+			$("#template_menu").slideUp();
+			template_menu_toggle = false;
+
+			//enable todo item delete button
 			$('#b_todo_delete_item').removeClass('hidden');
 
 			//switch back to main menu
@@ -345,7 +369,7 @@ $(document).ready(function() {
 
 	    	$(this).css('border', '1px solid ' + accent);
 
-	    	$(this).html('<span class="marked_item"><span style="color: #111">' + $(this).text() + '</span><span style="width: 0px; opacity: 0.0; font-size: 0;">&Completed</font></span></span>');
+	    	$(this).html('<span class="marked_item"><span style="color: #111">' + $(this).html() + '</span><span style="width: 0px; opacity: 0.0; font-size: 0;">&Completed</font></span></span>');
 			clicked_once = true;
 			clicked_on = $(this).text().replace('&Completed','');
 
@@ -609,7 +633,7 @@ $(document).ready(function() {
 		});
 	});
 
-	// save
+	// save 
 	$('#b_edit_menu_save').click(function (e) {
 		setTimeout(function() {	
 			$('#edit_menu_div').fadeOut(200);
@@ -620,6 +644,15 @@ $(document).ready(function() {
 		if($('#edit_note').val() !== "") $('#rendered_note').html(md.render($('#edit_note').val()));
 		else  $('#rendered_note').html("<font size='2px' color='#AAA'>To edit, you can click here, or use the 'Edit' icon to enter edit mode.</font>");
 
+		if(template_menu_toggle){
+			$('#template_menu').slideUp();
+			template_menu_toggle = false;
+		}
+
+		if(mode === 'todo'){
+			delete_item_mode = false;
+			$('#b_todo_delete_item').attr("src","img/delete_item.png");
+		}
 		
 		$("a").css("color", accent);
 		$("h1").css("color", accent);
@@ -647,7 +680,15 @@ $(document).ready(function() {
 		if($('#edit_note').val() !== "") $('#rendered_note').html(md.render($('#edit_note').val()));
 		else  $('#rendered_note').html("<font size='2px' color='#AAA'>To edit, you can click here, or use the 'Edit' icon to enter edit mode.</font>");
 
+		if(template_menu_toggle){
+			$('#template_menu').slideUp();
+			template_menu_toggle = false;
+		}
 
+		if(mode === 'todo'){
+			delete_item_mode = false;
+			$('#b_todo_delete_item').attr("src","img/delete_item.png");
+		}
 	});
 
 
@@ -1106,4 +1147,81 @@ $(document).ready(function() {
 	}
 
 
+	var template_menu_toggle = false;
+	$("#b_insert").click(function(){
+		if(!template_menu_toggle) $('#template_menu').slideDown();
+		else $('#template_menu').slideUp();
+		template_menu_toggle = !template_menu_toggle;
+	});
+
+	$("#b_href").click(function(){
+		$('#edit_note').val($('#edit_note').val() + getTemplate('href'));
+	});
+
+	$("#b_heading").click(function(){
+		$('#edit_note').val($('#edit_note').val() + getTemplate('heading'));
+	});
+
+
+	$("#b_image").click(function(){
+		$('#edit_note').val($('#edit_note').val() + getTemplate('image'));
+	});
+
+	$("#b_hr").click(function(){
+		$('#edit_note').val($('#edit_note').val() + getTemplate('hr'));
+	});
+
+	$("#b_text_format").click(function(){
+		$('#edit_note').val($('#edit_note').val() + getTemplate('text_format'));
+	});
+
+	$("#b_table").click(function(){
+		$('#edit_note').val($('#edit_note').val() + getTemplate('table'));
+	});
+
+	$("#b_blockquote").click(function(){
+		$('#edit_note').val($('#edit_note').val() + getTemplate('blockquote'));
+	});
+
+	$('#edit_note').click(function(){
+		if(template_menu_toggle) {
+			$('#template_menu').slideUp();
+			template_menu_toggle = false;
+		}
+	})
+
+	function getTemplate(category){
+		if(category === 'table') template = `
+
+| heading_1         | heading_2         |
+| ---------------------- |:---------------------:|
+| row_1_col_1     | row_1_col_2     |
+`;
+		else if(category === 'href') template = `
+[Google](https://www.google.com)
+`;
+		else if(category === 'image') template = `
+![alt_text](https://github.com/adam-p/markdown-here/raw/master/src/common/images/icon48.png)
+`;
+		else if(category === 'hr') template = `
+---
+`;
+		else if(category === 'heading') template = `
+# H1
+## H2
+### H3
+#### H4
+`;
+		else if(category === 'blockquote') template = `
+> In war, truth is the first casualty
+> ~Anonymous
+`;
+		else if(category === 'text_format') template = `
+*italics*
+**bold**
+~~striked~~
+`;
+		
+		return template;
+	}
 });

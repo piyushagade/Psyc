@@ -51,13 +51,24 @@
         <input type="image" class="menu_icon" src="img/delete.png" id="b_edit_menu_delete"  height="20px"/> 
         <input class="menu_icon" type="image" src="img/sync.png" id="b_sync" height="20px" />
         <input class="menu_icon" type="image" src="img/delete_item.png" id="b_todo_delete_item" height="20px" />
+        <input class="menu_icon" type="image" src="img/insert.png" id="b_insert" height="24px" />
       </div>
 
       <!-- mode menu -->
       <div class="mode_menu" id="mode_menu">
-
         <input class="menu_icon" type="image" src="img/text.png" id="b_text_mode" height="18px" />
         <input class="menu_icon" type="image" src="img/todo.png" id="b_todo_mode" height="20px" />
+      </div>
+
+      <!-- template menu -->
+      <div class="template_menu" id="template_menu"><span style="font-size: 12px; margin: 2px; font-family: Ubuntu; color: #888">Markdown templates:</span><br>
+        <input class="menu_icon" type="image" src="img/href.png" id="b_href" height="20px" />
+        <input class="menu_icon" type="image" src="img/table.png" id="b_table" height="24px" />
+        <input class="menu_icon" type="image" src="img/image.png" id="b_image" height="24px" />
+        <input class="menu_icon" type="image" src="img/heading.png" id="b_heading" height="24px" />
+        <input class="menu_icon" type="image" src="img/hr.png" id="b_hr" height="20px" />
+        <input class="menu_icon" type="image" src="img/blockquote.png" id="b_blockquote" height="20px" />
+        <input class="menu_icon" type="image" src="img/text_format.png" id="b_text_format" height="20px" />
 
       </div>
 
@@ -65,11 +76,12 @@
       <textarea id="heading" class="heading" onkeydown="return limitLines(this, event)" style="z-index: 5" placeholder="Title"></textarea>
       <textarea id="edit_note" name="edit_note"  class="note scollbar hidden" style="z-index: 3" placeholder="Markdown enabled."></textarea>
 
+
       <!-- Rendered Note -->
       <div id="rendered_note" style="z-index: 2;" class="note"><font size='2px'  color="#AAA">To edit, you can click here, press 'Enter', or use the 'Edit' icon to enter edit mode.</font></div>
 
       <!-- Todo Note -->
-      <div id="todo_note" style="z-index: 2;" class="note">
+      <div id="todo_note" style="z-index: 2;" class="todo_note">
         <font size='2px'  color="#AAA">
         <ol id="ol" class="todo_ol"></ol>
         <div id="empty_ol" class="empty_ol"><center><br><br>Hurray! nothing to do today.<br><br><br><br><img style="width: 200px; height: 200px;" src="img/yay.png"></center></div>

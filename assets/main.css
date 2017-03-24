@@ -38,6 +38,25 @@ body{
 }
 
 
+.todo_note {
+	padding: 20px;
+	padding-top: 60px;
+	margin-top: 46px;
+	position: absolute;
+	box-sizing: border-box;
+
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	width: 100%;
+	height: 100%; 
+	background: #ECE5DD;
+	font-family: Ubuntu;
+    background-position: bottom right;
+    background-repeat: no-repeat;
+}
+
+
 .login {
 	padding: 20px; 
 	position: absolute; 
@@ -106,6 +125,23 @@ body{
 	height: 24px; 
 	width: auto; 
 	z-index: 10;
+}
+
+
+
+.template_menu{
+	position: absolute; 
+	padding : 4px 4px 6px 6px;
+	top: 45px; 
+	right: 10px; 
+	float: left; 
+	height: 52px; 
+	width: auto; 
+	z-index: 10;
+	opacity: 0.92;
+	border: 1px solid #BBB;
+	background-color: #ECE5DD;
+	display: none;
 }
 
 .menu_icon{
@@ -392,8 +428,8 @@ hr{
 ol{
 	margin: 10px;
 	padding: 6px;
-	padding-left: 30px;
-	padding-right: 30px;
+	padding-left: 22px;
+	padding-right: 22px;
 	width: auto;
 	border: 1px dashed #BBB;
 }
@@ -476,4 +512,15 @@ p{
 	height: auto;
 	opacity: 0.6;
 	display: inline-block;
+}
+
+.todo_note ol{
+	margin: 4px;
+	padding: 6px;
+	padding-left: 2px;
+	padding-right: 2px;
+	width: auto;
+
+
+	border: 0px dashed #BBB;
 }
