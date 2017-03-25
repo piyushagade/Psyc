@@ -1,0 +1,184 @@
+body{
+	margin:10px;
+	background-color: #ECE5DD;
+	color: #333;
+	font-family: Ubuntu;
+	overflow-y: auto;
+}
+img{
+	display: none;
+}
+
+.div_input{
+	padding: 0px;
+	z-index: 2;
+	position: fixed;
+	top: 6;
+	left: 0;
+	width: 100%;
+	padding-right: : 120px;
+	height: auto;
+	background-color: #ECE5DD;
+	border-bottom: 1px solid #ccc;
+	-webkit-box-shadow: 0px 4px 10px rgba(50, 50, 50, 0.20);
+    -moz-box-shadow:    0px 4px 10px rgba(50, 50, 50, 0.20);
+    box-shadow:         0px 4px 10px rgba(50, 50, 50, 0.20);
+}
+
+.div_input input{
+	font-size:22px;
+	font-family: Ubuntu;
+	position: relative;
+	left: 0px;
+	width: 100%;
+	height: 48px;
+	text-align: center;
+	padding:6px 6px;
+	margin: 0px;
+	border: 0;
+	background-color: #ECE5DD;
+	border-bottom:0px solid #ccc;
+	color:#555;
+	border-radius:0;
+	transition:border-color .25s ease, box-shadow .25s ease;
+}
+
+.div_input input:focus{	
+	border-bottom: 1px solid #ccc;
+	-webkit-box-shadow: 0px 4px 12px rgba(50, 50, 50, 0.20);
+    -moz-box-shadow:    0px 4px 12px rgba(50, 50, 50, 0.20);
+    box-shadow:         0px 4px 12px rgba(50, 50, 50, 0.20);
+	outline: 0;
+}
+
+.div_wiki{
+	position: absolute;
+	z-index: 1;
+	top: 30px;
+	width: 100%;
+	overflow-y: auto;
+	left: 0;
+}
+
+.toc .toclevel-1{
+	display: inline-block;
+	vertical-align: middle;
+	padding: 20px;
+	margin: 20px;
+	border: 1px dashed #AAA;
+}
+
+.toc .toclevel-1 li{
+	display: inline-block;
+	vertical-align: top;
+	margin:10px;
+	list-style-type: none;
+}
+
+.tocnumber{
+	display: none;
+}
+
+.toc .toclevel-1 li ul{
+	display: inline-block;
+	vertical-align: top;
+	margin:6px;
+	list-style-type: none;
+	border: 1px dashed #AAA;
+}
+
+.toc{
+	display: none;
+}
+
+.mw-editsection{
+	display: none;
+}
+
+.sister-wikipedia, .disambig-see-also{
+	display: none;
+}
+
+.audiotable{
+	display: none;
+}
+
+/*#Translingual, #Pronunciation, #Symbol, #{
+	display: none;
+}*/
+
+hr{
+	border-style: dashed;
+	border-color: #AAA;
+	height: 0px;
+}
+
+.thumbcaption{
+	display: none;
+}
+
+#wikiInfo{
+	display: inline-grid;
+	margin-top: 00px;
+	padding: 26px;
+}
+
+h1{
+
+	padding-left: 0px;
+}
+
+h2{
+	margin-left: 20px;
+}
+
+h3{
+	margin-left: 35px;
+}
+
+p{
+	margin-left: 45px;
+}
+
+#Usage_notes .mw-headline{
+	margin-left: 45px;
+}
+
+ul{
+	margin-left: 45px;
+}
+
+ol{
+	margin-left: 45px;
+}
+
+a{
+	text-decoration: none;
+	color: #128C7E;
+}
+
+span{
+	display: inline-block;
+
+}
+
+.NavFrame{
+	display: none;
+}
+
+.NavFrame{
+	display: none;
+}
+
+
+.translations{
+	display: none;
+}
+
+span#Derived_terms{
+	display: none;
+}
+
+span#Translations{
+	display: none;
+}

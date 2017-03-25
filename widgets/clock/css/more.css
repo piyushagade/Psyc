@@ -11,7 +11,7 @@ body{
   display: none;
 }
 
-.container{
+.container div{
 	position: absolute;
 	top: 0px;
 	left: 0px;

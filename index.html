@@ -22,13 +22,13 @@
       <!-- Accent Bar -->
       <div id="accentBar" style="position: absolute; top: -10px; left: 0px; height: 16px; width: 100%; background: #128C7E; z-index: 198; -webkit-app-region: drag;"></div>
 
-  <div id="accentBarMover" style="position: absolute; padding: 6px; font-family: Ubuntu; display:none; top: 6px; opacity: 0.92; left: 0px; height: 40px; width: 100%;  box-sizing: border-box; z-index: 198; -webkit-app-region: drag;">
-      <font  size="6px" color="#111111">Pysc</font>&nbsp;&nbsp;&nbsp;
-      <font size="1px" color="#444444">v1.0</font>
-      <span style="float: right;">
-        <font color="#eeeeee" size="2px">Drag here to move this note around.</font>
-      </span>
-  </div>
+      <div id="accentBarMover" style="position: absolute; padding: 6px; font-family: Ubuntu; display:none; top: 6px; opacity: 0.92; left: 0px; height: 40px; width: 100%;  box-sizing: border-box; z-index: 198; -webkit-app-region: drag;">
+          <font  size="6px" color="#111111">Pysc</font>&nbsp;&nbsp;&nbsp;
+          <font size="1px" color="#444444">v1.0</font>
+          <span style="float: right;">
+            <font color="#eeeeee" size="2px">Drag here to move this note around.</font>
+          </span>
+      </div>
 
       <!-- Menu -->
       <div class="menu" id="menu">
@@ -205,6 +205,12 @@
       </div>
 
     </div>
+
+
+      <div style="display: none;" id="myclock"></div>
+      <!-- <input type="text" id="altime" placeholder="hh:mm"/><br><br>
+<a href="javascript:void(0)" id="set">set Alarm</a> -->
+   
   </body>
 
 
@@ -213,9 +219,96 @@
   function setColor(picker) {
     document.getElementsByTagName('div')[0].style.color = '#' + picker.toString()
   }
+  </script>
+
+
+  <script language="javascript" type="text/javascript" src="assets/alarm.js"></script> 
+
+
+  <script type="text/javascript">
+    
+
+// $(document).ready(function(){
+
+    //     var audioElement = new Audio("");
+
+    //     //clock plugin constructor
+    //     $('#myclock').thooClock({
+    //         size:$(document).height()/1.4,
+            
+    //         onAlarm:function(){
+    //             //all that happens onAlarm
+    //             $('#alarm1').show();
+    //             alarmBackground(0);
+    //             //audio element just for alarm sound
+    //             document.body.appendChild(audioElement);
+    //             var canPlayType = audioElement.canPlayType("audio/ogg");
+    //             if(canPlayType.match(/maybe|probably/i)) {
+    //                 audioElement.src = 'assets/alarm.ogg';
+    //             } else {
+    //                 audioElement.src = 'assets/alarm.mp3';
+    //             }
+    //             // erst abspielen wenn genug vom mp3 geladen wurde
+    //             audioElement.addEventListener('canplay', function() {
+    //                 audioElement.loop = true;
+    //                 audioElement.play();
+    //             }, false);
+    //         },
+    //         showNumerals:true,
+    //         brandText:'Pysc',
+    //         brandText2:'Clock',
+    //         onEverySecond:function(){
+    //             //callback that should be fired every second
+    //         },
+    //         //alarmTime:'15:10',
+    //         offAlarm:function(){
+    //             $('#alarm1').hide();
+    //             audioElement.pause();
+    //             clearTimeout(intVal);
+    //             $('body').css('background-color','#FCFCFC');
+    //         }
+    //     });
+
+    // });
+
+
+
+    // $('#turnOffAlarm').click(function(){
+    //     $.fn.thooClock.clearAlarm();
+    // });
+
+
+    // $('#set').click(function(){
+    //     var inp = $('#altime').val();
+    //     $.fn.thooClock.setAlarm('01:28');
+    // });
+
+    
+    // function alarmBackground(y){
+    //         var color;
+    //         if(y===1){
+    //             color = '#CC0000';
+    //             y=0;
+    //         }
+    //         else{
+    //             color = '#FCFCFC';
+    //             y+=1;
+    //         }
+    //         $('body').css('background-color',color);
+    //         intVal = setTimeout(function(){alarmBackground(y);},100);
+    // }
 
 
   </script>
+
+
+
+
+
+
+
+
+
 
 
   <script type="text/javascript">

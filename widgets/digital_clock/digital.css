@@ -1,0 +1,36 @@
+@font-face {
+  font-family: 'Electrolize';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Electrolize'), local('Electrolize-Regular'), url(http://themes.googleusercontent.com/static/fonts/electrolize/v2/DDy9sgU2U7S4xAwH5thnJ4bN6UDyHWBl620a-IRfuBk.woff) format('woff');
+}
+html{
+  overflow: hidden;
+}
+body {
+  background: #ECE5DD;
+  height: 100%;
+  -webkit-user-select: none;
+  font-family: 'Electrolize';
+  font-size:40px;
+  color:#333;
+  overflow: hidden;
+}
+.clock {
+  position:absolute;
+  top:00%;left:00%;
+  box-shadow:0 0 500px red;
+  width:300px;
+  height:50px;
+  margin:auto;
+  padding:20px;
+  overflow: hidden;
+}
+.clock div{
+  margin-top:-40px;
+  margin-left:-20px;
+  display:inline-block;
+  width:25%;
+  height: 10%;
+  text-align: center;
+}

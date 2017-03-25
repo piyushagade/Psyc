@@ -19,7 +19,7 @@ var lastWindowState;
 var docked = true;
 
 const config = require('./config');
-const tray = require('./tray');
+// const tray = require('./tray');
 
 var notes_string = "";
 var ipcMain = require('electron').ipcMain;
@@ -57,7 +57,10 @@ var cloud_notes_string = 0;
 var isLoggedIn = false;
 var isBusy = false;
 
-
+var pomo = false;
+var clock = false;
+var digital = false;
+var wiki = false;
 
 var messageCount;
 
@@ -75,21 +78,6 @@ if(reset){
 
 }
 
-const isAlreadyRunning = app.makeSingleInstance(() => {
-  if (mainWindow) {
-    if (mainWindow.isMinimized()) {
-      mainWindow.restore();
-    }
-
-    mainWindow.show();
-  }
-});
-
-if (isAlreadyRunning) {
-  app.quit();
-}
-
-
 
 
 function updateBadge(title) {
@@ -102,15 +90,93 @@ function updateBadge(title) {
   messageCount = messageCount ? Number(messageCount[1]) : 0;
 
   if (process.platform === 'darwin' || process.platform === 'linux') {
-    app.setBadgeCount(messageCount);
+    // app.setBadgeCount(messageCount);
   }
 
   if (process.platform === 'linux' || process.platform === 'win32') {
-    tray.setBadge(messageCount);
+    // tray.setBadge(messageCount);
   }
 
 }
 
+
+app.on('ready', function(){
+	  var path = require('path');
+
+	  const Tray = electron.Tray;
+	  appIcon = new Tray(path.join(__dirname, 'img/icon_20.png'));
+
+	  contextMenu = Menu.buildFromTemplate([
+	  	{
+			label: 'Analog clock widget',
+			type: 'checkbox',
+			checked: clock,
+			click() {
+				if(!clock) {
+					createClockWidget();
+					clock = true;
+				}else{
+					clockWidget.close();
+					clock = false;
+					clockWidget = null;
+				}
+			}
+		},{
+			label: 'Digital clock widget',
+			type: 'checkbox',
+			checked: digital,
+			click() {
+				if(!digital) {
+					createDigitalWidget();
+					digital = true;
+				}else{
+					digitalWidget.close();
+					digital = false;
+					digitalWidget = null;
+				}
+			}
+		},
+		{
+			label: 'Pomodoro timer',
+			type: 'checkbox',
+			checked: pomo,
+			click() {
+				if(!pomo) {
+					createPomoWidget();
+					pomo = true;
+				}else{
+					pomoWidget.close();
+					pomo = false;
+					pomoWidget == null;
+				}
+			}
+		},
+		{
+			label: 'Wikitionary',
+			type: 'checkbox',
+			checked: wiki,
+			click() {
+				if(!wiki) {
+					createWikiWidget();
+					wiki = true;
+				}else{
+					wikiWidget.close();
+					wiki = false;
+					wikiWidget == null;
+				}
+			}
+		},
+		{
+			type: 'separator'
+		},
+		{
+			role: 'quit'
+		}
+	    ]);
+	    appIcon.setToolTip('Pysc');
+	    appIcon.setContextMenu(contextMenu);
+
+});
 
 var winHidden = false;
 var x = 400;
@@ -174,9 +240,9 @@ function createWindow () {
     updateBadge(title);
   });
 
-  // mainWindow.on('close', (e, cmd) => {
-  //   if(mainWindow !== null) config.set('lastWindowState', mainWindow.getBounds());
-  // });
+  mainWindow.on('close', (e, cmd) => {
+     // if(mainWindow !== null) config.set('lastWindowState', mainWindow.getBounds());
+  });
 
 }
 
@@ -213,6 +279,159 @@ function createLoginWindow () {
 
   loginWindow.on('close', (e, cmd) => {
     // createWindow();
+  });
+
+}
+
+
+// const PaneBrowserwindow = require('electron-pane-window');
+ 
+// win = new PaneBrowserWindow({
+//  side: 'left',
+//  'always-on-top': false,
+//  width: 600
+// });
+
+
+// clock window
+let clockWidget;
+
+function createClockWidget () {
+
+  // Create the browser window.
+  clockWidget = new BrowserWindow({
+      x: x, 
+      y: y, 
+	  width: 330, 
+      height: 330, 
+      minWidth: 330,
+      minHeight: 330,
+      frame: false, 
+      'titleBarStyle': 'hidden', 
+      resizable: false, 
+      alwaysOnTop: false, 
+      fullscreenable: false,
+      fullscreen: false, 
+      skipTaskbar: true,
+      title: 'Psyc', 
+      icon : __dirname + '/img/icon_color.png', movable: true,
+      maximizable: false,
+    });
+
+  
+  if(debug) clockWidget.webContents.openDevTools();
+  clockWidget.setMenu(null);
+  clockWidget.loadURL('file://'+__dirname+'/widgets/clock/index.html');
+
+  clockWidget.on('close', (e, cmd) => {
+  });
+
+}
+
+// digital clock window
+let digitalWidget;
+
+function createDigitalWidget () {
+
+  // Create the browser window.
+  digitalWidget = new BrowserWindow({
+      x: x, 
+      y: y, 
+	  width: 330, 
+      height: 80, 
+      // minWidth: 330,
+      // minHeight: 330,
+      frame: false, 
+      'titleBarStyle': 'hidden', 
+      resizable: true, 
+      alwaysOnTop: false, 
+      fullscreenable: false,
+      fullscreen: false, 
+      skipTaskbar: true,
+      title: 'Psyc', 
+      icon : __dirname + '/img/icon_color.png', movable: true,
+      maximizable: false,
+    });
+
+  
+  if(debug) digitalWidget.webContents.openDevTools();
+  digitalWidget.setMenu(null);
+  digitalWidget.loadURL('file://'+__dirname+'/widgets/digital_clock/digital.html');
+
+  digitalWidget.on('close', (e, cmd) => {
+  });
+
+}
+
+
+// pomo window
+let pomoWidget;
+
+function createPomoWidget () {
+
+  // Create the browser window.
+  pomoWidget = new BrowserWindow({
+      x: x, 
+      y: y, 
+	  width: 330, 
+      height: 220, 
+      minWidth: 330,
+      minHeight: 220,
+      frame: false, 
+      'titleBarStyle': 'hidden', 
+      resizable: false, 
+      alwaysOnTop: false, 
+      fullscreenable: false,
+      fullscreen: false, 
+      skipTaskbar: true,
+      title: 'Psyc', 
+      icon : __dirname + '/img/icon_color.png', movable: true,
+      maximizable: false,
+    });
+
+  
+  if(debug) pomoWidget.webContents.openDevTools();
+  pomoWidget.setMenu(null);
+  pomoWidget.loadURL('file://'+__dirname+'/widgets/pomodoro/pomo.html');
+
+  pomoWidget.on('close', (e, cmd) => {
+  });
+
+}
+
+
+
+// wiki window
+let wikiWidget;
+
+function createWikiWidget () {
+
+  // Create the browser window.
+  wikiWidget = new BrowserWindow({
+      x: x, 
+      y: y, 
+	  width: 820, 
+      height: 520, 
+      minWidth: 820,
+      minHeight: 520,
+      frame: false, 
+      'titleBarStyle': 'hidden', 
+      resizable: true, 
+      alwaysOnTop: false, 
+      fullscreenable: false,
+      fullscreen: false, 
+      skipTaskbar: true,
+      title: 'Psyc', 
+      icon : __dirname + '/img/icon_color.png', movable: true,
+      maximizable: false,
+    });
+
+  
+  if(debug) wikiWidget.webContents.openDevTools();
+  wikiWidget.setMenu(null);
+  wikiWidget.loadURL('file://'+__dirname+'/widgets/wikitionary/wikitionary.html');
+
+  wikiWidget.on('close', (e, cmd) => {
   });
 
 }
@@ -345,6 +564,7 @@ app.on('ready', function(){
 	    				createWindow();
 
 		    		}, 700 * i); 
+
 		    	}
 
 		    	//Set global object
@@ -360,7 +580,7 @@ app.on('ready', function(){
 });
 
 app.on('ready', function(){
-  tray.create(mainWindow);
+  // tray.create(mainWindow);
 
 });
 
@@ -914,3 +1134,21 @@ app.on('ready', function() {
 		app.quit();
 	});
 });
+
+
+
+
+// prevent multiple instances
+const isAlreadyRunning = app.makeSingleInstance(() => {
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) {
+      mainWindow.restore();
+    }
+
+    mainWindow.show();
+  }
+});
+
+if (isAlreadyRunning) {
+  app.quit();
+}

@@ -12,13 +12,21 @@ $(document).ready(function() {
 	
 	var toggle_menu = true;
 	todo_object = {data: []};
+	priority_object = {data: []};
 	todo_count = 1;
 	delete_item_mode = false;
 	pin = "";
 	protected = false;
+
+
+    remote = require('electron').remote;
+
     var grid_toggle = false;
-    var width = 525;
-    var height = 525;
+    
+    var width = remote.getGlobal('dimensions').width;
+    var height =  remote.getGlobal('dimensions').height;
+
+	win = remote.getCurrentWindow();
 
 	setTimeout(function(){
 		$("#loading").fadeOut('300');
@@ -200,6 +208,13 @@ $(document).ready(function() {
 								else if(todo_array[i].marked && local_important)
 									$('#ol').append('<li style="border: 1px solid' + accent +';"><span class="marked_item_important"><font style="display: none; opacity:0; font-size:0;">!</font>' + todo_array[i].item.slice(1) + '</span></li>');
 
+								if(local_important){
+									priority_object.data.push({
+										'id' : r(),
+										'item' : todo_array[i].item.slice(1),
+									});
+								}
+
 								if(grid_toggle) goGrid();
 								else noGrid();
 
@@ -237,6 +252,8 @@ $(document).ready(function() {
 					$(".note th").css("color", accent);
     				$("tr:odd").css("background-color", "rgba(220,220,220, 0.5468)");
 					$(".todo_button").css("background", accent);
+					$(".security_menu button").css("background", accent);
+					$(".security_menu button").css("background", accent);
 
 				}
 			}, 0);
@@ -414,12 +431,21 @@ $(document).ready(function() {
 				'marked' : false,
 			});
 
+			
 
 			var important = false;
 			if($('#new_li').val().trim().charAt(0) === '!') important = true;
 
-			if(!important) $('#ol').append('<li><span class="unimportant">' + $('#new_li').val() + '</span></li>');
-				else $('#ol').append('<li><span class="important"><font style="display: none;">!</font>' + $('#new_li').val().slice(1) + '</span></li>');
+			if(!important) $('#ol').append('<li><span class="un_item_unimportant">' + $('#new_li').val() + '</span></li>');
+			else {
+				$('#ol').append('<li><span class="un_item_important"><font style="display: none;">!</font>' + $('#new_li').val().slice(1) + '</span></li>');
+				
+				priority_object.data.push({
+					'id' : r(),
+					'item' : $('#new_li').val().slice(1),
+				});
+
+			}
 
 			$('#new_li').val('');
 
@@ -839,6 +865,7 @@ $(document).ready(function() {
 		$(".note th").css("color", accent);
 		$("tr:odd").css("background-color", "rgba(220,220,220, 0.5468)");
 		$(".todo_button").css("background", accent);
+					$(".security_menu button").css("background", accent);
 
 	});
 
@@ -1204,6 +1231,7 @@ $(document).ready(function() {
 			$(".note th").css("color", accent);
 			$("tr:odd").css("background-color", "rgba(220,220,220, 0.5468)");
 			$(".todo_button").css("background", accent);
+					$(".security_menu button").css("background", accent);
 
 			$(".marked_item").css("border-color", accent);
 
@@ -1249,82 +1277,6 @@ $(document).ready(function() {
 		ipcRenderer.send('new_note');
 	});
 
-
-// var edit_toggle = false;
-// $(document).ready(function() {
-//     $(this).on('keypress', function(event) {
-//         if (event.keyCode == 13) {
-//         	if(!edit_toggle){
-// 	            setTimeout(function() {	
-// 					$('#menu').fadeOut(200);
-// 				}, 200);
-// 				$('#edit_menu_div').fadeIn(200);
-// 				$('#color_picker_div').fadeIn(200);
-// 				$('#edit_note').fadeIn(200);
-// 			}
-// 			else{
-// 				setTimeout(function() {	
-// 					$('#edit_menu_div').fadeOut(200);
-// 					$('#color_picker_div').fadeOut(200);
-// 					$('#edit_note').fadeOut(200);
-// 				}, 200);
-// 				$('#menu').fadeIn(200);
-// 				if($('#edit_note').val() !== "") $('#rendered_note').html($('#edit_note').parseAsMarkdown());
-// 				else  $('#rendered_note').html("<font size='2px' color='#AAA'>To edit, you can click here, press 'Enter', or use the 'Edit' icon to enter edit mode.</font>");
-		
-// 			}
-// 			edit_toggle = !edit_toggle;
-//         }
-//     });
-
-//     $(this).on('keypress', function(event) {
-//         if (event.keyCode == 115) {
-//         	$('#b_sync').fadeOut(400);
-
-
-// 		  	// Send IPC
-// 		 	var remote = require('electron').remote;
-// 			remote.getGlobal('sync').note_string = id + "!@#" + $('#heading').val() + "!@#" + $('#edit_note').val() + "!@#" + accent; 
-// 			remote.getGlobal('sync').id = id; 
-
-// 			var ipcRenderer = require('electron').ipcRenderer;   
-// 			ipcRenderer.send('sync');
-		 
-// 			ipcRenderer.on('sync', function(event, arg) {
-// 				if(arg == 1){
-
-// 					$('#b_sync').fadeIn(400);
-// 					setTimeout(function(){	
-// 						$('#b_sync').attr("src","img/done.png");
-// 					}, 400);
-
-// 					setTimeout(function(){
-// 						$('#b_sync').fadeOut(400);
-						
-// 						setTimeout(function(){
-// 							$('#b_sync').fadeIn(400);
-// 						}, 400);
-
-// 						setTimeout(function(){
-// 							$('#b_sync').attr("src","img/sync.png");
-// 						}, 400);
-
-// 					}, 2000);
-// 				}	
-// 			});
-//         }
-//     });
-
-
-
-//     $(this).on('keypress', function(event) {
-//         if (event.keyCode == 110) {
-// 			var remote = require('electron').remote;
-// 			var ipcRenderer = require('electron').ipcRenderer;   
-// 			ipcRenderer.send('new_note');
-//         }
-//     });
-// })
 
 
 
@@ -1681,6 +1633,13 @@ $(document).ready(function() {
     	},0);
     });
 
+  	// change size
+    Mousetrap.bind('alt+c', function() { 
+		const remote = require('electron').remote;
+		var win = remote.getCurrentWindow();
+		for(var i = 0; i < 200; i++) win.setSize(width + i, height);
+    });
+
 
     // grid view toggle
     Mousetrap.bind('alt+v', function() { 
@@ -1770,7 +1729,15 @@ $(document).ready(function() {
 				if($('#new_li').val().trim().charAt(0) === '!') local_important = true;
 				
 				if(!local_important) $('#ol').append('<li><span class="un_item_unimportant">' + $('#new_li').val() + '</span></li>');
-				else $('#ol').append('<li><span class="un_item_important"><font style="display: none;">!</font>' + $('#new_li').val().slice(1) + '</span></li>');
+				else {
+					$('#ol').append('<li><span class="un_item_important"><font style="display: none;">!</font>' + $('#new_li').val().slice(1) + '</span></li>');
+					
+					priority_object.data.push({
+						'id' : r(),
+						'item' : $('#new_li').val().slice(1),
+					});
+
+				}
 
 				$('#new_li').val('');
 
@@ -1883,7 +1850,7 @@ $(document).ready(function() {
 			object.grid = grid_toggle;
 			object.pin = pin;
 
-			l(JSON.stringify(object), "Dimensions updated");
+			// l(JSON.stringify(object), "Dimensions updated");
 
 			remote.getGlobal('note_update').note_string = object;
 
@@ -1892,6 +1859,72 @@ $(document).ready(function() {
 		}, 10000);
 		
 	}, 5000);
+
+
+	var audioElement = new Audio("");
+
+        //clock plugin constructor
+        $('#myclock').thooClock({
+            size:$(document).height()/1.4,
+            
+            onAlarm:function(){
+                //all that happens onAlarm
+
+                var array = priority_object.data;
+
+                for (var j = 0; j < array.length; j++){
+
+                }
+
+                // popup(JSON.stringify(array));
+                
+                // //audio element just for alarm sound
+                // document.body.appendChild(audioElement);
+                // var canPlayType = audioElement.canPlayType("audio/ogg");
+                
+                // if(canPlayType.match(/maybe|probably/i)) {
+                //     audioElement.src = 'assets/alarm.ogg';
+                // } else {
+                //     audioElement.src = 'assets/alarm.mp3';
+                // }
+                // // erst abspielen wenn genug vom mp3 geladen wurde
+                // audioElement.addEventListener('canplay', function() {
+                //     audioElement.loop = false;
+                //     audioElement.play();
+                // }, false);
+            },
+
+            showNumerals:true,
+            brandText:'Pysc',
+            brandText2:'Clock',
+            
+            onEverySecond:function(){
+                //callback that should be fired every second
+                var array = priority_object.data;
+                l(array.length, "Priority object count");
+            },
+            offAlarm:function(){
+                audioElement.pause();
+                // clearTimeout(intVal);
+                // $('body').css('background-color','#FCFCFC');
+            }
+        });
+
+
+
+    $('#turnOffAlarm').click(function(){
+        $.fn.thooClock.clearAlarm();
+    });
+
+ //    priority_object.data.push({
+	// 	'id' : r(),
+	// 	'item' : 'Piyush Agade',
+	// });
+
+    //Set alarm
+	$.fn.thooClock.setAlarm('09:30');
+    
+
 });
 
 

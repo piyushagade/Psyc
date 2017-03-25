@@ -2,7 +2,15 @@
 
 What is this?
 ---
-Psyc is a minimalistic **note-taking app** and a **to-do manager** for Linux based on electron. It is still in its early phases of developement, but it does work pretty well. And yes, Psyc has **markdown parsing capabilities**!
+Psyc is a minimalistic **note-taking app**, a **to-do manager**, and a desktop widget utitlity for Linux. And yes, Psyc has **markdown parsing capabilities**!
+
+Widgets
+---
+Pysc has following widgets yet:
+1. Pomodoro timer
+2. Digital clock
+3. Analog clock
+4. Wikitionary portal
 
 Cloud backup
 ---
@@ -29,13 +37,23 @@ Description            | Keys
 Focus on the input textbox            | <kbd>Tab</kbd> or <kbd>Alt</kbd>
 Add new item   | <kbd>Enter</kbd>
 
+Widgets shortcuts
+---
+Description            | Keys
+-----------------------| -----------------------
+Change theme background            | <kbd>Alt</kbd> <kbd>b</kbd>
+Change theme font            | <kbd>Alt</kbd> <kbd>f</kbd>
+Change font color            | <kbd>Alt</kbd> <kbd>t</kbd>
+
 Collaboration
 ---
 We would love to have collaborators contribute to this project or any other of our projects. Email us at piyushagade@gmail.com
 
-
 Screenshots
 ---
+
+<img src="http://i.imgur.com/p9nUNaa.png"/>
+
 <img src="http://i.imgur.com/3VXEoNd.png"/>
 
 <img src="http://i.imgur.com/fQ9GMMn.png"/>

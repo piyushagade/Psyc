@@ -1,0 +1,62 @@
+<html>
+<head>
+  <script type="text/javascript" src="jquery.min.js"></script>
+  <script type="text/javascript" src="wiki.js"></script>
+
+  <link rel="stylesheet" type="text/css" href="wiki.css">
+  <script type="text/javascript">
+    var baseURL = 'http://en.wiktionary.org';
+    function showPage(page,text) {
+      var sourceurl = baseURL + '/wiki/' + page;
+      $('#pagetitle').text(page);
+      $('#wikiInfo').html(text);
+      $('#sourceurl').attr('href',sourceurl);
+      // $('#licenseinfo').show();
+      // now you can modify content of #wikiInfo as you like
+      $('#wikiInfo').find('a:not(.references a):not(.extiw):not([href^="#"])').attr('href',
+        function() { return baseURL + $(this).attr('href');
+      });
+      // ...
+    }
+    $(document).ready(function() {
+      $('#pagetitle').hide();
+      $('#word').change(function() {
+        var page = this.value;
+        $('#wikiInfo').html('Loading.');
+        $.getJSON(baseURL+'/w/api.php?action=parse&format=json&prop=text|revid|displaytitle&callback=?&page='+page,
+        function(json) {
+          if(json.parse.revid > 0) {
+            showPage(page,json.parse.text['*']);
+          } else {
+            $('#wikiInfo').html('word not found');
+            $('#licenseinfo').hide();
+          }
+        });
+      });
+    });
+  </script>
+</head>
+<body>
+  <!-- Accent Bar -->
+  <div id="accentBar" style="position: fixed; top: -10px; left: 0px; height: 16px; width: 100%; background: #128C7E; z-index: 198; -webkit-app-region: drag;"></div>
+
+  <div id="accentBarMover" style="position: fixed; padding: 6px; font-family: Ubuntu; display:none; top: 6px; opacity: 0.92; left: 0px; height: 48px; width: 100%;  box-sizing: border-box; z-index: 198; -webkit-app-region: drag; background: #128C7E;">
+      <font  size="6px" color="#111111">Pysc</font>&nbsp;&nbsp;&nbsp;
+      <font size="1px" color="#444444">v1.0</font>
+      <span style="float: right;">
+        <font color="#eeeeee" size="2px">Drag here to move this note around.</font>
+      </span>
+  </div>
+
+  <div class="div_input" id="div_input">
+    <input type="text" id="word" placeholder="Enter search query" />
+  </div>
+  <div class="div_wiki">
+    <br>
+    <h1 id='pagetitle'></h1>
+    <div id="wikiInfo"></div>
+  </div>
+
+</body>
+  <script type="text/javascript" src="mousetrap.js"></script>
+</html>
