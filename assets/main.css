@@ -745,3 +745,28 @@ p{
 
 	border: 0px dashed #BBB;
 }
+
+/*sortable*/
+#sortable { list-style-type: none; margin: 0; padding: 0; width: 60%; }
+#sortable .todo_note li { margin: 0 3px 3px 3px; padding: 0.4em; padding-left: 1.5em; font-size: 1.4em; height: 18px; }
+#sortable .todo_note li span { position: absolute; margin-left: -1.3em; }
+
+body.dragging, body.dragging * {
+  cursor: move !important;
+}
+
+.dragged {
+  opacity: 0.5;
+  display: inline;
+  width: 250px;
+  z-index: 2000;
+}
+
+ol li.placeholder {
+  display: inline;
+  /** More li styles **/
+}
+ol li.placeholder:before {
+  display: inline;
+  /** Define arrowhead **/
+}

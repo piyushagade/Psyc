@@ -14,8 +14,6 @@ const Tray = electron.Tray;
 const storage = require('electron-json-storage');
 const globalShortcut = electron.globalShortcut;
 
-
-
 var lastWindowPosition;
 var lastWindowState;
 var docked = true;
@@ -32,6 +30,8 @@ var clients_served = 0;
 //Global Objects
 require('./assets/global');
 
+var width = global.dimensions.width;
+var height = global.dimensions.height;
 
 
 // Initialize Firebase
@@ -73,11 +73,6 @@ if(reset){
 
 	storage.set('user', { user_name : null, eemail: null, email: null});
 
-	storage.clear(function(error) {
-	  if (error) throw error;
-	});
-
-
 }
 
 const isAlreadyRunning = app.makeSingleInstance(() => {
@@ -93,15 +88,6 @@ const isAlreadyRunning = app.makeSingleInstance(() => {
 if (isAlreadyRunning) {
   app.quit();
 }
-
-
-app.on('ready', function() {
-
-  //Ctrl + Shift + W
-  var ret_accept = globalShortcut.register('ctrl+shift+n', function() {
-    createWindow();
-  });
-});	
 
 
 
@@ -145,8 +131,8 @@ function createWindow () {
       height: lastWindowState.height, 
       x: x, 
       y: y, 
-	  width: debug_add + 525, 
-      height: debug_add + 525, 
+	  width: debug_add + width, 
+      height: debug_add + height, 
       minWidth: 330,
       minHeight: 490,
       frame: false, 
@@ -161,18 +147,22 @@ function createWindow () {
       maximizable: false,
     });
 
-  if(count < 4){
-	  x = x + 60;
-	  y = y + 60;
-  }
-  else if(count == 4){
-    	x = x + 560;
-    	y = y - 180;
-  }
-  else if(count < 8){
-	  x = x - 60;
-	  y = y + 60;
-  }
+  // v shaped
+  // if(count < 4){
+	 //  x = x + 60;
+	 //  y = y + 60;
+  // }
+  // else if(count == 4){
+  //   	x = x + 560;
+  //   	y = y - 180;
+  // }
+  // else if(count < 8){
+	 //  x = x - 60;
+	 //  y = y + 60;
+  // }
+
+  // linear horizontal
+  x = x + 80;
 
   if(debug) mainWindow.webContents.openDevTools();
   mainWindow.setMenu(null);
@@ -261,7 +251,7 @@ app.on('ready', function(){
 
     		//if first run
 		    if(data.number_notes === null || data.number_notes === undefined || user_name === "not_set"){
-  				l("Welcome new user.");
+  				l("New user");
 
 		    	var object = {data: []};
 
@@ -273,6 +263,8 @@ app.on('ready', function(){
 					"mode" : "text",
 					"grid" : false,
 					"protected" : false,
+					"width" : width,
+					"height" : height,
 					"pin" : "",
 					"timestamp" : n
 				});
@@ -288,8 +280,12 @@ app.on('ready', function(){
 	    			for(var i = 0; i < parseInt(data.number_notes); i++){
 			    		setTimeout(function(){
 	  						loginWindow = null;
-			    			createWindow();
-			    		}, 700 * i); 
+
+	  						setTimeout(function(){
+	  							createWindow();
+	  						}, 100);
+			    			
+			    		}, 600 * i); 
 			    	}
 			    }
 
@@ -321,6 +317,8 @@ app.on('ready', function(){
 					"title" : "empty",
 					"accent" : "#128C7E",
 					"protected" : false,
+					"width" : width,
+					"height" : height,
 					"pin" : "0000",
 					"mode" : "text",
 					"grid" : false,
@@ -331,12 +329,21 @@ app.on('ready', function(){
 	    	}
 	    	//few notes saved && logged in
 		    else{
+		    	var counter = 0;
 		    	for(var i = 0; i < parseInt(data.number_notes); i++){
-	    			l(data.number_notes,"Notes found");
+	    			l(data.number_notes,"Notes found"); 						
 
 		    		setTimeout(function(){
+		    			if(JSON.parse(data.notes_string).data[counter] !== undefined) width = JSON.parse(data.notes_string).data[counter].width;
+						if(JSON.parse(data.notes_string).data[counter] !== undefined) height = JSON.parse(data.notes_string).data[counter].height;
+
+						l(height, width);
+
+						counter++;
+
   						loginWindow = null;
-		    			createWindow();
+	    				createWindow();
+
 		    		}, 700 * i); 
 		    	}
 
@@ -424,6 +431,8 @@ function updateNote(ns){
 	    			array[i].pin = ns.pin;
 	    			array[i].mode = ns.mode;
 	    			array[i].grid = ns.grid;
+	    			array[i].width = ns.width;
+	    			array[i].height = ns.height;
 	    			array[i].timestamp = ns.timestamp;
 	    		}
 	    	}
@@ -555,7 +564,7 @@ function retreive_from_cloud(){
 // new note
 ipcMain.on('new_note', function(event) {
 	
-	if(clients_served <= 7){
+	if(clients_served <= global.settings.max_notes){
 		loginWindow = null;
 		createWindow();
 	
@@ -577,9 +586,14 @@ ipcMain.on('new_note', function(event) {
 				"mode" : "text",
 				"grid" : false,
 				"protected" : false,
+				"width" : global.dimensions.width,
+				"height" : global.dimensions.height,
 				"pin" : "0000",
 				"timestamp" : n
 			});
+
+			width = global.dimensions.width;
+			height = global.dimensions.height;
 
 
 			global.note_retrieve = {note_string: JSON.stringify(object.data[0]), id: id, mode: 'text'};
@@ -600,6 +614,7 @@ ipcMain.on('delete_note', function(event) {
 				var id = global.note_delete.id;
 
 				l("Note deleted: " + id);
+				clients_served--;
 
 				var nn = parseInt(data.number_notes) - 1;
 				var object = JSON.parse(data.notes_string);
@@ -652,6 +667,8 @@ function cloud_listener(id, ns, ls){
 		    			cloud_array.data[i].accent = ns.accent;
 		    			cloud_array.data[i].protected = ns.protected;
 		    			cloud_array.data[i].pin = ns.pin;
+		    			cloud_array.data[i].width = ns.width;
+		    			cloud_array.data[i].height = ns.height;
 	    				cloud_array.data[i].grid = ns.grid;
 		    			cloud_array.data[i].mode = ns.mode;
 		    			found = true;
@@ -670,6 +687,8 @@ function cloud_listener(id, ns, ls){
 						"timestamp" : ns.timestamp,
 						"pin" : ns.pin,
 						"protected" : false,
+						"width" : width,
+						"height" : height,
 						"mode" : ns.mode
 					});
 
@@ -802,6 +821,8 @@ ipcMain.on('skip_login', function(event) {
 					"grid" : false,
 					"pin" : "0000",
 					"protected" : false,
+					"width" : width,
+					"height" : height,
 					"timestamp" : n
 				});
 

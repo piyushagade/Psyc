@@ -6,3 +6,5 @@ global.login = {eemail: null, email: null};
 global.logout = {initiate: false};
 global.open_url = {url: null};
 global.debug = {on: false, reset: false};
+global.dimensions = {width: 525, height: 525};
+global.settings = {max_notes: 10};

@@ -17,6 +17,8 @@ $(document).ready(function() {
 	pin = "";
 	protected = false;
     var grid_toggle = false;
+    var width = 525;
+    var height = 525;
 
 	setTimeout(function(){
 		$("#loading").fadeOut('300');
@@ -24,6 +26,22 @@ $(document).ready(function() {
 			$("#loading").removeClass('hidden');
 		},400);
 	},1000);
+
+	//Make all lists sortable
+	// $("ol").sortable();
+
+
+	var group = $("ol").sortable({
+	  group: 'serialization',
+	  delay: 500,
+	  onDrop: function ($item, container, _super) {
+	    var data = group.sortable("serialize").get();
+
+	    var jsonString = JSON.stringify(data, null, ' ');
+
+	    l(jsonString);
+	  }
+	});
 
 
 	//disable todo input div
@@ -265,6 +283,8 @@ $(document).ready(function() {
 			object.accent = accent;
 			object.mode = mode;
 			object.timestamp = n;
+			object.width = width;
+			object.height = height;
 			object.protected = protected;
 			object.grid = grid_toggle;
 			object.pin = pin;
@@ -346,6 +366,8 @@ $(document).ready(function() {
 			object.accent = accent;
 			object.mode = mode;
 			object.timestamp = n;
+			object.width = width;
+			object.height = height;
 			object.protected = protected;
 			object.grid = grid_toggle;
 			object.pin = pin;
@@ -396,8 +418,6 @@ $(document).ready(function() {
 			var important = false;
 			if($('#new_li').val().trim().charAt(0) === '!') important = true;
 
-			l(important, "Important");
-
 			if(!important) $('#ol').append('<li><span class="unimportant">' + $('#new_li').val() + '</span></li>');
 				else $('#ol').append('<li><span class="important"><font style="display: none;">!</font>' + $('#new_li').val().slice(1) + '</span></li>');
 
@@ -421,6 +441,8 @@ $(document).ready(function() {
 			object.accent = accent;
 			object.mode = mode;
 			object.timestamp = n;
+			object.width = width;
+			object.height = height;
 			object.protected = protected;
 			object.grid = grid_toggle;
 			object.pin = pin;
@@ -540,6 +562,8 @@ $(document).ready(function() {
 		object.accent = accent;
 		object.mode = mode;
 		object.timestamp = n;
+		object.width = width;
+		object.height = height;
 		object.protected = protected;
 		object.grid = grid_toggle;
 		object.pin = pin;
@@ -724,6 +748,8 @@ $(document).ready(function() {
 		object.accent = accent;
 		object.mode = 'text';
 		object.timestamp = n;
+		object.width = width;
+		object.height = height;
 		object.protected = protected;
 		object.grid = grid_toggle;
 		object.pin = pin;
@@ -758,6 +784,8 @@ $(document).ready(function() {
 		object.accent = accent;
 		object.mode = mode;
 		object.timestamp = n;
+		object.width = width;
+		object.height = height;
 		object.protected = protected;
 		object.grid = grid_toggle;
 		object.pin = pin;
@@ -925,6 +953,8 @@ $(document).ready(function() {
 			object.title = $('#heading').val();
 			object.accent = accent;
 			object.timestamp = n;
+			object.width = width;
+			object.height = height;
 			object.protected = protected;
 			object.grid = grid_toggle;
 			object.pin = pin;
@@ -1000,6 +1030,8 @@ $(document).ready(function() {
 			object.title = $('#heading').val();
 			object.accent = accent;
 			object.timestamp = n;
+			object.width = width;
+			object.height = height;
 			object.protected = protected;
 			object.grid = grid_toggle;
 			object.pin = pin;
@@ -1190,6 +1222,8 @@ $(document).ready(function() {
 			object.accent = accent;
 			object.mode = mode;
 			object.timestamp = n;
+			object.width = width;
+			object.height = height;
 			object.protected = protected;
 			object.grid = grid_toggle;
 			object.pin = pin;
@@ -1401,6 +1435,8 @@ $(document).ready(function() {
 		object.grid = grid_toggle;
 		object.pin = pin;
 		object.timestamp = n;
+		object.width = width;
+		object.height = height;
 
 
 		remote.getGlobal('note_update').note_string = object;
@@ -1488,6 +1524,8 @@ $(document).ready(function() {
 			object.protected = protected;
 			object.grid = grid_toggle;
 			object.pin = pin;
+			object.width = width;
+			object.height = height;
 
 			remote.getGlobal('note_update').note_string = object;
 
@@ -1545,6 +1583,8 @@ $(document).ready(function() {
 			object.protected = protected;
 			object.grid = grid_toggle;
 			object.pin = pin;
+			object.width = width;
+			object.height = height;
 
 			remote.getGlobal('note_update').note_string = object;
 
@@ -1658,6 +1698,7 @@ $(document).ready(function() {
     function goGrid(){
     	if(mode === 'todo') {
 	    	$('.todo_note li').css('display','inline-block');
+	    	// $('ol li').css('float','left');
 			$('.todo_note li span').css('background-position','center right 26px');
 			$('.todo_note li span').css('padding-right','32px');
 			grid_toggle = true; 		
@@ -1667,6 +1708,7 @@ $(document).ready(function() {
     function noGrid(){
     	if(mode === 'todo'){
 	    	$('.todo_note li').css('display','block');
+	    	// $('ol li').css('float','');
 			$('.todo_note li span').css('background-position','center right');
 			$('.todo_note li span').css('padding-right','');
 			grid_toggle = false;
@@ -1689,6 +1731,8 @@ $(document).ready(function() {
 		object.grid = grid_toggle;
 		object.pin = pin;
 		object.timestamp = n;
+		object.width = width;
+		object.height = height;
 
 		l(JSON.stringify(object), "Object updated");
 
@@ -1751,6 +1795,8 @@ $(document).ready(function() {
 				object.grid = grid_toggle;
 				object.pin = pin;
 				object.timestamp = n;
+				object.width = width;
+				object.height = height;
 
 				l(JSON.stringify(todo_object), "Object persisted");
 
@@ -1815,6 +1861,37 @@ $(document).ready(function() {
 			}, 200);  		
 	    }
 	} 
+
+
+	setInterval(function(){
+		setTimeout(function(){
+			var remote = require('electron').remote;
+			var d = new Date();
+	    	var n = d.getTime();
+
+		 	var object = {};
+			object.id = id;
+			if(mode === 'text') object.note = $('edit_note').val();
+			if(mode === 'todo') object.note = JSON.stringify(todo_object);
+			object.title = $('#heading').val();
+			object.accent = accent;
+			object.mode = mode;
+			object.timestamp = n;
+			object.width = $(window).width();
+			object.height = $(window).height();
+			object.protected = protected;
+			object.grid = grid_toggle;
+			object.pin = pin;
+
+			l(JSON.stringify(object), "Dimensions updated");
+
+			remote.getGlobal('note_update').note_string = object;
+
+			var ipcRenderer = require('electron').ipcRenderer;   
+			ipcRenderer.send('ren_to_main_data');
+		}, 10000);
+		
+	}, 5000);
 });
 
 
