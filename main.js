@@ -14,6 +14,8 @@ const Tray = electron.Tray;
 const storage = require('electron-json-storage');
 const globalShortcut = electron.globalShortcut;
 
+
+
 var lastWindowPosition;
 var lastWindowState;
 var docked = true;
@@ -28,14 +30,7 @@ var ipcRenderer = require('electron').ipcRenderer;
 var clients_served = 0;
 
 //Global Objects
-global.note_update = {note_string: null};
-global.note_retrieve = {note_string: null, id: null, mode: 'text'};
-global.note_delete = {id: null};
-global.sync = {note_string: null, id: null};
-global.login = {eemail: null, email: null};
-global.logout = {initiate: false};
-global.open_url = {url: null};
-global.debug = {on: false, reset: false};
+require('./assets/global');
 
 
 
@@ -77,6 +72,11 @@ if(reset){
 	storage.set('notes', { number_notes: null, notes_string: null, timestamp: null });
 
 	storage.set('user', { user_name : null, eemail: null, email: null});
+
+	storage.clear(function(error) {
+	  if (error) throw error;
+	});
+
 
 }
 
@@ -271,6 +271,9 @@ app.on('ready', function(){
 					"title" : "empty",
 					"accent" : "#128C7E",
 					"mode" : "text",
+					"grid" : false,
+					"protected" : false,
+					"pin" : "",
 					"timestamp" : n
 				});
 
@@ -317,7 +320,10 @@ app.on('ready', function(){
 					"note" : "empty",
 					"title" : "empty",
 					"accent" : "#128C7E",
+					"protected" : false,
+					"pin" : "0000",
 					"mode" : "text",
+					"grid" : false,
 					"timestamp" : n
 				});
 
@@ -414,8 +420,11 @@ function updateNote(ns){
 	    			array[i].note = ns.note;
 	    			array[i].title = ns.title;
 	    			array[i].accent = ns.accent;
+	    			array[i].protected = ns.protected;
+	    			array[i].pin = ns.pin;
 	    			array[i].mode = ns.mode;
-	    			array[i].timestamp = n;
+	    			array[i].grid = ns.grid;
+	    			array[i].timestamp = ns.timestamp;
 	    		}
 	    	}
 
@@ -566,6 +575,9 @@ ipcMain.on('new_note', function(event) {
 				"title" : "empty",
 				"accent" : "#128C7E",
 				"mode" : "text",
+				"grid" : false,
+				"protected" : false,
+				"pin" : "0000",
 				"timestamp" : n
 			});
 
@@ -638,6 +650,9 @@ function cloud_listener(id, ns, ls){
 		    			cloud_array.data[i].note = ns.note;
 		    			cloud_array.data[i].title = ns.title;
 		    			cloud_array.data[i].accent = ns.accent;
+		    			cloud_array.data[i].protected = ns.protected;
+		    			cloud_array.data[i].pin = ns.pin;
+	    				cloud_array.data[i].grid = ns.grid;
 		    			cloud_array.data[i].mode = ns.mode;
 		    			found = true;
 
@@ -653,6 +668,8 @@ function cloud_listener(id, ns, ls){
 						"title" : ns.title,
 						"accent" : ns.accent,
 						"timestamp" : ns.timestamp,
+						"pin" : ns.pin,
+						"protected" : false,
 						"mode" : ns.mode
 					});
 
@@ -782,6 +799,9 @@ ipcMain.on('skip_login', function(event) {
 					"title" : "empty",
 					"accent" : "#128C7E",
 					"mode" : "text",
+					"grid" : false,
+					"pin" : "0000",
+					"protected" : false,
 					"timestamp" : n
 				});
 
@@ -865,5 +885,11 @@ app.on('ready', function() {
 	        loginWindow.show();
 	        loginWindow.focus();
     	}
+	});
+
+
+	//Ctrl + alt + q
+	var ret_accept = globalShortcut.register('ctrl+alt+q', function() {
+		app.quit();
 	});
 });

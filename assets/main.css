@@ -216,6 +216,32 @@ body{
    padding-top: 14px;
 }
 
+.security_menu{
+	position: absolute; 
+	padding : 4px 4px 6px 6px;
+	top: 45px; 
+	margin-left: 6px;
+	margin-right: 6px; 
+	height: auto; 
+	width: 95%; 
+	z-index: 10;
+	opacity: 0.96;
+	border: 1px solid #BBB;
+	background-color: #ECE5DD;
+	display: none;
+	text-align: center;
+
+	border-top: 1px solid #ccc;
+	-webkit-box-shadow: 4px 4px 10px rgba(50, 50, 50, 0.20);
+    -moz-box-shadow:    4px 4px 10px rgba(50, 50, 50, 0.20);
+    box-shadow:         4px 4px 10px rgba(50, 50, 50, 0.20);
+}
+
+.security_menu input{
+	width: 140px;
+	text-align: center;
+}
+
 .menu_icon{
 	margin-right: 6px;
 	margin-left: 6px;
@@ -223,6 +249,7 @@ body{
 	float: right; 
 	padding: 6px;
 }
+
 
 .mode_menu_icon{
 	margin-right: 10px;
@@ -409,7 +436,7 @@ button:hover {
 	position: absolute; 
 	bottom: 0px;
 	left: 0px;
-	height: 12px;
+	height: auto;
 	width: 100%;
 }
 
@@ -428,12 +455,39 @@ button:hover {
 .loading{
 	z-index: 197;
 	background-color: #ECE5DD;
-	opacity: 0.94;
+	opacity: 0.98;
 	position: absolute;
 	bottom: 00px;
 	right: 00px;
 	width: 100%;
 	height: 100%;
+}
+
+.curtain{
+	z-index: 196;
+	background-color: #ECE5DD;
+	opacity: 0.999;
+	position: absolute;
+	margin-left: auto;
+	margin-right: auto;
+	bottom: 00px;
+	right: 00px;
+	width: 100%;
+	height: 100%;
+
+}
+
+.curtain div{
+	position: relative;
+	float: left;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.curtain input{
+	text-align: center;
+	width: 180px;
 }
 
 .scrollbar
@@ -637,12 +691,48 @@ p{
 	border: 1px dashed #BBB;
 }
 
-.marked_item{
-	background: url('../img/done.png') no-repeat top right;
-	background-size: 16px 16px;
+
+.grid{	
+	display: inline-block;
+}
+
+
+
+.marked_item_important{
+	background: url('../img/marked_important.png') right no-repeat;
+	background-size: auto 12px;
 	width: 100%;
 	height: auto;
-	opacity: 0.6;
+	opacity: 0.99;
+	display: inline-block;
+}
+
+
+.un_item_important{
+	background: url('../img/un_important.png') right no-repeat;
+	background-size: auto 12px;
+	width: 100%;
+	height: auto;
+	opacity: 0.99;
+	display: inline-block;
+}
+
+.marked_item_unimportant{
+	background: url('../img/marked_unimportant.png') right no-repeat;
+	background-size: auto 12px;
+	width: 100%;
+	height: auto;
+	opacity: 0.99;
+	display: inline-block;
+}
+
+/*unmarked*/
+.un_item_unimportant{
+	background: url('../img/un_unimportant.png') right no-repeat;
+	background-size: auto 12px;
+	width: 100%;
+	height: auto;
+	opacity: 0.99;
 	display: inline-block;
 }
 

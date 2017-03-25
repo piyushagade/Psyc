@@ -14,6 +14,9 @@ $(document).ready(function() {
 	todo_object = {data: []};
 	todo_count = 1;
 	delete_item_mode = false;
+	pin = "";
+	protected = false;
+    var grid_toggle = false;
 
 	setTimeout(function(){
 		$("#loading").fadeOut('300');
@@ -21,6 +24,10 @@ $(document).ready(function() {
 			$("#loading").removeClass('hidden');
 		},400);
 	},1000);
+
+
+	//disable todo input div
+	$('#todo_input_div').addClass('hidden');
 
 
 	$('#expanded_menu').fadeOut(0);
@@ -69,6 +76,8 @@ $(document).ready(function() {
 			//user email
 			user_id = remote.getGlobal('login').email;
 
+			l(JSON.stringify(object), "Object")
+
 			setTimeout(function(){
 				// get note id
 				if(id === null){
@@ -97,15 +106,32 @@ $(document).ready(function() {
 				//set up ui and note
 				if(id === object.id){
 					var heading = object.title;
+					protected = object.protected;
+					if(protected) pin = object.pin;
+
+					if(protected) l(JSON.stringify(object), "Object recieved");
 
 					var note = object.note;
 					accent = object.accent;
+					grid_toggle = object.grid;
+
+					l(protected, "Protection");
+					l(pin, "PIN");
 
 					if(heading !== 'empty') $('#heading').val(heading);
+
+					if(protected){
+						$('#curtain').fadeIn(0);
+						$('#b_secure').attr("src","img/secured.png");
+					}
+					else {
+						$('#curtain').fadeOut(0);
+						pin = "";
+					}
+					
 					
 					if(mode === 'text' && note !== 'empty') {
 						$('#edit_note').val(note);
-
 
 						//enable template menu
 						$("#b_insert").removeClass('hidden');
@@ -139,12 +165,26 @@ $(document).ready(function() {
 							//if(current item is not empty or deleted)
 							if(todo_array[i] !== '' && todo_array[i].item.trim() !== 'empty' && todo_array[i].item.trim() !== '&deleted'){
 								todo_count++;
-								//if current item is unmarked
-								if(!todo_array[i].marked)
-									$('#ol').append('<li style="border: 1px dashed #BBB;">' + todo_array[i].item + '</li>');
-								//if current item is marked
-								else if(todo_array[i].marked)
-									$('#ol').append('<li style="border: 1px solid' + accent +';"><span class="marked_item"><span style="color: #111">' + todo_array[i].item + '</span></span></li>');
+								var local_important = false;
+								if(todo_array[i].item.charAt(0) === '!') local_important = true;
+
+								//if current item is unmarked && not important
+								if(!todo_array[i].marked && !local_important)
+									$('#ol').append('<li style="border: 1px dashed #BBB;"><span class="un_item_unimportant">' + todo_array[i].item + '</span></li>');
+								//if current item is marked && not important
+								else if(todo_array[i].marked && !local_important)
+									$('#ol').append('<li style="border: 1px solid' + accent +';"><span class="marked_item_unimportant">' + todo_array[i].item + '</span></li>');
+
+								//if current item is unmarked && important
+								else if(!todo_array[i].marked && local_important)
+									$('#ol').append('<li style="border: 1px dashed #BBB;"><span class="un_item_important"><font style="display: none; opacity:0; font-size:0;">!</font>' + todo_array[i].item.slice(1) + '</span></li>');
+								//if current item is marked && important
+								else if(todo_array[i].marked && local_important)
+									$('#ol').append('<li style="border: 1px solid' + accent +';"><span class="marked_item_important"><font style="display: none; opacity:0; font-size:0;">!</font>' + todo_array[i].item.slice(1) + '</span></li>');
+
+								if(grid_toggle) goGrid();
+								else noGrid();
+
 							}
 						}
 						if(todo_count >1){
@@ -225,6 +265,9 @@ $(document).ready(function() {
 			object.accent = accent;
 			object.mode = mode;
 			object.timestamp = n;
+			object.protected = protected;
+			object.grid = grid_toggle;
+			object.pin = pin;
 
 			remote.getGlobal('note_update').note_string = object;
 
@@ -287,7 +330,7 @@ $(document).ready(function() {
 			todo_object.data.push({
 				'id' : r(),
 				'item' : 'empty',
-				'marked' : false
+				'marked' : false,
 			});
 
 
@@ -303,6 +346,9 @@ $(document).ready(function() {
 			object.accent = accent;
 			object.mode = mode;
 			object.timestamp = n;
+			object.protected = protected;
+			object.grid = grid_toggle;
+			object.pin = pin;
 
 
 
@@ -340,20 +386,28 @@ $(document).ready(function() {
 		if($('#new_li').val().trim() !== '') {
 			todo_count++;
 
-
 			todo_object.data.push({
 				'id' : r(),
 				'item' : $('#new_li').val(),
-				'marked' : false
+				'marked' : false,
 			});
 
-			l($('#new_li').val(), "New item added");
 
-			$('#ol').append('<li>' + $('#new_li').val() + '</li>');
+			var important = false;
+			if($('#new_li').val().trim().charAt(0) === '!') important = true;
+
+			l(important, "Important");
+
+			if(!important) $('#ol').append('<li><span class="unimportant">' + $('#new_li').val() + '</span></li>');
+				else $('#ol').append('<li><span class="important"><font style="display: none;">!</font>' + $('#new_li').val().slice(1) + '</span></li>');
+
 			$('#new_li').val('');
 
 			$("#empty_ol").addClass('hidden');
 			$("#ol").removeClass('hidden');
+
+			if(grid_toggle) goGrid();
+			else noGrid();
 
 			// Send IPC
 		 	var remote = require('electron').remote;
@@ -367,6 +421,9 @@ $(document).ready(function() {
 			object.accent = accent;
 			object.mode = mode;
 			object.timestamp = n;
+			object.protected = protected;
+			object.grid = grid_toggle;
+			object.pin = pin;
 
 			l(JSON.stringify(todo_object), "Object persisted");
 
@@ -384,12 +441,19 @@ $(document).ready(function() {
 	var clicked_once = false;
 	var clicked_on = "";
 	$(document).on('click', '#ol li', function(event) {
-		//if current item is pending and should be marked as completed
+
+		//if current item should be marked as completed
 	    if(!~($(this).text().indexOf("&Completed")) && !(~($(this).html().indexOf("marked_item"))) && !delete_item_mode){
 
 	    	$(this).css('border', '1px solid ' + accent);
 
-	    	$(this).html('<span class="marked_item"><span style="color: #111">' + $(this).html() + '</span><span style="width: 0px; opacity: 0.0; font-size: 0;">&Completed</font></span></span>');
+	    	var local_important = false;
+	    	if($(this).text().charAt(0) === '!') local_important = true;
+
+	    	if(!local_important) $(this).html('<span class="marked_item_unimportant">' + $(this).text() + '<font style="opacity: 0.0; font-size: 0; display: none;">&Completed</font></font></span>');
+			else $(this).html('<span class="marked_item_important"><font style="color: #111"><font style="display: none">!</font>' + $(this).text().slice(1) + '</font><font style="display: none; width: 0px; opacity: 0.0; font-size: 0;">&Completed</font></font></span>');
+
+
 			clicked_once = true;
 			clicked_on = $(this).text().replace('&Completed','');
 
@@ -441,7 +505,13 @@ $(document).ready(function() {
 
 	    	$(this).css('border', '1px dashed ' + '#BBB');
 
-	    	$(this).html('<font style="text-decoration: none;">' + string);
+
+	    	var local_important = false;
+	    	if($(this).text().charAt(0) === '!') local_important = true;
+
+	    	if(!local_important) $(this).html('<span class="un_item_unimportant"><font style="text-decoration: none;">' + string + '</span>');
+	    	else  $(this).html('<span class="un_item_important"><font style="text-decoration: none; display: none;">!</font>' + string.slice(1) + '</span>');
+
 	    	clicked_once = false;
 			clicked_on = "";
 
@@ -470,12 +540,20 @@ $(document).ready(function() {
 		object.accent = accent;
 		object.mode = mode;
 		object.timestamp = n;
+		object.protected = protected;
+		object.grid = grid_toggle;
+		object.pin = pin;
 
 
 		remote.getGlobal('note_update').note_string = object;
 
 		var ipcRenderer = require('electron').ipcRenderer;   
 		ipcRenderer.send('ren_to_main_data');
+
+
+		if(grid_toggle) goGrid();
+		else noGrid();
+
 	});
 
 	// switch to delete item mode
@@ -499,14 +577,12 @@ $(document).ready(function() {
 		}, 200);
 		$('#edit_menu_div').fadeIn(200);
 		$('#color_picker_div').fadeIn(200);
-		l("Switching to edit menu", mode);
 		
 
 		if(mode === 'text'){
 			$('#edit_note').removeClass('hidden'); 
 			$('#edit_note').fadeOut(0);
 			$('#edit_note').fadeIn(200);
-
 
 			//disable todo input div
 			$('#todo_input_div').addClass('hidden');
@@ -517,7 +593,7 @@ $(document).ready(function() {
 		else if(mode === 'todo') $('#edit_note').addClass('hidden');
 	});
 
-	// switch to edit mode from menu icon
+	// switch to edit mode from expanded menu icon
 	$('#b_edit_expanded_menu').click(function (e) {
 		setTimeout(function() {	
 			toggle_menu = true;
@@ -648,6 +724,9 @@ $(document).ready(function() {
 		object.accent = accent;
 		object.mode = 'text';
 		object.timestamp = n;
+		object.protected = protected;
+		object.grid = grid_toggle;
+		object.pin = pin;
 
 
 		remote.getGlobal('note_update').note_string = object;
@@ -679,6 +758,9 @@ $(document).ready(function() {
 		object.accent = accent;
 		object.mode = mode;
 		object.timestamp = n;
+		object.protected = protected;
+		object.grid = grid_toggle;
+		object.pin = pin;
 
 		remote.getGlobal('note_update').note_string = object;
 
@@ -781,6 +863,25 @@ $(document).ready(function() {
 		});
 	});
 
+	// delete from unlock ui
+	$('#security_menu_delete').click(function (e) {
+	  	// Send IPC
+	 	var remote = require('electron').remote;
+		remote.getGlobal('note_delete').id = id; 
+
+		var ipcRenderer = require('electron').ipcRenderer;   
+		ipcRenderer.send('delete_note');
+	 
+		ipcRenderer.on('delete_note', function(event, arg) {
+			if(arg == 1){
+				const remote = require('electron').remote;
+				var window = remote.getCurrentWindow();
+
+				window.close();
+			}	
+		});
+	});
+
 	// delete
 	$('#b_edit_menu_delete_expanded_menu').click(function (e) {
 	  	// Send IPC
@@ -824,6 +925,9 @@ $(document).ready(function() {
 			object.title = $('#heading').val();
 			object.accent = accent;
 			object.timestamp = n;
+			object.protected = protected;
+			object.grid = grid_toggle;
+			object.pin = pin;
 
 			remote.getGlobal('sync').note_string = object; 
 			remote.getGlobal('sync').id = id; 
@@ -896,6 +1000,9 @@ $(document).ready(function() {
 			object.title = $('#heading').val();
 			object.accent = accent;
 			object.timestamp = n;
+			object.protected = protected;
+			object.grid = grid_toggle;
+			object.pin = pin;
 
 			remote.getGlobal('sync').note_string = object; 
 			remote.getGlobal('sync').id = id; 
@@ -1083,6 +1190,9 @@ $(document).ready(function() {
 			object.accent = accent;
 			object.mode = mode;
 			object.timestamp = n;
+			object.protected = protected;
+			object.grid = grid_toggle;
+			object.pin = pin;
 
 			remote.getGlobal('note_update').note_string = object;
 
@@ -1287,6 +1397,9 @@ $(document).ready(function() {
 		object.title = $('#heading').val();
 		object.accent = accent;
 		object.mode = 'text';
+		object.protected = protected;
+		object.grid = grid_toggle;
+		object.pin = pin;
 		object.timestamp = n;
 
 
@@ -1346,6 +1459,116 @@ $(document).ready(function() {
 	});
 
 
+	//security
+	var toggle_security_menu = false;
+	$('#b_secure').click(function(){
+		// show security menu
+		if(!toggle_security_menu && !protected) {
+			$('#security_menu').slideDown();
+		}
+		// turn off protection
+		else if(protected) {
+
+			protected = false;
+			pin = ""
+
+			// Send IPC
+		 	var remote = require('electron').remote;
+			var d = new Date();
+	    	var n = d.getTime();
+
+		 	var object = {};
+			object.id = id;
+			if(mode === 'text') object.note = $('edit_note').val();
+			else if(mode === 'todo') object.note = JSON.stringify(todo_object);
+			object.title = $('#heading').val();
+			object.accent = accent;
+			object.mode = mode;
+			object.timestamp = n;
+			object.protected = protected;
+			object.grid = grid_toggle;
+			object.pin = pin;
+
+			remote.getGlobal('note_update').note_string = object;
+
+			var ipcRenderer = require('electron').ipcRenderer;   
+			ipcRenderer.send('ren_to_main_data');
+		 
+			var k = 0;
+			ipcRenderer.on('ren_to_main_data', function(event, arg) {
+				if(arg==1 && k == 0){
+					popup('Security turned off.');
+					$('#b_secure').attr("src","img/secure.png");
+					$('#security_menu').slideUp();
+
+					toggle_security_menu = false;
+					k++;
+				}	
+			});
+		}
+
+		toggle_security_menu = !toggle_security_menu;
+	});
+
+	$('#pin_unlock').click(function(){
+		l(pin.trim() === $('#pin_code').val().trim(), "Counter");
+		l($('#pin_code').val().trim(), "Entered");
+		if($('#pin_code').val().trim().length === 4 && $('#pin_code').val().trim() === pin.trim()){
+			$('#curtain').fadeOut(600);
+		}
+		else if($('#pin_code').val().trim().length === 4 && $('#pin_code').val().trim() !== pin.trim())
+			popup("Wrong PIN entered. Try again.");
+		else popup("Enter the 4 digit PIN to unlock");
+	});
+
+	// turn on protection
+	$('#pin_set').click(function(){
+		var local_pin = $("#pin_security_menu").val();
+
+		if(local_pin !== '' && local_pin.length === 4){
+			pin = local_pin;
+			protected = true;
+
+			// Send IPC
+		 	var remote = require('electron').remote;
+			var d = new Date();
+	    	var n = d.getTime();
+
+		 	var object = {};
+			object.id = id;
+			if(mode === 'text') object.note = $('edit_note').val();
+			else if(mode === 'todo') object.note = JSON.stringify(todo_object);
+			object.title = $('#heading').val();
+			object.accent = accent;
+			object.mode = mode;
+			object.timestamp = n;
+			object.protected = protected;
+			object.grid = grid_toggle;
+			object.pin = pin;
+
+			remote.getGlobal('note_update').note_string = object;
+
+			var ipcRenderer = require('electron').ipcRenderer;   
+			ipcRenderer.send('ren_to_main_data');
+		 
+			var k = 0;
+			ipcRenderer.on('ren_to_main_data', function(event, arg) {
+				if(arg==1 && k == 0){
+					popup('PIN has been set. You will be asked to enter the PIN at startup. <br><br><b>Note:</b> The PIN is associated with only this note.');
+					$('#b_secure').attr("src","img/secured.png");
+					$('#security_menu').slideUp();
+					k++;
+				}	
+			});
+		}
+		else popup('Enter a 4-digit PIN.');
+	});
+
+	$('#pin_back').click(function(){
+		$('#security_menu').slideUp();
+		toggle_security_menu = false;
+	});
+
 
 
 
@@ -1365,29 +1588,39 @@ $(document).ready(function() {
 		keyboard_menu_toggle = !keyboard_menu_toggle;
     });
 
-    //edit
+    // toggle edit mode in text mode
     var edit_toggle = true;
     Mousetrap.bind('alt+enter', function() { 
-      if(edit_toggle && mode === 'text'){
-        setTimeout(function() { 
-            $('#menu').fadeOut(200);
-        }, 200);
-        $('#edit_menu_div').fadeIn(200);
-        $('#color_picker_div').fadeIn(200);
-        $('#edit_note').fadeIn(200);
-      }
-      else{
-        setTimeout(function() { 
-          $('#edit_menu_div').fadeOut(200);
-          $('#color_picker_div').fadeOut(200);
-          $('#edit_note').fadeOut(200);
-        }, 200);
-        
-        $('#menu').fadeIn(200);
-        if($('#edit_note').val() !== "") $('#rendered_note').html(md.render($('#edit_note').val()));
-        else  $('#rendered_note').html("<font size='2px' color='#AAA'>To edit, you can click here, or use the 'Edit' icon to enter edit mode.</font>");
-        }
-        edit_toggle = !edit_toggle;
+    	if(mode === 'text'){
+			if(edit_toggle && mode === 'text'){
+			setTimeout(function() { 
+			    $('#menu').fadeOut(200);
+			}, 200);
+			$('#edit_menu_div').fadeIn(200);
+			$('#color_picker_div').fadeIn(200);
+			$('#edit_note').fadeIn(200);
+			}
+			else{
+			setTimeout(function() { 
+			  $('#edit_menu_div').fadeOut(200);
+			  $('#color_picker_div').fadeOut(200);
+			  $('#edit_note').fadeOut(200);
+			}, 200);
+
+			$('#menu').fadeIn(200);
+			if($('#edit_note').val() !== "") $('#rendered_note').html(md.render($('#edit_note').val()));
+			else  $('#rendered_note').html("<font size='2px' color='#AAA'>To edit, you can click here, or use the 'Edit' icon to enter edit mode.</font>");
+			}
+			edit_toggle = !edit_toggle;
+		}
+		else if(mode === 'todo'){
+			setTimeout(function() {	
+				$('#menu').fadeOut(200);
+			}, 200);
+			$('#edit_menu_div').fadeIn(200);
+			$('#color_picker_div').fadeIn(200);
+			edit_toggle = !edit_toggle;
+		}
       });
 
     // get focus to text box
@@ -1398,6 +1631,73 @@ $(document).ready(function() {
     		$("#new_li").focus();
     	},0);
     });
+
+     // get focus to text box
+    Mousetrap.bind('alt+r', function() { 
+        //request focus
+		window.setTimeout(function ()
+    	{
+    		window.location.reload()
+    	},0);
+    });
+
+
+    // grid view toggle
+    Mousetrap.bind('alt+v', function() { 
+    	if(mode === 'todo'){
+			if(!grid_toggle) {
+				goGrid();
+			}
+			else {
+				noGrid();
+			}
+			updateTodo();
+		}
+    });
+
+    function goGrid(){
+    	if(mode === 'todo') {
+	    	$('.todo_note li').css('display','inline-block');
+			$('.todo_note li span').css('background-position','center right 26px');
+			$('.todo_note li span').css('padding-right','32px');
+			grid_toggle = true; 		
+		}
+    }
+
+    function noGrid(){
+    	if(mode === 'todo'){
+	    	$('.todo_note li').css('display','block');
+			$('.todo_note li span').css('background-position','center right');
+			$('.todo_note li span').css('padding-right','');
+			grid_toggle = false;
+		}
+    }
+
+    function updateTodo(){
+    	// Send IPC
+	 	var remote = require('electron').remote;
+		var d = new Date();
+    	var n = d.getTime();
+
+	 	var object = {};
+		object.id = id;
+		object.note = JSON.stringify(todo_object);
+		object.title = $('#heading').val();
+		object.accent = accent;
+		object.mode = mode;
+		object.protected = protected;
+		object.grid = grid_toggle;
+		object.pin = pin;
+		object.timestamp = n;
+
+		l(JSON.stringify(object), "Object updated");
+
+		remote.getGlobal('note_update').note_string = object;
+
+		var ipcRenderer = require('electron').ipcRenderer;   
+		ipcRenderer.send('ren_to_main_data');
+
+    }
 
     window.enterKeyEvent = function(obj, e) {
 	  	var keynum, lines = 1;
@@ -1416,16 +1716,25 @@ $(document).ready(function() {
 				todo_object.data.push({
 					'id' : r(),
 					'item' : $('#new_li').val(),
-					'marked' : false
+					'marked' : false,
+
 				});
 
 				l($('#new_li').val(), "New item added");
+			
+				var local_important = false;
+				if($('#new_li').val().trim().charAt(0) === '!') local_important = true;
+				
+				if(!local_important) $('#ol').append('<li><span class="un_item_unimportant">' + $('#new_li').val() + '</span></li>');
+				else $('#ol').append('<li><span class="un_item_important"><font style="display: none;">!</font>' + $('#new_li').val().slice(1) + '</span></li>');
 
-				$('#ol').append('<li>' + $('#new_li').val() + '</li>');
 				$('#new_li').val('');
 
 				$("#empty_ol").addClass('hidden');
 				$("#ol").removeClass('hidden');
+
+				if(grid_toggle) goGrid();
+				else noGrid();
 
 				// Send IPC
 			 	var remote = require('electron').remote;
@@ -1438,6 +1747,9 @@ $(document).ready(function() {
 				object.title = $('#heading').val();
 				object.accent = accent;
 				object.mode = mode;
+				object.protected = protected;
+				object.grid = grid_toggle;
+				object.pin = pin;
 				object.timestamp = n;
 
 				l(JSON.stringify(todo_object), "Object persisted");
@@ -1452,6 +1764,57 @@ $(document).ready(function() {
 		    }
     	}
   	}
+
+  	document.onkeydown = keydown;
+  	document.onkeyup = keyup;
+
+	function keydown(evt) {
+	    if (!evt) evt = event;
+	    if (evt.altKey) {
+    		$('input').blur();
+    		$('textarea').blur();
+	    }
+	} 
+
+	function keyup(evt) {
+	    if (!evt) evt = event;
+	    var KeyID = (window.event) ? event.keyCode : evt.keyCode;
+
+	    if (KeyID === 18) {
+			window.setTimeout(function (){
+	    		$("#new_li").focus();
+	    	},0);
+	    }
+	    else if (KeyID === 27) {
+			window.setTimeout(function (){
+				// exit edit mode
+				setTimeout(function() {	
+					$('#edit_menu_div').fadeOut(200);
+					$('#color_picker_div').fadeOut(200);
+					$('#edit_note').fadeOut(200);
+				}, 200);
+				$('#menu').fadeIn(200);
+				if($('#edit_note').val() !== "") $('#rendered_note').html(md.render($('#edit_note').val()));
+				else  $('#rendered_note').html("<font size='2px' color='#AAA'>To edit, you can click here, or use the 'Edit' icon to enter edit mode.</font>");
+
+				if(template_menu_toggle){
+					$('#template_menu').slideUp();
+					template_menu_toggle = false;
+				}
+
+				if(keyboard_menu_toggle){
+					$('#keyboard_menu').slideUp();
+					keyboard_menu_toggle = false;
+				}
+
+
+				if(mode === 'todo'){
+					delete_item_mode = false;
+					$('#b_todo_delete_item').attr("src","img/delete_item.png");
+				}  
+			}, 200);  		
+	    }
+	} 
 });
 
 

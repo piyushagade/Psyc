@@ -30,7 +30,7 @@
       <!-- Menu -->
       <div class="menu" id="menu">
         <input class="menu_icon" type="image" src="img/more.png" id="b_more" height="18px" />
-        <input class="menu_icon" type="image" src="img/add.png" id="b_add" height="20px" />
+        <input class="menu_icon security_menu_icon" type="image" src="img/add.png" id="b_add" height="20px" />
         <input class="menu_icon" type="image" src="img/edit.png" id="b_edit" height="20px" />
       </div>
 
@@ -63,6 +63,7 @@
       <div class="mode_menu" id="mode_menu">
         <input class="mode_menu_icon" type="image" src="img/text.png" id="b_text_mode" height="18px" />
         <input class="mode_menu_icon" type="image" src="img/todo.png" id="b_todo_mode" height="20px" />
+        <input class="mode_menu_icon" type="image" src="img/secure.png" id="b_secure" height="20px" />
       </div>
 
       <!-- template menu -->
@@ -93,13 +94,17 @@
               <td>Alt + Enter</td>
             </tr>
             <tr>
+              <td>Exit edit mode</td>
+              <td>Esc</td>
+            </tr>
+            <tr>
               <td>Show shortcuts</td>
               <td>Alt + K</td>
             </tr>
-            <tr>
+            <!-- <tr>
               <td>Show help</td>
               <td>Alt + H</td>
-            </tr>
+            </tr> -->
             <tr>
               <td>Quit**</td>
               <td>Ctrl + Alt + Q</td>
@@ -111,17 +116,29 @@
           <tbody>
             <tr>
               <td>Focus on textbox</td>
-              <td>Tab</td>
+              <td>Tab or Alt</td>
             </tr>
             <tr>
               <td>Enter new item</td>
               <td>Enter</td>
+            </tr>
+            <tr>
+              <td>Toggle grid view</td>
+              <td>Alt + V</td>
             </tr>
           </tbody>
         </table>
         <span style="font-size: 10px; margin: 0px; font-family: Ubuntu; color: #888; text-align: center;"><center>Shortcuts marked with ** are global shortcuts. It means that they can be used even with other application running in the foreground. </center>
         </span>
 
+      </div>
+
+      <!-- Security menu -->
+      <div class="security_menu" id="security_menu">
+        <span style="font-size: 12px; margin: 2px; font-family: Ubuntu; color: #888">Turn on PIN unlock at startup:</span><br>
+        <center><input class="login_input" type="number" id="pin_security_menu" placeholder="Set a 4-digit PIN" /></center>
+        <button id="pin_set">Set PIN</button>
+        <button id="pin_back">Later</button>
       </div>
 
       <!-- TextArea -->
@@ -172,9 +189,18 @@
       </div>
 
       <div id="loading" class="loading"><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-        <center><img class="rotate" width="100px" style="margin-left: 20px; opacity: 0.1;" src="img/busy.png"></center>
+        <center><img class="rotate" width="100px" style="margin-left: 16px; opacity: 0.1;" src="img/busy.png"></center>
       </div>
       <div id="popup" class="popup"></div>
+      <div id="curtain" class="curtain">
+        <div>  
+          <center>
+            <input align="center" type="password" id="pin_code" placeholder="Enter 4-digit PIN to unlock" class="login_input"/>
+            <button id="pin_unlock">Unlock</button><br><br><br>
+            <a style="font-family: Ubuntu; font-size: 12px;" id="security_menu_delete">or, delete the note</a>
+          </center>
+        </div>
+      </div>
 
     </div>
   </body>

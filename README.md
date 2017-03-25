@@ -18,6 +18,7 @@ Description            | Keys
 -----------------------| -----------------------
 Add new note            | <kbd>Alt</kbd> <kbd>A</kbd>
 Toggle edit mode   | <kbd>Alt</kbd> <kbd>Enter</kbd>
+Exit edit mode   | <kbd>Esc</kbd>
 Show keyboard shortcuts   | <kbd>Alt</kbd> <kbd>K</kbd>
 Quit Pysc   | <kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Q</kbd>
 
@@ -25,7 +26,7 @@ To-Do mode shortcuts
 ---
 Description            | Keys
 -----------------------| -----------------------
-Focus on the input textbox            | <kbd>Tab</kbd>
+Focus on the input textbox            | <kbd>Tab</kbd> or <kbd>Alt</kbd>
 Add new item   | <kbd>Enter</kbd>
 
 Collaboration
