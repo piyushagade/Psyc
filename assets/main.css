@@ -191,8 +191,13 @@ body{
 	float: left; 
 	height: auto; 
 	width: 224px; 
-	z-index: 10;
+	z-index: 12;
 	opacity: 0.94;
+
+	overflow-y: auto;
+	box-sizing: border-box;
+	
+	overflow-x: hidden;
 	border: 1px solid #BBB;
 	background-color: #ECE5DD;
 	display: none;
@@ -697,9 +702,15 @@ p{
 	font-size: 14px;
 	-webkit-user-select: none;
 	border: 1px dashed #BBB;
+
+	position: absolute;
+	top: 44%;
+	left: 50%;
+	transform: translate(-50%, -50%);
 }
 .empty_ol:img{
 	width: 200px;
+	-webkit-user-select: none;
 }
 
 
@@ -779,3 +790,15 @@ p{
 
 	border: 0px dashed #BBB;
 }
+
+
+.todo_note ol li{
+	cursor: default;
+	transition: all 0.7s ease;
+}
+
+
+.todo_note ol li:hover{
+	color: #111;
+}
+

@@ -272,143 +272,158 @@ $(document).ready(function() {
 	// switch to text mode
 	$('#b_text_mode').click(function (e) {
 		if(mode !== 'text'){
-			hideAllModes();
+			var proceed = false;
+			popupPersistent("Changing to markdown text mode will delete current to-do data.", true, function(result){
 
+				if(result){
+					hideAllModes();
 
-			//enable template menu
-			$("#b_insert").removeClass('hidden');
+					//enable template menu
+					$("#b_insert").removeClass('hidden');
 
-			//disable todo input div
-			$('#todo_input_div').addClass('hidden');
+					//disable todo input div
+					$('#todo_input_div').addClass('hidden');
 
-			//disable todo item delete button
-			$('#b_todo_delete_item').addClass('hidden');
+					//disable todo item delete button
+					$('#b_todo_delete_item').addClass('hidden');
 
-			//switch back to main menu
-			setTimeout(function() {	
-				$('#edit_menu_div').fadeOut(200);
-				$('#expanded_menu').fadeOut(200);
-				$('#color_picker_div').fadeOut(200);
-			}, 200);
-			$('#menu').fadeIn(200);
+					//switch back to main menu
+					setTimeout(function() {	
+						$('#edit_menu_div').fadeOut(200);
+						$('#expanded_menu').fadeOut(200);
+						$('#color_picker_div').fadeOut(200);
+					}, 200);
+					$('#menu').fadeIn(200);
 
-			$('#rendered_note').fadeIn(200);
-			mode = 'text';
+					$('#rendered_note').fadeIn(200);
+					mode = 'text';
 
-			// Send IPC
-		 	var remote = require('electron').remote;
-			var d = new Date();
-	    	var n = d.getTime();
+					// Send IPC
+				 	var remote = require('electron').remote;
+					var d = new Date();
+			    	var n = d.getTime();
 
-		 	var object = {};
-			object.id = id;
-			object.note = $('edit_note').val();
-			object.title = $('#heading').val();
-			object.accent = accent;
-			object.mode = mode;
-			object.timestamp = n;
-			object.width = width;
-			object.height = height;
-			object.protected = protected;
-			object.grid = grid_toggle;
-			object.pin = pin;
+				 	var object = {};
+					object.id = id;
+					object.note = $('edit_note').val();
+					object.title = $('#heading').val();
+					object.accent = accent;
+					object.mode = mode;
+					object.timestamp = n;
+					object.width = width;
+					object.height = height;
+					object.protected = protected;
+					object.grid = grid_toggle;
+					object.pin = pin;
 
-			remote.getGlobal('note_update').note_string = object;
+					remote.getGlobal('note_update').note_string = object;
 
-			var ipcRenderer = require('electron').ipcRenderer;   
-			ipcRenderer.send('ren_to_main_data');
-		 
-			var k = 0;
-			ipcRenderer.on('ren_to_main_data', function(event, arg) {
-				if(arg==1 && k == 0){
-					popup("Switched to markdown text mode.");
-					k++;
-				}	
-			});
+					var ipcRenderer = require('electron').ipcRenderer;   
+					ipcRenderer.send('ren_to_main_data');
+				 
+					var k = 0;
+					ipcRenderer.on('ren_to_main_data', function(event, arg) {
+						if(arg==1 && k == 0){
+							setTimeout(function(){
+								popup("Switched to markdown text mode.");
+							}, 400);
+							k++;
+						}	
+					});
+				}
+			}); 
+			
 		}
 	});
 
 	// switch to todo mode
 	$('#b_todo_mode').click(function (e) {
 		if(mode !== 'todo'){
-			hideAllModes();
+			popupPersistent("Changing to to-do mode will delete current markdown data.", true, function(result){
+			
+				if(result){
+					hideAllModes();
 
-			//disable template menu
-			$("#b_insert").addClass('hidden');
-			$("#template_menu").slideUp();
-			template_menu_toggle = false;
+					//disable template menu
+					$("#b_insert").addClass('hidden');
+					$("#template_menu").slideUp();
+					template_menu_toggle = false;
 
-			//enable todo input div
-			$('#todo_input_div').removeClass('hidden');
+					//enable todo input div
+					$('#todo_input_div').removeClass('hidden');
 
-			//enable todo item delete button
-			$('#b_todo_delete_item').removeClass('hidden');
+					//enable todo item delete button
+					$('#b_todo_delete_item').removeClass('hidden');
 
-			//switch back to main menu
-			setTimeout(function() {	
-				$('#edit_menu_div').fadeOut(200);
-				$('#expanded_menu').fadeOut(200);
-				$('#color_picker_div').fadeOut(200);
-			}, 200);
-			$('#menu').fadeIn(200);
+					//switch back to main menu
+					setTimeout(function() {	
+						$('#edit_menu_div').fadeOut(200);
+						$('#expanded_menu').fadeOut(200);
+						$('#color_picker_div').fadeOut(200);
+					}, 200);
+					$('#menu').fadeIn(200);
 
-			$("#empty_ol").removeClass('hidden');
-			$("#ol").addClass('hidden');
+					$("#empty_ol").removeClass('hidden');
+					$("#ol").addClass('hidden');
 
-			setTimeout(function() {	
-				$('#edit_menu_div').fadeOut(200);
-				$('#color_picker_div').fadeOut(200);
-				$('#edit_note').fadeOut(200);
-			}, 200);
-			$('#menu').fadeIn(200);
+					setTimeout(function() {	
+						$('#edit_menu_div').fadeOut(200);
+						$('#color_picker_div').fadeOut(200);
+						$('#edit_note').fadeOut(200);
+					}, 200);
+					$('#menu').fadeIn(200);
 
-			$('#ol').html("");
-			todo_count = 1;
+					$('#ol').html("");
+					todo_count = 1;
 
-			$('#todo_note').fadeIn(200);
-			mode = 'todo';
+					$('#todo_note').fadeIn(200);
+					mode = 'todo';
 
-			todo_object = {data : []};
-
-
-			todo_object.data.push({
-				'id' : r(),
-				'item' : 'empty',
-				'marked' : false,
-			});
+					todo_object = {data : []};
 
 
-			// Send IPC
-		 	var remote = require('electron').remote;
-			var d = new Date();
-	    	var n = d.getTime();
-
-		 	var object = {};
-			object.id = id;
-			object.note = JSON.stringify(todo_object);
-			object.title = $('#heading').val();
-			object.accent = accent;
-			object.mode = mode;
-			object.timestamp = n;
-			object.width = width;
-			object.height = height;
-			object.protected = protected;
-			object.grid = grid_toggle;
-			object.pin = pin;
+					todo_object.data.push({
+						'id' : r(),
+						'item' : 'empty',
+						'marked' : false,
+					});
 
 
+					// Send IPC
+				 	var remote = require('electron').remote;
+					var d = new Date();
+			    	var n = d.getTime();
 
-			remote.getGlobal('note_update').note_string = object;
+				 	var object = {};
+					object.id = id;
+					object.note = JSON.stringify(todo_object);
+					object.title = $('#heading').val();
+					object.accent = accent;
+					object.mode = mode;
+					object.timestamp = n;
+					object.width = width;
+					object.height = height;
+					object.protected = protected;
+					object.grid = grid_toggle;
+					object.pin = pin;
 
-			var ipcRenderer = require('electron').ipcRenderer;   
-			ipcRenderer.send('ren_to_main_data');
-		 
-			var k = 0;
-			ipcRenderer.on('ren_to_main_data', function(event, arg) {
-				if(arg==1 && k ==0){
-					popup("Switched to to-do mode.");
-					k++;
-				}	
+
+
+					remote.getGlobal('note_update').note_string = object;
+
+					var ipcRenderer = require('electron').ipcRenderer;   
+					ipcRenderer.send('ren_to_main_data');
+				 
+					var k = 0;
+					ipcRenderer.on('ren_to_main_data', function(event, arg) {
+						if(arg==1 && k ==0){
+							setTimeout(function(){
+								popup("Switched to to-do mode.");
+							}, 400);
+							k++;
+						}	
+					});
+				}
 			});
 		}
 	});
@@ -1302,11 +1317,46 @@ $(document).ready(function() {
 
 
 	function popup(data){
-		$("#popup").html(data);
-		$("#popup").slideDown().delay(1500).slideUp();
-
+		$("#popup").slideDown().delay(1500).html(data).delay(100).slideUp();
 	}
 
+	function popupPersistent(data, cancellable, callback){
+		$("#popup").css('display', 'inline-block');
+		$("#popup").html(`
+			<table border="0" width="92%" valign="middle" style="margin: 4px;">
+				<tr>
+					<td style="text-align: justify;">` + data + `</td>
+				</tr>
+			</table>
+			<div><button id="proceedPopup">Okay</button></div>`);
+		if(cancellable){
+			$("#popup").html(`
+			<table border="0" width="92%" valign="middle" style="margin: 4px;">
+				<tr>
+					<td style="text-align: justify;">` + data + `</td>
+				</tr>
+			</table>
+			<div style="display: inline-block;">
+				<button style="float: left;" id="proceedPopup">Okay</button>
+				<button style="float: right;" id="cancelPopup">Cancel</button>
+			</div>`);
+		}
+
+		$('#proceedPopup').css('background', accent);
+		$('#cancelPopup').css('background', accent);
+
+
+		$("#proceedPopup").click(function(){
+			$("#popup").slideDown().delay(100).slideUp();
+			callback(true);
+		});
+
+
+		$("#cancelPopup").click(function(){
+			$("#popup").slideDown().delay(100).slideUp();
+			callback(false);
+		});
+	}
 
 
 
@@ -1466,6 +1516,8 @@ $(document).ready(function() {
 		// show security menu
 		if(!toggle_security_menu && !protected) {
 			$('#security_menu').slideDown();
+			$('#pin_security_menu').css('border-color', accent);
+			$('#pin_security_menu').css('color', accent);
 		}
 		// turn off protection
 		else if(protected) {
@@ -1563,7 +1615,8 @@ $(document).ready(function() {
 			var k = 0;
 			ipcRenderer.on('ren_to_main_data', function(event, arg) {
 				if(arg==1 && k == 0){
-					popup('PIN has been set. You will be asked to enter the PIN at startup. <br><br><b>Note:</b> The PIN is associated with only this note.');
+					popupPersistent('PIN has been set. You will be asked to enter the PIN at startup. <br><br><b>Note:</b> The PIN is associated only with this note.', false, null);
+					
 					$('#b_secure').attr("src","img/secured.png");
 					$('#security_menu').slideUp();
 					protected = true;
@@ -1660,6 +1713,8 @@ $(document).ready(function() {
 	    // show security menu
 		if(!protected) {
 			$('#security_menu').slideDown();
+			$('#pin_security_menu').css('border-color', accent);
+			$('#pin_security_menu').css('color', accent);
 			toggle_security_menu = true;
 
 			popup('Set a PIN first.');
