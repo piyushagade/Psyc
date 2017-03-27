@@ -28,6 +28,8 @@ Add new note            | <kbd>Alt</kbd> <kbd>A</kbd>
 Toggle edit mode   | <kbd>Alt</kbd> <kbd>Enter</kbd>
 Exit edit mode   | <kbd>Esc</kbd>
 Show keyboard shortcuts   | <kbd>Alt</kbd> <kbd>K</kbd>
+Lock note   | <kbd>Alt</kbd> <kbd>L</kbd>
+Open dictionary   | <kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>D</kbd>
 Quit Pysc   | <kbd>Ctrl</kbd> <kbd>Alt</kbd> <kbd>Q</kbd>
 
 To-Do mode shortcuts
@@ -61,3 +63,7 @@ Screenshots
 <img src="http://i.imgur.com/D9KIxra.png"/>
 
 <img src="http://i.imgur.com/U97kkgG.png"/>
+
+<img src="http://i.imgur.com/Mt8kkfZ.png"/>
+
+<img src="http://i.imgur.com/r0hNxOp.png"/>

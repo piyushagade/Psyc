@@ -23,9 +23,13 @@
     "electron": "^1.4.15",
     "electron-config": "^0.2.1",
     "electron-json-storage": "^3.0.1",
+    "electron-pane-window": "0.0.1",
+    "electron-window-state": "^4.1.0",
     "firebase": "^3.7.2",
     "markdown-it": "^8.3.1",
     "menubar": "^5.2.3",
-    "open": "0.0.5"
+    "open": "0.0.5",
+    "request": "^2.81.0",
+    "xml2js": "^0.4.17"
   }
 }

@@ -13,6 +13,10 @@ const Menu = electron.Menu;
 const Tray = electron.Tray;
 const storage = require('electron-json-storage');
 const globalShortcut = electron.globalShortcut;
+const clockStateKeeper = require('electron-window-state');
+const pomoStateKeeper = require('electron-window-state');
+const wikiStateKeeper = require('electron-window-state');
+const digitalStateKeeper = require('electron-window-state');
 
 var lastWindowPosition;
 var lastWindowState;
@@ -61,6 +65,7 @@ var pomo = false;
 var clock = false;
 var digital = false;
 var wiki = false;
+var dict = false;
 
 var messageCount;
 
@@ -100,6 +105,7 @@ function updateBadge(title) {
 }
 
 
+
 app.on('ready', function(){
 	  var path = require('path');
 
@@ -107,6 +113,21 @@ app.on('ready', function(){
 	  appIcon = new Tray(path.join(__dirname, 'img/icon_20.png'));
 
 	  contextMenu = Menu.buildFromTemplate([
+	  	{
+			label: 'Dictionary',
+			type: 'checkbox',
+			checked: dict,
+			click() {
+				if(!dict) {
+					createDictWidget();
+					dict = true;
+				}else{
+					dictWidget.close();
+					dict = false;
+					dictWidget = null;
+				}
+			}
+		},
 	  	{
 			label: 'Analog clock widget',
 			type: 'checkbox',
@@ -121,7 +142,8 @@ app.on('ready', function(){
 					clockWidget = null;
 				}
 			}
-		},{
+		},
+		{
 			label: 'Digital clock widget',
 			type: 'checkbox',
 			checked: digital,
@@ -177,6 +199,7 @@ app.on('ready', function(){
 	    appIcon.setContextMenu(contextMenu);
 
 });
+
 
 var winHidden = false;
 var x = 400;
@@ -258,8 +281,8 @@ function createLoginWindow () {
   loginWindow = new BrowserWindow({
       x: x, 
       y: y, 
-	  width: 325, 
-      height: 325, 
+	  width: 330, 
+      height: 330, 
       frame: false, 
       'titleBarStyle': 'hidden', 
       resizable: false, 
@@ -293,15 +316,63 @@ function createLoginWindow () {
 // });
 
 
+// dictionary window
+let dictWidget;
+
+dictWidget = null;
+
+function createDictWidget () {
+  let dictWidgetState = new clockStateKeeper({
+    defaultWidth: 325,
+    defaultHeight: 325
+  });
+
+  // Create the browser window.
+  dictWidget = new BrowserWindow({
+      x: dictWidgetState.x, 
+      y: dictWidgetState.y, 
+	  width: 900, 
+      height: 500, 
+      minWidth: 330,
+      minHeight: 330,
+      frame: false, 
+      'titleBarStyle': 'hidden', 
+      resizable: true, 
+      alwaysOnTop: false, 
+      fullscreenable: false,
+      fullscreen: false, 
+      skipTaskbar: true,
+      title: 'Psyc', 
+      icon : __dirname + '/img/icon_color.png', movable: true,
+      maximizable: false,
+    });
+
+  
+  if(debug) dictWidget.webContents.openDevTools();
+  dictWidget.setMenu(null);
+  dictWidget.loadURL('file://'+__dirname+'/widgets/dictionary/dictionary.html');
+
+  dictWidget.on('close', (e, cmd) => {
+  });
+
+  dictWidgetState.manage(dictWidget);
+
+}
+
+
 // clock window
 let clockWidget;
 
 function createClockWidget () {
+  let clockWidgetState = new clockStateKeeper({
+    defaultWidth: 325,
+    defaultHeight: 325
+  });
 
   // Create the browser window.
   clockWidget = new BrowserWindow({
-      x: x, 
-      y: y, 
+      x: clockWidgetState.x, 
+      y: clockWidgetState.y, 
 	  width: 330, 
       height: 330, 
       minWidth: 330,
@@ -326,6 +397,8 @@ function createClockWidget () {
   clockWidget.on('close', (e, cmd) => {
   });
 
+  clockWidgetState.manage(clockWidget);
+
 }
 
 // digital clock window
@@ -333,17 +406,23 @@ let digitalWidget;
 
 function createDigitalWidget () {
 
+  let digitalWidgetState = new digitalStateKeeper({
+    defaultWidth: 330,
+    defaultHeight: 80
+  });
+
+
   // Create the browser window.
   digitalWidget = new BrowserWindow({
-      x: x, 
-      y: y, 
+      x: digitalWidgetState.x, 
+      y: digitalWidgetState.y, 
 	  width: 330, 
       height: 80, 
-      // minWidth: 330,
-      // minHeight: 330,
+      minWidth: 330,
+      minHeight: 80,
       frame: false, 
       'titleBarStyle': 'hidden', 
-      resizable: true, 
+      resizable: false, 
       alwaysOnTop: false, 
       fullscreenable: false,
       fullscreen: false, 
@@ -361,6 +440,7 @@ function createDigitalWidget () {
   digitalWidget.on('close', (e, cmd) => {
   });
 
+  digitalWidgetState.manage(digitalWidget);
 }
 
 
@@ -369,10 +449,14 @@ let pomoWidget;
 
 function createPomoWidget () {
 
+
+  let pomoWidgetState = new pomoStateKeeper();
+
+
   // Create the browser window.
   pomoWidget = new BrowserWindow({
-      x: x, 
-      y: y, 
+      x: pomoWidgetState.x, 
+      y: pomoWidgetState.y, 
 	  width: 330, 
       height: 220, 
       minWidth: 330,
@@ -397,6 +481,8 @@ function createPomoWidget () {
   pomoWidget.on('close', (e, cmd) => {
   });
 
+  pomoWidgetState.manage(pomoWidget);
+
 }
 
 
@@ -406,12 +492,18 @@ let wikiWidget;
 
 function createWikiWidget () {
 
+
+  let wikiWidgetState = new wikiStateKeeper({
+  	width: 820,
+  	height: 520
+  });
+
   // Create the browser window.
   wikiWidget = new BrowserWindow({
-      x: x, 
-      y: y, 
-	  width: 820, 
-      height: 520, 
+      x: wikiWidgetState.x, 
+      y: wikiWidgetState.y, 
+	  width: wikiWidgetState.width, 
+      height: wikiWidgetState.height, 
       minWidth: 820,
       minHeight: 520,
       frame: false, 
@@ -434,6 +526,12 @@ function createWikiWidget () {
   wikiWidget.on('close', (e, cmd) => {
   });
 
+	
+
+ // clockWidgetState.manage(clockWidget);
+ // pomoWidgetState.manage(pomoWidget);
+ // digitalWidgetState.manage(digitalWidget);
+ wikiWidgetState.manage(wikiWidget);
 }
 
 
@@ -441,6 +539,9 @@ var user_name = "";
 
 // preferences
 app.on('ready', function(){
+
+
+
 	storage.get('user', function(error, data) {
 
 		//if not logged in or logged out
@@ -846,6 +947,9 @@ ipcMain.on('delete_note', function(event) {
 				event.sender.send('delete_note', 1);
 				note_delete = {id: null};
 			}, 0);
+
+			//reset position for new window
+			x = x - 80;
 			
 		});
 		
@@ -1126,6 +1230,17 @@ app.on('ready', function() {
 	        loginWindow.show();
 	        loginWindow.focus();
     	}
+	});
+
+	//Ctrl + alt + d
+	var ret_accept = globalShortcut.register('ctrl+alt+d', function() {
+		if(dictWidget === null) {
+			createDictWidget();
+			dict = true;
+		}
+
+		dictWidget.show();
+		dictWidget.focus();
 	});
 
 

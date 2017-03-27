@@ -22,6 +22,21 @@ exports.create = win => {
 
 	const contextMenu = electron.Menu.buildFromTemplate([
 		{
+			label: 'Clock widget',
+			click() {
+				createClockWidget();
+			}
+		},
+		{
+			label: 'Pomodoro timer',
+			click() {
+				createPomoWidget();
+			}
+		},
+		{
+			type: 'separator'
+		},
+		{
 			role: 'quit'
 		}
 	]);

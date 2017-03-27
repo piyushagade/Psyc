@@ -39,17 +39,17 @@ $(document).ready(function() {
 	// $("ol").sortable();
 
 
-	var group = $("ol").sortable({
-	  group: 'serialization',
-	  delay: 500,
-	  onDrop: function ($item, container, _super) {
-	    var data = group.sortable("serialize").get();
+	// var group = $("ol").sortable({
+	//   group: 'serialization',
+	//   delay: 500,
+	//   onDrop: function ($item, container, _super) {
+	//     var data = group.sortable("serialize").get();
 
-	    var jsonString = JSON.stringify(data, null, ' ');
+	//     var jsonString = JSON.stringify(data, null, ' ');
 
-	    l(jsonString);
-	  }
-	});
+	//     l(jsonString);
+	//   }
+	// });
 
 
 	//disable todo input div
@@ -135,8 +135,6 @@ $(document).ready(function() {
 					protected = object.protected;
 					if(protected) pin = object.pin;
 
-					if(protected) l(JSON.stringify(object), "Object recieved");
-
 					var note = object.note;
 					accent = object.accent;
 					grid_toggle = object.grid;
@@ -149,6 +147,9 @@ $(document).ready(function() {
 					if(protected){
 						$('#curtain').fadeIn(0);
 						$('#b_secure').attr("src","img/secured.png");
+						setTimeout(function(){
+							$('#pin_code').focus();
+						},0);
 					}
 					else {
 						$('#curtain').fadeOut(0);
@@ -180,7 +181,8 @@ $(document).ready(function() {
 						$('#b_todo_delete_item').removeClass('hidden');
 
 						todo_object = JSON.parse(note);		//object
-						l(note, "Object recieved");
+
+						l(note, "Object recieved at start up");
 
 						if(todo_object === null) todo_object = {data: []};
 
@@ -220,7 +222,7 @@ $(document).ready(function() {
 
 							}
 						}
-						if(todo_count >1){
+						if(todo_count > 1){
 								$("#empty_ol").addClass('hidden');
 								$("#ol").removeClass('hidden');
 
@@ -233,12 +235,13 @@ $(document).ready(function() {
 					}
 
 
-
+					// set user email in user menu
 					if(user_id !== 'empty' || user_id !== 'skipped') $('#user_id').text(user_id);
 
+					// set rendered text
 					if($('#edit_note').val() !== "" && mode === 'text') $('#rendered_note').html(md.render($('#edit_note').val()));
 
-					//general ui
+					//general ui setup
 					$("#accentBar").css("background", accent);
 					$("#accentBarMover").css("background", accent);
 					$("#heading").css("color", accent);
@@ -252,6 +255,10 @@ $(document).ready(function() {
 					$(".note th").css("color", accent);
     				$("tr:odd").css("background-color", "rgba(220,220,220, 0.5468)");
 					$(".todo_button").css("background", accent);
+
+					$("#pin_code").css("border-color", accent);
+					$("#pin_code").css("color", accent);
+					$(".curtain button").css("background", accent);
 					$(".security_menu button").css("background", accent);
 					$(".security_menu button").css("background", accent);
 
@@ -1231,7 +1238,12 @@ $(document).ready(function() {
 			$(".note th").css("color", accent);
 			$("tr:odd").css("background-color", "rgba(220,220,220, 0.5468)");
 			$(".todo_button").css("background", accent);
-					$(".security_menu button").css("background", accent);
+
+	
+			$("#pin_code").css("border-color", accent);
+			$("#pin_code").css("color", accent);
+			$(".curtain button").css("background", accent);
+			$(".security_menu button").css("background", accent);
 
 			$(".marked_item").css("border-color", accent);
 
@@ -1338,6 +1350,7 @@ $(document).ready(function() {
 	});
 
 	$("#b_hr").click(function(){
+		$('#edit_note').val($('#edit_note').val() + getTemplate('hr'));
 		sendUpdateIPC();
 	});
 
@@ -1500,6 +1513,7 @@ $(document).ready(function() {
 		toggle_security_menu = !toggle_security_menu;
 	});
 
+	// unlock security curtain
 	$('#pin_unlock').click(function(){
 		l(pin.trim() === $('#pin_code').val().trim(), "Counter");
 		l($('#pin_code').val().trim(), "Entered");
@@ -1509,6 +1523,10 @@ $(document).ready(function() {
 		else if($('#pin_code').val().trim().length === 4 && $('#pin_code').val().trim() !== pin.trim())
 			popup("Wrong PIN entered. Try again.");
 		else popup("Enter the 4 digit PIN to unlock");
+		
+		setTimeout(function(){
+			$('#pin_code').val('');
+		}, 2000);
 	});
 
 	// turn on protection
@@ -1517,7 +1535,6 @@ $(document).ready(function() {
 
 		if(local_pin !== '' && local_pin.length === 4){
 			pin = local_pin;
-			protected = true;
 
 			// Send IPC
 		 	var remote = require('electron').remote;
@@ -1542,13 +1559,15 @@ $(document).ready(function() {
 
 			var ipcRenderer = require('electron').ipcRenderer;   
 			ipcRenderer.send('ren_to_main_data');
-		 
+		 	
 			var k = 0;
 			ipcRenderer.on('ren_to_main_data', function(event, arg) {
 				if(arg==1 && k == 0){
 					popup('PIN has been set. You will be asked to enter the PIN at startup. <br><br><b>Note:</b> The PIN is associated with only this note.');
 					$('#b_secure').attr("src","img/secured.png");
 					$('#security_menu').slideUp();
+					protected = true;
+
 					k++;
 				}	
 			});
@@ -1624,13 +1643,27 @@ $(document).ready(function() {
     	},0);
     });
 
-     // get focus to text box
+    // get focus to text box
     Mousetrap.bind('alt+r', function() { 
         //request focus
 		window.setTimeout(function ()
     	{
     		window.location.reload()
     	},0);
+    });
+
+    //lock
+    Mousetrap.bind('alt+l', function() { 
+		if (protected) {
+	        $('#curtain').fadeIn(400);
+	    }
+	    // show security menu
+		if(!protected) {
+			$('#security_menu').slideDown();
+			toggle_security_menu = true;
+
+			popup('Set a PIN first.');
+		}
     });
 
   	// change size
@@ -1669,7 +1702,7 @@ $(document).ready(function() {
 	    	$('.todo_note li').css('display','block');
 	    	// $('ol li').css('float','');
 			$('.todo_note li span').css('background-position','center right');
-			$('.todo_note li span').css('padding-right','');
+			$('.todo_note li span').css('padding-right','');$('li').addClass('remove-item');
 			grid_toggle = false;
 		}
     }
@@ -1876,7 +1909,7 @@ $(document).ready(function() {
 
                 }
 
-                // popup(JSON.stringify(array));
+                l(JSON.stringify(array));
                 
                 // //audio element just for alarm sound
                 // document.body.appendChild(audioElement);
@@ -1928,5 +1961,25 @@ $(document).ready(function() {
 });
 
 
+var idleTime = 0;
+$(document).ready(function () {
+    //Increment the idle time counter every minute.
+    var idleInterval = setInterval(timerIncrement, 60000); // 1 minute
+
+    //Zero the idle timer on mouse movement.
+    $(this).mousemove(function (e) {
+        idleTime = 0;
+    });
+    $(this).keypress(function (e) {
+        idleTime = 0;
+    });
+});
+
+function timerIncrement() {
+    idleTime = idleTime + 1;
+    if (idleTime > 4 && protected) { // 20 minutes
+        $('#curtain').fadeIn(400);
+    }
+}
 
 

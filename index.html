@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="UTF-8">
-    <title>WhatsApp for Linux</title><!-- Custom Fonts -->
+    <title>Psyc</title><!-- Custom Fonts -->
     <link href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/css?family=Merriweather:400,300,300italic,400italic,700,700italic,900,900italic' rel='stylesheet' type='text/css'>
 
@@ -22,11 +22,11 @@
       <!-- Accent Bar -->
       <div id="accentBar" style="position: absolute; top: -10px; left: 0px; height: 16px; width: 100%; background: #128C7E; z-index: 198; -webkit-app-region: drag;"></div>
 
-      <div id="accentBarMover" style="position: absolute; padding: 6px; font-family: Ubuntu; display:none; top: 6px; opacity: 0.92; left: 0px; height: 40px; width: 100%;  box-sizing: border-box; z-index: 198; -webkit-app-region: drag;">
+      <div id="accentBarMover" style="position: absolute; padding: 6px; font-family: Ubuntu; display:none; top: 6px; opacity: 0.92; left: 0px; height: 40px; width: 100%;  box-sizing: border-box; z-index: 198; -webkit-app-region: drag; -webkit-user-select: none;">
           <font  size="6px" color="#111111">Pysc</font>&nbsp;&nbsp;&nbsp;
           <font size="1px" color="#444444">v1.0</font>
           <span style="float: right;">
-            <font color="#eeeeee" size="2px">Drag here to move this note around.</font>
+            <font color="#eeeeee" size="2px">Drag to move note around.</font>
           </span>
       </div>
 
@@ -74,7 +74,7 @@
         <input class="menu_icon" type="image" src="img/href.png" id="b_href" height="20px" />
         <input class="menu_icon" type="image" src="img/table.png" id="b_table" height="24px" />
         <input class="menu_icon" type="image" src="img/image.png" id="b_image" height="24px" />
-        <input class="menu_icon" type="image" src="img/heading.png" id="b_heading" height="24px" />
+        <input class="menu_icon" type="image" src="img/heading.png" id="b_heading" height="24px" /><br>
         <input class="menu_icon" type="image" src="img/hr.png" id="b_hr" height="20px" />
         <input class="menu_icon" type="image" src="img/blockquote.png" id="b_blockquote" height="20px" />
         <input class="menu_icon" type="image" src="img/text_format.png" id="b_text_format" height="20px" />
@@ -104,10 +104,14 @@
               <td>Show shortcuts</td>
               <td>Alt + K</td>
             </tr>
-            <!-- <tr>
-              <td>Show help</td>
-              <td>Alt + H</td>
-            </tr> -->
+            <tr>
+              <td>Lock note</td>
+              <td>Alt + L</td>
+            </tr>
+            <tr>
+              <td>Open dictionary</td>
+              <td>Ctrl + Alt + D</td>
+            </tr>
             <tr>
               <td>Quit**</td>
               <td>Ctrl + Alt + Q</td>

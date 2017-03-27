@@ -1,0 +1,67 @@
+<html>
+<head>
+  <script type="text/javascript" src="jquery.min.js"></script>
+  <script type="text/javascript" src="scripts.js"></script>
+  <link rel="stylesheet" type="text/css" href="dictionary.css">
+  <link rel="stylesheet" type="text/css" href="jcloud.scss">
+ 
+</head>
+<body>
+  <!-- Accent Bar -->
+  <div id="accentBar" style="position: fixed; top: -10px; left: 0px; height: 16px; width: 100%; background: #e69138; z-index: 198; -webkit-app-region: drag;"></div>
+
+  <div id="accentBarMover" style="position: fixed; padding: 6px; font-family: Ubuntu; display:none; top: 6px; opacity: 0.92; left: 0px; height: 48px; width: 100%;  box-sizing: border-box; z-index: 198; -webkit-app-region: drag; background: #e69138;">
+      <font  size="6px" color="#111111">Pysc</font>&nbsp;&nbsp;&nbsp;
+      <font size="1px" color="#444444">v1.0</font>
+  </div>
+
+  <div class="div_input" id="div_input">
+    <input type="text" id="word" onkeydown="return enterKeyEvent(this, event)" placeholder="Enter search query" />
+  </div>
+  <div class="div_wiki display">
+    <br>
+    <div id="suggestions" class="suggestions"></div>
+    <h1 id='pagetitle'></h1>
+    <div id="wikiInfo" class="results">
+      <img src="dictionary.png" id="intro_img" class="intro_img">
+    </div>
+  </div>
+
+
+
+  <!-- <div id="cloud" style="z-index: 1000; height: 100%; width: 100%; top: 50px;"></div> -->
+
+  <span class="footmark">Powered by: Merriam Webster</span>
+
+</body>
+  <script type="text/javascript" src="mousetrap.js"></script>
+
+
+  <!-- <script type="text/javascript" src="jcloud.js"></script>
+  <script type="text/javascript">
+    var words = [
+      {text: "Lorem", weight: 13, 
+        handlers: {
+        click: function() {
+          alert('You clicked the word !');
+        }},
+      {text: "Ipsum", weight: 10.5},
+      {text: "Dolor", weight: 9.4},
+      {text: "Sit", weight: 8},
+      {text: "Amet", weight: 6.2},
+      {text: "Consectetur", weight: 5},
+      {text: "Adipiscing", weight: 5},
+      /* ... */
+    ];
+
+    $('#cloud').jQCloud(words, {
+  classPattern: null,
+  colors: ["#800026", "#bd0026", "#e31a1c", "#fc4e2a", "#fd8d3c", "#feb24c", "#fed976", "#ffeda0", "#ffffcc"],
+  fontSize: {
+    from: 0.1,
+    to: 0.02
+  }
+});
+  </script> -->
+
+</html>
