@@ -4,7 +4,26 @@ What is it?
 ---
 Psyc is a minimalistic **note-taking app**, a **to-do manager**, and a **desktop widget utitlity** for Linux. And yes, Psyc has **markdown parsing capabilities**!
 
-Widgets
+
+Notes taking features
+---
+1. Take notes in markdown format
+2. Use available markdown templates from the menu
+3. Protect note with a 4-digit PIN
+4. Backup to cloud
+5. Theme colors
+
+To-do managing features
+---
+1. Mark/unmark items in your list by clicking on them
+2. Make important items standout by typing '!' before the item while inserting the item in the list
+3. A timely alarm will remind you of priority items 
+4. Backup to cloud
+5. Changeable 'Grid view'
+6. Protect note with a 4-digit PIN
+7. Theme colors
+
+Desktop widgets
 ---
 Pysc has following widgets yet:
 1. Pomodoro timer
@@ -19,8 +38,8 @@ Pysc supports cloud backup and retrieval. And we are working to get other featur
 
 Features planned
 ---
-A ~~todo manager~~, reminders, and integration of clipboard sharing capabilities ([UniClip](http://piyushagade.xyz/uniclip)).
-
+A ~~todo manager~~, ~~reminders~~, and integration of clipboard sharing capabilities ([UniClip](http://piyushagade.xyz/uniclip)).
+ 
 General keyboard shortcuts
 ---
 Description            | Keys

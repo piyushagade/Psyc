@@ -275,6 +275,8 @@ $(document).ready(function() {
     	// construct object
 	 	var object = {};
 
+	 	if(mode === null || mode === undefined) mode = 'text';
+
 		object.id = id;
 		if(mode === 'todo') object.note = JSON.stringify(todo_object);
 		if(mode === 'text') object.note = $('edit_note').val();
@@ -288,7 +290,7 @@ $(document).ready(function() {
 		object.grid = grid_toggle;
 		object.pin = pin;
 
-		l(object.note, "IPC: note updated");
+		l(JSON.stringify(object), "IPC: note updated");
 
 		//update global object
 		remote.getGlobal('note_update').note_string = object;
@@ -420,9 +422,9 @@ $(document).ready(function() {
 
 	//show save animation
 	function showSaveAnimation(){
-		$('#b_mode_menu_saved').clearQueue();
+		$('#b_mode_menu_saved').clearQueue().stop().finish();
 		$('#b_mode_menu_saved').removeClass('hidden');
-		$('#b_mode_menu_saved').fadeIn(100).delay(2000).fadeOut(600);
+		$('#b_mode_menu_saved').fadeIn(0).delay(2000).fadeOut(600);
 	}
 
 	//turn off delete item mode in todo mode
@@ -457,6 +459,10 @@ $(document).ready(function() {
 
 
 		$(".marked_item").css("border-color", accent);
+
+		$(".today_heading").css("color", accent);
+		$(".today button").css("background", accent);
+
 	}
 
 
@@ -609,11 +615,18 @@ $(document).ready(function() {
 			//update note
 			sendUpdateIPC(mode);
 
+			//show save animation
+			showSaveAnimation();
+
 			//turn off delete item mode
 			turnDeleteModeOff();
 
 			//exit edit mode
 			exitEditMode();
+
+			//prevent alarm from firing when an important item is added
+    		alarm_toggle = false;
+
 
 			//reput focus on todo input
 			$("#new_li").focus();
@@ -1220,7 +1233,7 @@ $(document).ready(function() {
 			applyCSS();
 
 			//update note
-			sendUpdateIPC();
+			sendUpdateIPC(mode);
 	    }
 	});
 
@@ -1255,9 +1268,6 @@ $(document).ready(function() {
 
 	function popup(data){
 		$("#popup").slideDown().delay(1500).html(data).delay(100).slideUp();
-		setTimeout(function(){
-			$("#popup").html('');
-		},2500);
 	}
 
 	var popup_toggle = false;
@@ -1294,7 +1304,7 @@ $(document).ready(function() {
 			setTimeout(function(){
 				$("#popup").html('');
 				popup_toggle = false;
-			},2000);
+			},4000);
 		});
 
 
@@ -1455,6 +1465,7 @@ $(document).ready(function() {
 			$('#security_menu').slideDown();
 			$('#pin_security_menu').css('border-color', accent);
 			$('#pin_security_menu').css('color', accent);
+			$("#pin_security_menu").focus();
 		}
 		// turn off protection
 		else if(protected) {
@@ -1463,7 +1474,7 @@ $(document).ready(function() {
 			pin = ""
 
 			//update note
-			sendUpdateIPC();
+			sendUpdateIPC(mode);
 		 
 			var k = 0;
 			ipcRenderer.on('ren_to_main_data', function(event, arg) {
@@ -1499,22 +1510,23 @@ $(document).ready(function() {
 	$('#pin_set').click(function(){
 		var local_pin = $("#pin_security_menu").val();
 		$("#pin_security_menu").val('');
-		$("#pin_security_menu").val('');
 
 		if(local_pin !== '' && local_pin.length === 4){
 			pin = local_pin;
 
+			//update protected variable
+			protected = true;
+
 			//update note
-			sendUpdateIPC();
+			sendUpdateIPC(mode);
 		 	
 			var k = 0;
 			ipcRenderer.on('ren_to_main_data', function(event, arg) {
 				if(arg==1 && k++ == 0){
-					popupPersistent('PIN has been set. You will be asked to enter the PIN at startup. <br><br><b>Note:</b> The PIN is associated only with this note.', false, null);
+					popupPersistent('PIN has been set. You will be asked to enter the PIN at startup. <br><br><b>Note:</b> The PIN is associated only with this note.', false, function(){});
 					
 					$('#b_secure').attr("src","img/secured.png");
 					$('#security_menu').slideUp();
-					protected = true;
 				}	
 			});
 		}
@@ -1688,12 +1700,17 @@ $(document).ready(function() {
 				//update note
 				sendUpdateIPC('todo');
 
+				//show save animation
+				showSaveAnimation();
 
 				//turn off delete item mode
 				turnDeleteModeOff();
 
 				//exit edit mode
 				exitEditMode();
+
+				//prevent alarm from firing when an important item is added
+				alarm_toggle = false;
 
 				$("#new_li").focus();
 				return true;
@@ -1772,8 +1789,8 @@ $(document).ready(function() {
 
 
 	//monitor window dimensions
-	var old_height = $(window).height();
-	var old_width = $(window).width();
+	var old_height = height;
+	var old_width = width;
 
 	setInterval(function(){
 		setTimeout(function(){
@@ -1784,55 +1801,26 @@ $(document).ready(function() {
 	    	if(old_width !== $(window).width() ||
 	    		old_height !== $(window).height()){
 	    		sendUpdateIPC(mode);
-	    		old_width !== $(window).width();
-	    		old_height !== $(window).height();
+	    		old_width = $(window).width();
+	    		old_height = $(window).height();
+	    		width = $(window).width();
+	    		height = $(window).height();
 	    	}
-		}, 10000);
+		}, 1000);
 	}, 5000);
 
 
 
 	//Priority list functions
-	var audioElement = new Audio("");
+	var alarm_toggle = true;
+	audioElement = new Audio("");
 
         //clock plugin constructor
         $('#myclock').thooClock({
             size:$(document).height()/1.4,
             
             onAlarm:function(){
-                //all that happens onAlarm
-
-                var array = priority_object.data;
-                l(array.length, "Priority object count");
-
-                setTimeout(function(){
-                	var html = "<font class='today_heading'><center>Today</center></font><ol style=''>";
-	                for (var j = 0; j < array.length; j++){
-	                	// html += '<li id="priority_' + j + '"  class="today_ol_li">' + 'Piyush Agade' + '</li>';
-	                	html += '<li id="priority_' + j + '"  class="today_ol_li">' + array[j].item + '</li>';
-	                }
-	                html += '</ol>'
-	                
-	                if(array.length > 0) popupPersistent(html, false, function(){});
-                }, 500);
-                
-
-                //audio element just for alarm sound
-                document.body.appendChild(audioElement);
-                var canPlayType = audioElement.canPlayType("audio/ogg");
-                
-                if(canPlayType.match(/maybe|probably/i)) {
-                    audioElement.src = 'assets/chime.ogg';
-                } else {
-                    audioElement.src = 'assets/chime.mp3';
-                }
-                // erst abspielen wenn genug vom mp3 geladen wurde
-                audioElement.addEventListener('canplay', function() {
-                    audioElement.loop = false;
-                    setTimeout(function(){
-                    	if(array.length > 0) audioElement.play();
-                	}, 900);
-                }, false);
+                fireAlarm();
             },
 
             showNumerals:true,
@@ -1858,10 +1846,129 @@ $(document).ready(function() {
     });
 
 
-	var alarm_time = '02:56';
+	var alarm_time = '10:30';
 
     //Set alarm
 	$.fn.thooClock.setAlarm(alarm_time);
+
+	function fireAlarm(){
+		var array = priority_object.data;
+		if(array.length <= 0) {
+            	$('#today').html('').clearQueue().fadeOut(00);
+        }
+
+        setTimeout(function(){
+        	var html = "<font class='today_heading'><center>Today</center></font>";
+        	html += "<ol style='position: absolute; z-index: 202; margin-bottom: 80px; top: 80px;'>";
+
+
+            for (var j = 0; j < array.length; j++){
+            	html += '<li id="priority_' + j + '"  class="today_ol_li">' + array[j].item + '</li>';
+            }
+            html += '</ol>'
+            html += '<div style="position: fixed; z-index: 203; background: #222; opacity:0.96; bottom: 0px; padding-bottom: 16px; left: 0px; width: 100%;"><center>'
+            html += '<button id="today_snooze" style="margin-right: 40px;">Remind in 1 hr</button>'
+            html += '<button id="today_dismiss">Dismiss</button>'
+            html += '</center></div>'
+            
+            if(array.length > 0) {
+            	$('#today').html(html).clearQueue().fadeIn(200);
+            }
+
+            $('#today_snooze').click(function(){
+        		$('#today').html(html).fadeOut(400).clearQueue();
+				$.fn.thooClock.clearAlarm();
+
+            	setInterval(function(){
+            		$.fn.thooClock.clearAlarm();
+
+            		if(alarm_toggle) remindAlarm();
+            	}, 3600 * 1000);
+            });
+
+            $('#today_dismiss').click(function(){
+            	alarm_toggle = false;
+				$.fn.thooClock.clearAlarm();
+
+            	$('#today').fadeOut(400).clearQueue();
+            });
+
+            //change appearence
+            applyCSS();
+
+
+
+	        //audio element just for alarm sound
+	        document.body.appendChild(audioElement);
+	        var canPlayType = audioElement.canPlayType("audio/ogg");
+	        
+	        if(canPlayType.match(/maybe|probably/i)) {
+	            audioElement.src = 'assets/chime.ogg';
+	        } else {
+	            audioElement.src = 'assets/chime.mp3';
+	        }
+	        // erst abspielen wenn genug vom mp3 geladen wurde
+	        audioElement.addEventListener('canplay', function() {
+	            audioElement.loop = false;
+
+	        	if(array.length > 0 && alarm_toggle) audioElement.play();
+
+	            setInterval(function(){
+	            	if(array.length > 0 && alarm_toggle) audioElement.play();
+	        	}, 1000 * 5);	//5 seconds
+	        }, false);
+        }, 960);
+	}
+
+
+	function remindAlarm(){
+		var array = priority_object.data;
+
+        setTimeout(function(){
+        	var html = "<font class='today_heading'><center>Today</center></font>";
+        	html += "<ol style='position: absolute; z-index: 202; margin-bottom: 80px; top: 80px;'>";
+
+            for (var j = 0; j < array.length; j++){
+            	html += '<li id="priority_' + j + '"  class="today_ol_li">' + array[j].item + '</li>';
+            }
+            html += '</ol>'
+            html += '<div style="position: fixed; z-index: 203; background: #222; opacity:0.96; bottom: 0px; padding-bottom: 16px; left: 0px; width: 100%;"><center>'
+            // html += '<button id="today_snooze" style="margin-right: 40px;">Remind in 1 hr</button>'
+            html += '<button id="today_dismiss">Dismiss</button>'
+            html += '</center></div>'
+            
+            if(array.length > 0) {
+            	$('#today').html(html).clearQueue().fadeIn(200);
+            }
+
+            $('#today_dismiss').click(function(){
+            	alarm_toggle = false;
+            	$('#today').fadeOut(400).clearQueue();
+            });
+
+            //change appearence
+            applyCSS();
+
+        }, 500);
+
+
+        //audio element just for alarm sound
+        document.body.appendChild(audioElement);
+        var canPlayType = audioElement.canPlayType("audio/ogg");
+        
+        if(canPlayType.match(/maybe|probably/i)) {
+            audioElement.src = 'assets/chime.ogg';
+        } else {
+            audioElement.src = 'assets/chime.mp3';
+        }
+        // erst abspielen wenn genug vom mp3 geladen wurde
+        audioElement.addEventListener('canplay', function() {
+            audioElement.loop = false;
+            setInterval(function(){
+            	if(array.length > 0 && alarm_toggle) audioElement.play();
+        	}, 10000 * 60);	//10 mins
+        }, false);
+	}
     
 
 });

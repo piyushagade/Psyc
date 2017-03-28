@@ -351,11 +351,6 @@ body{
   color: #FFF;
 }
 
-.curtain{
-	-webkit-user-select: none;
-}
-
-
 
 .todo_button {
 	border:0;
@@ -486,7 +481,7 @@ button:hover {
 }
 
 .loading{
-	z-index: 197;
+	z-index: 301;
 	background-color: #ECE5DD;
 	opacity: 0.98;
 	position: absolute;
@@ -498,7 +493,6 @@ button:hover {
 }
 
 .curtain{
-	z-index: 196;
 	background-color: #ECE5DD;
 	opacity: 0.999;
 	position: absolute;
@@ -508,6 +502,8 @@ button:hover {
 	right: 00px;
 	width: 100%;
 	height: 100%;
+	z-index: 300;
+	-webkit-user-select: none;
 
 }
 
@@ -524,24 +520,26 @@ button:hover {
 	width: 180px;
 }
 
+
+/*scrollbar*/
 .scrollbar
 {
 	overflow-y: scroll;
 }
 
-.edit_note::-webkit-scrollbar-track
+::-webkit-scrollbar-track
 {
 	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.0);
 	background-color: rgba(0,0,0,0);
 }
 
-.edit_note::-webkit-scrollbar
+::-webkit-scrollbar
 {
 	width: 6px;
 	background-color: rgba(0,0,0,0);
 }
 
-.edit_note::-webkit-scrollbar-thumb
+::-webkit-scrollbar-thumb
 {
 	background-color: rgba(44,44,44,0.5);
 	
@@ -550,49 +548,6 @@ button:hover {
 					   color-stop(.5, transparent), to(transparent));
 }
 
-
-.todo_note::-webkit-scrollbar-track
-{
-	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.0);
-	background-color: rgba(0,0,0,0);
-}
-
-.todo_note::-webkit-scrollbar
-{
-	width: 6px;
-	background-color: rgba(0,0,0,0);
-}
-
-.todo_note::-webkit-scrollbar-thumb
-{
-	background-color: rgba(44,44,44,0.5);
-	
-	background-image: -webkit-gradient(linear, 0 0, 0 100%),
-	                   color-stop(.5, rgba(255, 255, 255, 0)),
-					   color-stop(.5, transparent), to(transparent));
-}
-
-
-.note::-webkit-scrollbar-track
-{
-	-webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.0);
-	background-color: rgba(0,0,0,0);
-}
-
-.note::-webkit-scrollbar
-{
-	width: 6px;
-	background-color: rgba(0,0,0,0);
-}
-
-.note::-webkit-scrollbar-thumb
-{
-	background-color: rgba(44,44,44,0.5);
-	
-	background-image: -webkit-gradient(linear, 0 0, 0 100%),
-	                   color-stop(.5, rgba(255, 255, 255, 0)),
-					   color-stop(.5, transparent), to(transparent));
-}
 
 .note table{
    border: 1px solid;
@@ -733,9 +688,40 @@ p{
 	border: 1px dashed #BBB;
 }
 
+
+.today{
+	background: rgba(240,240,240,0.98); 
+	color: #CCC;
+	/*display: none;*/
+	font-size: 12px;
+	padding: 6x;
+	font-family: Ubuntu;
+	z-index: 201;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	height: 100%;
+	width: 100%;
+	-webkit-user-select: none;
+
+
+	position: absolute;
+	box-sizing: border-box;
+	overflow-y: auto;
+}
+
 .today_heading{
 	font-size: 36px;
 	color: #666;
+
+	position: fixed;
+	top: 6px;
+	left: 0px;
+	padding: 10px;
+	width: 98%;
+	z-index: 203;
+	background: rgba(240,240,240,0.98); 
 }
 
 .today_ol{
@@ -750,9 +736,10 @@ p{
 	padding-left: 20px;
 	padding-right: 20px;
 	border: 1px dashed #AAA;
+	display: inline-flex;
 	opacity: 0.94;
 	top: 20px;
-	display: inline-flex;
+	color: #333;
 }
 
 .grid{	
@@ -824,3 +811,16 @@ p{
 	color: #111;
 }
 
+
+
+/*animations*/
+@keyframes swing {
+  0%, 100% { transform: rotate(6deg); }
+  20% {transform:scale(.98);}
+  50% { transform: rotate(10deg); }
+  80% {transform:scale(.98);}
+}
+
+.anim_rock{
+	animation: swing 1s infinite ease;
+}

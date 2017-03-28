@@ -20,9 +20,9 @@
   <body>
     <div class="container">
       <!-- Accent Bar -->
-      <div id="accentBar" style="position: absolute; top: -10px; left: 0px; height: 16px; width: 100%; background: #128C7E; z-index: 198; -webkit-app-region: drag;"></div>
+      <div id="accentBar" style="position: absolute; top: -10px; left: 0px; height: 16px; width: 100%; background: #128C7E; z-index: 208; -webkit-app-region: drag;"></div>
 
-      <div id="accentBarMover" style="position: absolute; padding: 6px; font-family: Ubuntu; display:none; top: 6px; opacity: 0.92; left: 0px; height: 40px; width: 100%;  box-sizing: border-box; z-index: 198; -webkit-app-region: drag; -webkit-user-select: none;">
+      <div id="accentBarMover" style="position: absolute; padding: 6px; font-family: Ubuntu; display:none; top: 6px; opacity: 0.92; left: 0px; height: 40px; width: 100%;  box-sizing: border-box; z-index: 209; -webkit-app-region: drag; -webkit-user-select: none;">
           <font  size="6px" color="#111111">Pysc</font>&nbsp;&nbsp;&nbsp;
           <font size="1px" color="#444444">v1.0</font>
           <span style="float: right;">
@@ -67,7 +67,7 @@
         <input class="mode_menu_icon" type="image" src="img/text.png" id="b_text_mode" height="18px" />
         <input class="mode_menu_icon" type="image" src="img/todo.png" id="b_todo_mode" height="20px" />
         <input class="mode_menu_icon" type="image" src="img/secure.png" id="b_secure" height="20px" />
-        <input class="mode_menu_icon hidden" type="image"  src="img/edit.png" id="b_mode_menu_saved"  height="20px">
+        <input class="mode_menu_icon hidden anim_rock" type="image"  src="img/pencil.png" id="b_mode_menu_saved"  height="20px">
       </div>
 
       <!-- template menu -->
@@ -173,7 +173,7 @@
           <input type="image" name="add_li" id="add_li" class="todo_button" src="img/add_item.png" width="18px" height="20px"></input>
       </div>
 
-
+      <!-- user meanu -->
       <div id="user_menu" class="user_menu hidden">
           <center>
               <br><br>
@@ -185,6 +185,7 @@
           </center>
       </div>
 
+      <!-- user login menu -->
       <div id="user_login_menu" class="user_menu hidden">
           <center>
               <br><br>
@@ -195,10 +196,18 @@
           </center>
       </div>
 
+      <!-- loading screen -->
       <div id="loading" class="loading"><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
         <center><img class="rotate" width="100px" style="margin-left: 16px; opacity: 0.1;" src="img/busy.png"></center>
       </div>
+
+      <!-- popup -->
       <div id="popup" class="popup"></div>
+
+      <!-- today -->
+      <div id="today" class="today"></div>
+
+      <!-- curtain -->
       <div id="curtain" class="curtain">
         <div>  
           <center>
@@ -231,93 +240,7 @@
 
 
   <script type="text/javascript">
-    
-
-// $(document).ready(function(){
-
-    //     var audioElement = new Audio("");
-
-    //     //clock plugin constructor
-    //     $('#myclock').thooClock({
-    //         size:$(document).height()/1.4,
-            
-    //         onAlarm:function(){
-    //             //all that happens onAlarm
-    //             $('#alarm1').show();
-    //             alarmBackground(0);
-    //             //audio element just for alarm sound
-    //             document.body.appendChild(audioElement);
-    //             var canPlayType = audioElement.canPlayType("audio/ogg");
-    //             if(canPlayType.match(/maybe|probably/i)) {
-    //                 audioElement.src = 'assets/alarm.ogg';
-    //             } else {
-    //                 audioElement.src = 'assets/alarm.mp3';
-    //             }
-    //             // erst abspielen wenn genug vom mp3 geladen wurde
-    //             audioElement.addEventListener('canplay', function() {
-    //                 audioElement.loop = true;
-    //                 audioElement.play();
-    //             }, false);
-    //         },
-    //         showNumerals:true,
-    //         brandText:'Pysc',
-    //         brandText2:'Clock',
-    //         onEverySecond:function(){
-    //             //callback that should be fired every second
-    //         },
-    //         //alarmTime:'15:10',
-    //         offAlarm:function(){
-    //             $('#alarm1').hide();
-    //             audioElement.pause();
-    //             clearTimeout(intVal);
-    //             $('body').css('background-color','#FCFCFC');
-    //         }
-    //     });
-
-    // });
-
-
-
-    // $('#turnOffAlarm').click(function(){
-    //     $.fn.thooClock.clearAlarm();
-    // });
-
-
-    // $('#set').click(function(){
-    //     var inp = $('#altime').val();
-    //     $.fn.thooClock.setAlarm('01:28');
-    // });
-
-    
-    // function alarmBackground(y){
-    //         var color;
-    //         if(y===1){
-    //             color = '#CC0000';
-    //             y=0;
-    //         }
-    //         else{
-    //             color = '#FCFCFC';
-    //             y+=1;
-    //         }
-    //         $('body').css('background-color',color);
-    //         intVal = setTimeout(function(){alarmBackground(y);},100);
-    // }
-
-
-  </script>
-
-
-
-
-
-
-
-
-
-
-
-  <script type="text/javascript">
-  var keynum, lines = 1;
+  var keynum;
 
   function limitLines(obj, e) {
     // IE
@@ -329,19 +252,9 @@
     }
 
     if(keynum == 13) {
-      if(lines == obj.rows) {
-        return false;
-      }else{
-        lines++;
-      }
+      return false;
     }
   }
   </script>
- 
 
-<!--   <script type="text/javascript">
-    $(document).ready(function() {
-      $('#whatsapp_div').load('https://web.whatsapp.com/');
-    });
-  </script> -->
 </html>
