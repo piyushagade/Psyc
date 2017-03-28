@@ -468,7 +468,8 @@ button:hover {
 	left: 0px;
 	height: auto;
 	-webkit-user-select: none;
-	width: 100%;
+	right: 0px;
+	width: auto;
 }
 
 .user_menu{
@@ -645,7 +646,7 @@ hr{
     border-bottom: 0px;
 }
 
-ol{
+.note ol{
 	margin: 10px;
 	padding: 6px;
 	padding-left: 22px;
@@ -732,6 +733,27 @@ p{
 	border: 1px dashed #BBB;
 }
 
+.today_heading{
+	font-size: 36px;
+	color: #666;
+}
+
+.today_ol{
+	
+}
+
+
+.today_ol_li{
+	font-size: 15px;
+	margin: 8px;
+	padding: 10px;
+	padding-left: 20px;
+	padding-right: 20px;
+	border: 1px dashed #AAA;
+	opacity: 0.94;
+	top: 20px;
+	display: inline-flex;
+}
 
 .grid{	
 	display: inline-block;

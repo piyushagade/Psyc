@@ -1,8 +1,8 @@
 # Psyc
 
-What is this?
+What is it?
 ---
-Psyc is a minimalistic **note-taking app**, a **to-do manager**, and a desktop widget utitlity for Linux. And yes, Psyc has **markdown parsing capabilities**!
+Psyc is a minimalistic **note-taking app**, a **to-do manager**, and a **desktop widget utitlity** for Linux. And yes, Psyc has **markdown parsing capabilities**!
 
 Widgets
 ---
@@ -11,6 +11,7 @@ Pysc has following widgets yet:
 2. Digital clock
 3. Analog clock
 4. Wikitionary portal
+5. Dictionary
 
 Cloud backup
 ---
@@ -50,6 +51,10 @@ Change font color            | <kbd>Alt</kbd> <kbd>t</kbd>
 Collaboration
 ---
 We would love to have collaborators contribute to this project or any other of our projects. Email us at piyushagade@gmail.com
+
+Download
+---
+Since, the app is still under development and is improving on daily basis, making an executable available for download at this time seems inappropriate. However, if someone wishes to try out the app, please email me, and I will generate a package and email it back.
 
 Screenshots
 ---
