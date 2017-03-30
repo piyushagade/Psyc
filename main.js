@@ -32,7 +32,7 @@ var ipcRenderer = require('electron').ipcRenderer;
 var clients_served = 0;
 
 //Global Objects
-require('./assets/global');
+require('./app/global');
 
 var width = global.dimensions.width;
 var height = global.dimensions.height;
@@ -221,7 +221,7 @@ function createWindow () {
       x: x, 
       y: y, 
 	  width: debug_add + width, 
-      height: debug_add + height, 
+      height: height, 
       minWidth: 330,
       minHeight: 490,
       frame: false, 
@@ -564,6 +564,8 @@ app.on('ready', function(){
     		fb_user = fb.child(data.eemail);
     	} 
 
+
+    	//create notes instances
     	storage.get('notes', function(error, data) {
 
 			var d = new Date();
@@ -585,6 +587,7 @@ app.on('ready', function(){
 					"protected" : false,
 					"width" : width,
 					"height" : height,
+					"alarm" : true,
 					"pin" : "",
 					"timestamp" : n
 				});
@@ -641,6 +644,7 @@ app.on('ready', function(){
 					"height" : height,
 					"pin" : "0000",
 					"mode" : "text",
+					"alarm" : true,
 					"grid" : false,
 					"timestamp" : n
 				});
@@ -670,6 +674,7 @@ app.on('ready', function(){
 
 		    	//Set global object
 		    	notes_string = data.notes_string;
+		    	global.stats.number_notes = data.number_notes;
 		    }  
 
 		});
@@ -741,6 +746,7 @@ function updateNote(ns){
 
 	    	var id = ns.id;
 	    	l(id, "Note updated");
+	    	l(data.notes_string, "Note string after latest update");
 
 	    	var array = object.data;
 	    	for(var i = 0; i < array.length; i++){
@@ -753,6 +759,7 @@ function updateNote(ns){
 	    			array[i].mode = ns.mode;
 	    			array[i].grid = ns.grid;
 	    			array[i].width = ns.width;
+	    			array[i].alarm = ns.alarm;
 	    			array[i].height = ns.height;
 	    			array[i].timestamp = ns.timestamp;
 	    		}
@@ -882,7 +889,7 @@ function retreive_from_cloud(){
 
 
 
-// new note
+// new note / add note
 ipcMain.on('new_note', function(event) {
 	
 	if(clients_served <= global.settings.max_notes){
@@ -909,6 +916,7 @@ ipcMain.on('new_note', function(event) {
 				"protected" : false,
 				"width" : global.dimensions.width,
 				"height" : global.dimensions.height,
+				"alarm" : true,
 				"pin" : "0000",
 				"timestamp" : n
 			});
@@ -920,6 +928,8 @@ ipcMain.on('new_note', function(event) {
 			global.note_retrieve = {note_string: JSON.stringify(object.data[0]), id: id, mode: 'text'};
 
 			storage.set('notes', {number_notes: nn, notes_string: JSON.stringify(object), timestamp: n});
+
+			global.stats.number_notes = nn;
 
 		});
 	}
@@ -934,14 +944,29 @@ ipcMain.on('delete_note', function(event) {
 			setTimeout(function(){
 				var id = global.note_delete.id;
 
-				l("Note deleted: " + id);
+				l(id, "Note deleted");
+
 				clients_served--;
 
 				var nn = parseInt(data.number_notes) - 1;
 				var object = JSON.parse(data.notes_string);
-				object.data.splice(id--, 1);
+				
+				var array = object.data;
+
+				for(var j = 0; j < array.length; j++){
+					if(array[j].id === id){
+						array.splice(j, 1);
+					}
+				}
+				array.data = object.data;
+
+	    		l('\n\n' + JSON.stringify(object), "Note string after latest delete");
+
+
 
 				storage.set('notes', {number_notes: nn, notes_string: JSON.stringify(object)});
+
+				global.stats.number_notes = nn;
 
 				fb.child(id).set(null);
 				event.sender.send('delete_note', 1);
@@ -993,6 +1018,7 @@ function cloud_listener(id, ns, ls){
 		    			cloud_array.data[i].pin = ns.pin;
 		    			cloud_array.data[i].width = ns.width;
 		    			cloud_array.data[i].height = ns.height;
+		    			cloud_array.data[i].alarm = ns.alarm;
 	    				cloud_array.data[i].grid = ns.grid;
 		    			cloud_array.data[i].mode = ns.mode;
 		    			found = true;
@@ -1012,6 +1038,7 @@ function cloud_listener(id, ns, ls){
 						"pin" : ns.pin,
 						"protected" : false,
 						"width" : width,
+						"alarm" : true,
 						"height" : height,
 						"mode" : ns.mode
 					});
@@ -1146,6 +1173,7 @@ ipcMain.on('skip_login', function(event) {
 					"pin" : "0000",
 					"protected" : false,
 					"width" : width,
+					"alarm" : true,
 					"height" : height,
 					"timestamp" : n
 				});

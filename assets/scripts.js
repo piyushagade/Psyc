@@ -5,6 +5,7 @@ $(document).ready(function() {
 	var id = null;
 	var isLoggedIn = true;
 	var user_id = "user@usermail.com";
+	var number_notes = "1";
 	var md = require('markdown-it')();
 	var link_clicked = false;
 	var mode = "text";
@@ -25,6 +26,8 @@ $(document).ready(function() {
 
 
 
+	var alarm_toggle = true;
+	var alarm_menu_toggle = null;
     var grid_toggle = false;
     
     var width = remote.getGlobal('dimensions').width;
@@ -68,6 +71,12 @@ $(document).ready(function() {
 	//hide todo note ui menu on startup
 	$('#todo_note').fadeOut(0);
 
+	//hide option to turn off reminder
+	$('#b_reminder').fadeOut(0);
+
+	//show version info on startup
+	$('#statusbar').delay(8000).fadeOut(200);
+
 	//handle all links and open them in external browser
 	$(document).on('click', 'a[href^="http"]', function(event) {
 	    event.preventDefault();
@@ -107,6 +116,8 @@ $(document).ready(function() {
 			object = remote.getGlobal('note_retrieve').note_string;
 			//user email
 			user_id = remote.getGlobal('login').email;
+			//number of notes
+			number_notes = remote.getGlobal('stats').number_notes;
 
 			l(JSON.stringify(object), "Object recieved at startup");
 
@@ -131,6 +142,10 @@ $(document).ready(function() {
 			    	{
 			    		$("#new_li").focus();
 			    	},0);
+
+			    	//show random yay image
+			    	var yay_id = Math.floor(Math.random() * 7) + 1;
+			    	$('#yay').attr('src', 'img/yay' + yay_id + '.png');
 				}
 
 				//check if user is logged in or not
@@ -146,6 +161,46 @@ $(document).ready(function() {
 					var note = object.note;
 					accent = object.accent;
 					grid_toggle = object.grid;
+					alarm_menu_toggle = object.alarm;
+
+					if(alarm_menu_toggle){
+						$('#b_alarm').attr('src', 'img/alarm.png');
+
+						//Priority list functions
+						audioElement = new Audio("");
+
+					    //clock plugin constructor
+					    $('#myclock').thooClock({
+					        size:$(document).height()/1.4,
+					        
+					        onAlarm:function(){
+					            fireAlarm();
+					        },
+
+					        showNumerals:true,
+					        brandText:'Pysc',
+					        brandText2:'Clock',
+					        
+					        onEverySecond:function(){
+					            //callback that should be fired every second
+					            var array = priority_object.data;
+					            // l(array.length, "Priority object count");
+					        },
+					        offAlarm:function(){
+					            audioElement.pause();
+					            // clearTimeout(intVal);
+					            // $('body').css('background-color','#FCFCFC');
+					        }
+					    });
+
+						//Set alarm
+						$.fn.thooClock.setAlarm(alarm_time);
+
+					}
+					else{
+						$('#b_alarm').attr('src', 'img/alarm_off.png');
+						$('#today').fadeOut(0);
+					}
 
 					//setup note heading
 					if(heading !== 'empty') $('#heading').val(heading);
@@ -176,6 +231,15 @@ $(document).ready(function() {
 
 						//disable todo item delete button
 						$('#b_todo_delete_item').addClass('hidden');
+
+						//hide option to turn off reminder
+						$('#b_reminder').fadeOut(0);
+
+						//hide option to toggle alarm
+						$('#b_alarm').fadeOut(0);
+
+						//position tooltip
+						$('#tooltip_container').css('bottom', '74px');
 					}
 					else if(mode === 'todo'){
 
@@ -187,6 +251,9 @@ $(document).ready(function() {
 
 						//enable todo item delete button
 						$('#b_todo_delete_item').removeClass('hidden');
+
+						//position tooltip
+						$('#tooltip_container').css('bottom', '108px');
 
 						todo_object = JSON.parse(note);		//object
 
@@ -200,6 +267,8 @@ $(document).ready(function() {
 							//if(current item is not empty or deleted)
 							if(todo_array[i] !== '' && todo_array[i].item.trim() !== 'empty' && todo_array[i].item.trim() !== '&deleted'){
 								todo_count++;
+
+								//check if current item is important
 								var local_important = false;
 								if(todo_array[i].item.charAt(0) === '!') local_important = true;
 
@@ -222,6 +291,7 @@ $(document).ready(function() {
 									priority_object.data.push({
 										'id' : r(),
 										'item' : todo_array[i].item.slice(1),
+										'marked' : todo_array[i].marked
 									});
 								}
 
@@ -248,6 +318,9 @@ $(document).ready(function() {
 
 					// set user email in user menu
 					if(user_id !== 'empty' || user_id !== 'skipped') $('#user_id').text(user_id);
+					
+					//set number of notes in user menu
+					if(number_notes !== undefined || number_notes !== null) $('#number_notes').text(remote.getGlobal('stats').number_notes);
 
 					// set rendered note in text mode
 					if($('#edit_note').val() !== "" && mode === 'text') $('#rendered_note').html(md.render($('#edit_note').val()));
@@ -275,17 +348,20 @@ $(document).ready(function() {
     	// construct object
 	 	var object = {};
 
+	 	//defaults
 	 	if(mode === null || mode === undefined) mode = 'text';
+	 	if(alarm_menu_toggle === null || alarm_menu_toggle === undefined) alarm_menu_toggle = true;
 
 		object.id = id;
 		if(mode === 'todo') object.note = JSON.stringify(todo_object);
-		if(mode === 'text') object.note = $('edit_note').val();
+		if(mode === 'text') object.note = $('#edit_note').val();
 		object.title = $('#heading').val();
 		object.accent = accent;
 		object.mode = mode;
 		object.timestamp = n;
 		object.width = width;
 		object.height = height;
+		object.alarm = alarm_menu_toggle;
 		object.protected = protected;
 		object.grid = grid_toggle;
 		object.pin = pin;
@@ -305,16 +381,20 @@ $(document).ready(function() {
 	 	var remote = require('electron').remote;
 		remote.getGlobal('note_delete').id = id; 
 
-		var ipcRenderer = require('electron').ipcRenderer;   
-		ipcRenderer.send('delete_note');
-	 
-		ipcRenderer.on('delete_note', function(event, arg) {
-			if(arg == 1){
-				const remote = require('electron').remote;
-				var window = remote.getCurrentWindow();
+		popupPersistent("Are you sure you wish to delete this note? Deleted notes are unrecoverable.", true, function(result){
+			if(result){
+				var ipcRenderer = require('electron').ipcRenderer;   
+				ipcRenderer.send('delete_note');
+			 
+				ipcRenderer.on('delete_note', function(event, arg) {
+					if(arg == 1){
+						const remote = require('electron').remote;
+						var window = remote.getCurrentWindow();
 
-				window.close();
-			}	
+						window.close();
+					}	
+				});
+			}
 		});
 	}
 
@@ -417,6 +497,15 @@ $(document).ready(function() {
 			$('#security_menu').slideUp();
 			security_menu_toggle = false;
 		}
+
+		//if expanded menu is open, close it.
+		if(toggle_menu){
+			setTimeout(function() {	
+				$('#expanded_menu').fadeOut(200);
+			}, 200);
+			$('#color_picker_div').fadeOut(200);
+			toggle_menu = false;
+		}
 	}
 
 
@@ -432,6 +521,10 @@ $(document).ready(function() {
 		if(mode === 'todo'){
 			delete_item_mode = false;
 			$('#b_todo_delete_item').attr("src","img/delete_item.png");
+
+			//stop delete item animation
+			$('#ol li').removeClass('anim_dance');
+
 		}
 	}
 
@@ -463,6 +556,9 @@ $(document).ready(function() {
 		$(".today_heading").css("color", accent);
 		$(".today button").css("background", accent);
 
+		$(".alt_button").css("background", accent);
+		$(".today_ol_li_marked").css("border", '1px solid ' + accent);
+
 	}
 
 
@@ -483,6 +579,39 @@ $(document).ready(function() {
 			$('.todo_note li span').css('background-position','center right');
 			$('.todo_note li span').css('padding-right','');$('li').addClass('remove-item');
 			grid_toggle = false;
+		}
+    }
+
+    function undoDeleteItem(){
+    	if(undo_label !== ''){
+	    	if(undo_marked)
+				if(!undo_important) $("#ol").append('<li style="border: 1px solid' + accent +';"><span class="marked_item_unimportant">' + undo_label.replace('&Completed', '') + '<font style="opacity: 0.0; font-size: 0; display: none;">&Completed</font></font></span></li>');
+				else $("#ol").append('<li style="border: 1px solid' + accent +';"><span class="marked_item_important"><font style="color: #111"><font style="display: none">!</font>' + undo_label.slice(1).replace('&Completed', '') + '</font><font style="display: none; width: 0px; opacity: 0.0; font-size: 0;">&Completed</font></font></span></li>');
+			else
+				if(!undo_important) $("#ol").append('<li><span class="un_item_unimportant">' + undo_label.replace('&Completed', '') + '</span></li>');
+				else $("#ol").append('<li><span class="un_item_important"><font style="color: #111"><font style="display: none">!</font>' + undo_label.slice(1).replace('&Completed', '') + '</span></li>');
+			
+			//push undo entry to todo object
+			todo_object.data.push({
+				'id' : r(),
+				'item' : undo_label.replace('&Completed', ''),
+				'marked' : undo_marked,
+			});
+
+			if(grid_toggle) goGrid();
+			else noGrid();
+
+			todo_count++;
+
+			if(todo_count > 1){
+				$("#empty_ol").addClass('hidden');
+				$("#ol").removeClass('hidden');
+			}
+
+			//update note
+			sendUpdateIPC(mode);
+
+			undo_label = '';
 		}
     }
 
@@ -514,6 +643,18 @@ $(document).ready(function() {
 
 					//enable todo item delete button
 					$('#b_todo_delete_item').removeClass('hidden');
+
+					//enable alarm by default
+					alarm_menu_toggle = true;
+
+					//enable alarm button
+					$('#b_alarm').fadeIn(200);
+
+					//set alarm icon
+					$('#b_alarm').attr('src', 'img/alarm.png');
+
+					//position tooltip
+					$('#tooltip_container').css('bottom', '108px');
 
 					//switch back to main menu
 					setTimeout(function() {	
@@ -574,6 +715,7 @@ $(document).ready(function() {
 		if($('#new_li').val().trim() !== '') {
 			todo_count++;
 
+
 			//push new entry to todo object
 			todo_object.data.push({
 				'id' : r(),
@@ -595,6 +737,7 @@ $(document).ready(function() {
 				priority_object.data.push({
 					'id' : r(),
 					'item' : $('#new_li').val().slice(1),
+					'marked' : false
 				});
 
 			}
@@ -612,6 +755,9 @@ $(document).ready(function() {
 
 			mode = 'todo';
 
+			//hide all menus
+			hideAuxMenus();
+
 			//update note
 			sendUpdateIPC(mode);
 
@@ -620,6 +766,9 @@ $(document).ready(function() {
 
 			//turn off delete item mode
 			turnDeleteModeOff();
+
+			//stop delete item animation
+			$('#ol li').removeClass('anim_dance');
 
 			//exit edit mode
 			exitEditMode();
@@ -634,7 +783,11 @@ $(document).ready(function() {
 	});
 
 
-	//when a list item is clicked
+	//when a list item is clicked / delete list item / mark a list item
+	var undo_label = "";
+	var undo_important = false;
+	var undo_marked = false;
+
 	var clicked_once = false;
 	var clicked_on = "";
 	$(document).on('click', '#ol li', function(event) {
@@ -665,33 +818,55 @@ $(document).ready(function() {
 		}
 		//delete current todo item in delete mode from edit menu
 	  	else if(delete_item_mode){
-	  		$(this).closest('li').remove();
+
+	  		$(this).addClass('anim_fade_and_scale');
+
+	  		//undo actions
+	  		undo_label = $(this).text();
+			undo_important = false;
+			undo_marked = false;
+
+	  		if($(this).text().indexOf("&Completed") >= 0) undo_marked = true;
+	  		if($(this).text().charAt(0) === '!') undo_important = true;
+
+	  		//show undo button
+	  		$('#b_undo').removeClass('hidden');
+	  		$('#b_undo').clearQueue().finish().fadeOut(0).fadeIn(200).delay(10000).fadeOut(200);
+
 
 	    	var todo_array = todo_object.data;
 			for(var i = 1; i < todo_array.length; i++){
 				if(todo_array[i].item.trim() === $(this).text().replace('&Completed','').trim()){
-					todo_array[i].item = '&deleted';
+					todo_array.splice(i, 1);
 					todo_count--;
 				}
 			}
 
-	    	//check if list becomes empty, and show minions if it does
-	    	if(todo_count == 1){
-	    		$("#empty_ol").removeClass('hidden');
-				$("#ol").addClass('hidden');
+			// remove li on transition animation end
+			$(document).on('animationend', '.anim_fade_and_scale', function() {
+			  $(this).closest('li').remove();
 
-				clicked_once = false;
-				$('#b_todo_delete_item').attr("src","img/delete_item.png");
-				delete_item_mode = false;
+			  //check if list becomes empty, and show minions if it does
+		    	if(todo_count == 1){
+		    		$("#empty_ol").removeClass('hidden');
+					$("#ol").addClass('hidden');
 
-				//switch from edit menu to default menu
-				setTimeout(function() {	
-					$('#edit_menu_div').fadeOut(200);
-					$('#color_picker_div').fadeOut(200);
-					$('#edit_note').fadeOut(200);
-				}, 200);
-				$('#menu').fadeIn(200);
-			}
+					clicked_once = false;
+					$('#b_todo_delete_item').attr("src","img/delete_item.png");
+					delete_item_mode = false;
+
+					//switch from edit menu to default menu
+					setTimeout(function() {	
+						$('#edit_menu_div').fadeOut(200);
+						$('#color_picker_div').fadeOut(200);
+						$('#edit_note').fadeOut(200);
+					}, 200);
+					$('#menu').fadeIn(200);
+				}
+			});
+
+
+	    	
 	  	}
 
 	    //item needs to be unmarked
@@ -735,10 +910,16 @@ $(document).ready(function() {
 		if(delete_item_mode){ 
 			$('#b_todo_delete_item').attr("src","img/delete_item_mode_on.png");
 			popup("Click on the items you wish to delete. <br><br>When done, click on the icon again to turn 'Delete mode' off.");
+
+			//turn on delete item animations
+			$('#ol li').addClass('anim_dance');
 		}
 		else {
 			clicked_once = false;
 			$('#b_todo_delete_item').attr("src","img/delete_item.png");
+
+			//stop delete item animation
+			$('#ol li').removeClass('anim_dance');
 		}
 	});
 
@@ -795,6 +976,20 @@ $(document).ready(function() {
 
 					//disable todo item delete button
 					$('#b_todo_delete_item').addClass('hidden');
+
+					//disable alarm button
+					$('#b_alarm').fadeOut(0);
+
+					//disable reminder button
+					$('#b_reminder').fadeOut(0);
+
+					//disable undo button
+					$('#b_undo').clearQueue().finish().fadeOut(0);
+
+					//position tooltip
+					$('#tooltip_container').css('bottom', '74px');
+
+					
 
 					//switch back to main menu
 					setTimeout(function() {	
@@ -898,8 +1093,9 @@ $(document).ready(function() {
 
 	//show expanded menu
 	$('#b_more').click(function (e) {
+
 		if(toggle_menu){
-			setTimeout(function() {	
+			setTimeout(function() {
 				$('#expanded_menu').fadeIn(200);
 			}, 200);
 			$('#color_picker_div').fadeIn(200);
@@ -915,6 +1111,7 @@ $(document).ready(function() {
 
 	//hide expanded menu
 	$('#b_more_expanded_menu').click(function (e) {
+
 		if(toggle_menu){
 			setTimeout(function() {	
 				$('#expanded_menu').fadeIn(200);
@@ -927,9 +1124,11 @@ $(document).ready(function() {
 			}, 200);
 			$('#color_picker_div').fadeOut(200);
 		}
-		toggle_menu = !toggle_menu;
 
 		hideAuxMenus();
+
+		toggle_menu = !toggle_menu;
+
 	});
 
 	//when save icon in edit menu is clicked
@@ -1134,6 +1333,8 @@ $(document).ready(function() {
 
 			//change ui
 			if(user_id !== 'empty' || user_id !== 'skipped') $('#user_id').text(user_id);
+			if(number_notes !== undefined || number_notes !== null) $('#number_notes').text(remote.getGlobal('stats').number_notes);
+
 
 			$('#user_menu').removeClass('hidden');
 			$('#user_menu').fadeOut(0);
@@ -1157,6 +1358,7 @@ $(document).ready(function() {
 
 		//change ui
 		if(user_id !== 'empty' || user_id !== 'skipped') $('#user_id').text(user_id);
+		if(number_notes !== undefined || number_notes !== null) $('#number_notes').text(remote.getGlobal('stats').number_notes);
 
 		setTimeout(function(){
 			$('#user_menu').addClass('hidden');
@@ -1253,13 +1455,434 @@ $(document).ready(function() {
 	/*
 	----------------------	Mouseover functions ---------------------
 	*/
+	var statusbar = $('#statusbar');
+	var default_tooltip = 'Psyc v1.0';
+
+	function updateStatusBar(html){
+		statusbar.fadeOut(0);
+		statusbar.clearQueue().fadeIn(200);
+		statusbar.html('<center>' + html + '</center>');
+
+	}
+
+	//accentbar mover
 	$('#accentBar').mouseover(function() {
 	  $('#accentBarMover').slideDown();
+  	});
+
+	//accentbar mover
+	$('#accentBarMover').mouseover(function() {
+	  updateStatusBar('Move window');
+  	});
+
+	// edit button
+	$('#b_edit').mouseover(function() {
+	  updateStatusBar('Edit note');
+  	});
+
+	// edit note
+	$('#b_edit_expanded_menu').mouseover(function() {
+	  updateStatusBar('Edit note');
+  	});
+
+	// add button
+	$('#b_add').mouseover(function() {
+	  updateStatusBar('Add a note');
+  	});
+
+	// add button
+	$('#b_add_expanded_menu').mouseover(function() {
+	  updateStatusBar('Add a note');
+  	});
+
+	// more options button
+	$('#b_more').mouseover(function() {
+	  updateStatusBar('More options');
+  	});
+
+	// more options button
+	$('#b_more_expanded_menu').mouseover(function() {
+	  updateStatusBar('Lesser options');
+  	});
+
+	// sync button
+	$('#b_sync_expanded_menu').mouseover(function() {
+	  updateStatusBar('Sync to cloud');
+  	});
+
+	// sync button
+	$('#b_sync').mouseover(function() {
+	  updateStatusBar('Sync to cloud');
+  	});
+
+	// keyboard button
+	$('#b_keys_expanded_menu').mouseover(function() {
+	  updateStatusBar('Keyboard shortcuts');
+  	});
+
+	// delete note button
+	$('#b_edit_menu_delete_expanded_menu').mouseover(function() {
+	  updateStatusBar('Delete note');
+  	});
+
+
+	// delete note button
+	$('#b_edit_menu_delete').mouseover(function() {
+	  updateStatusBar('Delete note');
+  	});
+
+	// user menu button
+	$('#b_edit_menu_user').mouseover(function() {
+	  updateStatusBar('See user details');
+  	});
+
+
+	// save button
+	$('#b_edit_menu_save').mouseover(function() {
+	  updateStatusBar('Save changes');
+  	});
+
+
+	// todo item delete button
+	$('#b_todo_delete_item').mouseover(function() {
+	  updateStatusBar('Toggle \'Delete item mode\'');
+  	});
+
+
+	// template button
+	$('#b_insert').mouseover(function() {
+	  updateStatusBar('Markdown templates');
+  	});
+
+
+	// color picker
+	$('#color_picker_div').mouseover(function() {
+	  updateStatusBar('Change theme color');
+  	});
+
+
+	// text mode
+	$('#b_text_mode').mouseover(function() {
+	  updateStatusBar('Change to text mode');
+  	});
+
+
+	// todo mode
+	$('#b_todo_mode').mouseover(function() {
+	  updateStatusBar('Change to to-do mode');
+  	});
+
+
+	// secure mode
+	$('#b_secure').mouseover(function() {
+	  updateStatusBar('Security settings');
+  	});
+
+
+	// alarm in mode menu
+	$('#b_alarm').mouseover(function() {
+	  updateStatusBar('Toggle daily reminder');
+  	});
+
+
+
+	// reminder in mode menu
+	$('#b_reminder').mouseover(function() {
+	  updateStatusBar('Turn off 1hr reminder');
+  	});
+
+
+
+	//undo
+	$('#b_undo').mouseover(function() {
+	  updateStatusBar('Undo delete');
+  	});
+
+
+	// editing pencil
+	$('#b_mode_menu_saved').mouseover(function() {
+	  updateStatusBar('Changes saved');
+  	});
+
+
+	// template href
+	$('#b_href').mouseover(function() {
+	  updateStatusBar('Inline hyperlink');
+  	});
+
+
+	// template table
+	$('#b_table').mouseover(function() {
+	  updateStatusBar('Table');
+  	});
+
+
+	// template image
+	$('#b_image').mouseover(function() {
+	  updateStatusBar('Image');
+  	});
+
+
+	// template heading
+	$('#b_heading').mouseover(function() {
+	  updateStatusBar('Heading');
+  	});
+
+
+	// template hr
+	$('#b_hr').mouseover(function() {
+	  updateStatusBar('Horiontal line');
+  	});
+
+
+	// template blockquote
+	$('#b_blockquote').mouseover(function() {
+	  updateStatusBar('Blockquote');
+  	});
+
+
+	// template text_format
+	$('#b_text_format').mouseover(function() {
+	  updateStatusBar('Text decoration');
+  	});
+
+
+
+
+
+
+
+
+
+	//mouse out functions
+
+	function resetStatusBar(){
+		statusbar.finish().fadeOut(0);
+		setTimeout(function(){
+			// statusbar.html('');
+		}, 70); 
+	}
+
+	//accentbar mover
+	$('#accentBar').mouseout(function() {
+		$('#accentBarMover').slideUp();
+  	});
+
+	// edit button
+	$('#b_edit').mouseout(function() {
+		resetStatusBar();
+  	});
+
+	// edit note
+	$('#b_edit_expanded_menu').mouseout(function() {
+		resetStatusBar();
+  	});
+
+	// add button
+	$('#b_add').mouseout(function() {
+		resetStatusBar();
+  	});
+
+	// add button
+	$('#b_add_expanded_menu').mouseout(function() {
+		resetStatusBar();
+  	});
+
+	// more options button
+	$('#b_more').mouseout(function() {
+		resetStatusBar();
+  	});
+
+	// more options button
+	$('#b_more_expanded_menu').mouseout(function() {
+		resetStatusBar();
+  	});
+
+	// sync button
+	$('#b_sync_expanded_menu').mouseout(function() {
+		resetStatusBar();
+  	});
+
+	// sync button
+	$('#b_sync').mouseout(function() {
+		resetStatusBar();
+  	});
+
+	// keyboard button
+	$('#b_keys_expanded_menu').mouseout(function() {
+		resetStatusBar();
+  	});
+
+	// delete note button
+	$('#b_edit_menu_delete_expanded_menu').mouseout(function() {
+		resetStatusBar();
+  	});
+
+
+	// delete note button
+	$('#b_edit_menu_delete').mouseout(function() {
+		resetStatusBar();
+  	});
+
+	// user menu button
+	$('#b_edit_menu_user').mouseout(function() {
+		resetStatusBar();
+  	});
+
+
+	// save button
+	$('#b_edit_menu_save').mouseout(function() {
+		resetStatusBar();
+  	});
+
+
+	// todo item delete button
+	$('#b_todo_delete_item').mouseout(function() {
+		resetStatusBar();
+  	});
+
+
+	// template button
+	$('#b_insert').mouseout(function() {
+		resetStatusBar();
+  	});
+
+
+	// color picker
+	$('#color_picker_div').mouseout(function() {
+		resetStatusBar();
+  	});
+
+
+	// text mode
+	$('#b_text_mode').mouseout(function() {
+		resetStatusBar();
+  	});
+
+
+	// todo mode
+	$('#b_todo_mode').mouseout(function() {
+		resetStatusBar();
+  	});
+
+
+	// secure mode
+	$('#b_secure').mouseout(function() {
+		resetStatusBar();
+  	});
+
+
+	// alarm in mode menu
+	$('#b_alarm').mouseout(function() {
+		resetStatusBar();
+  	});
+
+
+
+	// reminder in mode menu
+	$('#b_reminder').mouseout(function() {
+		resetStatusBar();
+  	});
+
+
+
+	//undo
+	$('#b_undo').mouseout(function() {
+		resetStatusBar();
+  	});
+
+
+	// editing pencil
+	$('#b_mode_menu_saved').mouseout(function() {
+		resetStatusBar();
+  	});
+
+
+	// template href
+	$('#b_href').mouseout(function() {
+		resetStatusBar();
+  	});
+
+
+	// template table
+	$('#b_table').mouseout(function() {
+		resetStatusBar();
+  	});
+
+
+	// template image
+	$('#b_image').mouseout(function() {
+		resetStatusBar();
+  	});
+
+
+	// template heading
+	$('#b_heading').mouseout(function() {
+		resetStatusBar();
+  	});
+
+
+	// template hr
+	$('#b_hr').mouseout(function() {
+		resetStatusBar();
+  	});
+
+
+	// template blockquote
+	$('#b_blockquote').mouseout(function() {
+		resetStatusBar();
+  	});
+
+
+	// template text_format
+	$('#b_text_format').mouseout(function() {
+		resetStatusBar();
+  	});
+	
+
+	/*
+	----------------------	Mode menu functions ---------------------
+	*/
+	  		
+
+	// toggle alarm
+	$('#b_alarm').click(function(){
+
+		if(alarm_menu_toggle){
+			$('#b_alarm').attr('src', 'img/alarm_off.png');
+		}
+		else{
+			$('#b_alarm').attr('src', 'img/alarm.png');
+		}
+
+		alarm_menu_toggle = !alarm_menu_toggle;
+
+		//update note
+		sendUpdateIPC(mode);
 	});
 
-	$('#accentBar').mouseout(function() {
-	  $('#accentBarMover').slideUp();
+
+	// turn reminder off
+	$('#b_reminder').click(function(){
+
+		$('#b_reminder').fadeOut(400);
+		popup('Hourly reminder has been turned off.')
+
+		
+    	reminder_dismissed = true;
+		$.fn.thooClock.clearAlarm();
 	});
+
+	//undo delete item
+	$('#b_undo').click(function(){
+		undoDeleteItem();
+		$('#b_undo').fadeOut(200);
+
+      	$('#ol li').removeClass('anim_dance');
+	});
+
+
+
 	
 
 	/*
@@ -1298,11 +1921,16 @@ $(document).ready(function() {
 
 		popup_toggle = true;
 
+		$("#popup").css('display','none');
+		$("#popup").slideDown();
+
 		$("#proceedPopup").click(function(){
 			$("#popup").slideDown().delay(100).slideUp();
 			callback(true);
 			setTimeout(function(){
 				$("#popup").html('');
+				$("#popup").css('display','none');
+
 				popup_toggle = false;
 			},4000);
 		});
@@ -1313,6 +1941,8 @@ $(document).ready(function() {
 			callback(false);
 			setTimeout(function(){
 				$("#popup").html('');
+				$("#popup").css('display','none');
+
 				popup_toggle = false;
 			},2000);
 		});
@@ -1571,6 +2201,35 @@ $(document).ready(function() {
       createNote();
     });
 
+ 	//toggle delete item mode
+    Mousetrap.bind('alt+d', function() { 
+      if(mode === 'todo') {
+
+      	delete_item_mode = !delete_item_mode;
+
+		if(delete_item_mode){ 
+			$('#b_todo_delete_item').attr("src","img/delete_item_mode_on.png");
+			popup("Click on the items you wish to delete. <br><br>Press <b>Alt + D</b> again to turn 'Delete item mode' off.");
+      		$('#ol li').addClass('anim_dance');
+
+		}
+		else {
+			$('#b_todo_delete_item').attr("src","img/delete_item.png");
+	      	$('#ol li').removeClass('anim_dance');
+		}
+      }
+    });
+
+ 	//undo delete item
+    Mousetrap.bind('alt+z', function() { 
+      if(mode === 'todo'){
+      	undoDeleteItem();
+		$('#b_undo').fadeOut(200);
+
+		$('#ol li').removeClass('anim_dance');
+      }
+    });
+
     //show keyboard shortcuts
     Mousetrap.bind('alt+k', function() { 
       if(!keyboard_menu_toggle) $('#keyboard_menu').slideDown();
@@ -1686,6 +2345,7 @@ $(document).ready(function() {
 					priority_object.data.push({
 						'id' : r(),
 						'item' : $('#new_li').val().slice(1),
+						'marked' : false
 					});
 				}
 
@@ -1697,6 +2357,9 @@ $(document).ready(function() {
 				if(grid_toggle) goGrid();
 				else noGrid();
 
+				//hide all menus
+				hideAuxMenus();
+
 				//update note
 				sendUpdateIPC('todo');
 
@@ -1705,6 +2368,9 @@ $(document).ready(function() {
 
 				//turn off delete item mode
 				turnDeleteModeOff();
+
+				//stop delete item animation
+				$('#ol li').removeClass('anim_dance');
 
 				//exit edit mode
 				exitEditMode();
@@ -1800,56 +2466,25 @@ $(document).ready(function() {
 
 	    	if(old_width !== $(window).width() ||
 	    		old_height !== $(window).height()){
-	    		sendUpdateIPC(mode);
 	    		old_width = $(window).width();
 	    		old_height = $(window).height();
 	    		width = $(window).width();
 	    		height = $(window).height();
+
+	    		//update note
+	    		sendUpdateIPC(mode);
 	    	}
 		}, 1000);
 	}, 5000);
 
 
 
-	//Priority list functions
-	var alarm_toggle = true;
-	audioElement = new Audio("");
+	
 
-        //clock plugin constructor
-        $('#myclock').thooClock({
-            size:$(document).height()/1.4,
-            
-            onAlarm:function(){
-                fireAlarm();
-            },
-
-            showNumerals:true,
-            brandText:'Pysc',
-            brandText2:'Clock',
-            
-            onEverySecond:function(){
-                //callback that should be fired every second
-                var array = priority_object.data;
-                // l(array.length, "Priority object count");
-            },
-            offAlarm:function(){
-                audioElement.pause();
-                // clearTimeout(intVal);
-                // $('body').css('background-color','#FCFCFC');
-            }
-        });
-
-
-
-    $('#turnOffAlarm').click(function(){
-        $.fn.thooClock.clearAlarm();
-    });
 
 
 	var alarm_time = '10:30';
-
-    //Set alarm
-	$.fn.thooClock.setAlarm(alarm_time);
+	var reminder_dismissed = false;
 
 	function fireAlarm(){
 		var array = priority_object.data;
@@ -1863,7 +2498,9 @@ $(document).ready(function() {
 
 
             for (var j = 0; j < array.length; j++){
-            	html += '<li id="priority_' + j + '"  class="today_ol_li">' + array[j].item + '</li>';
+            	var marked = array[j].marked;
+            	if(!marked) html += '<li id="priority_' + j + '"  class="today_ol_li">' + array[j].item + '</li>';
+            	else html += '<li id="priority_' + j + '"  class="today_ol_li_marked">' + array[j].item + '</li>';
             }
             html += '</ol>'
             html += '<div style="position: fixed; z-index: 203; background: #222; opacity:0.96; bottom: 0px; padding-bottom: 16px; left: 0px; width: 100%;"><center>'
@@ -1875,19 +2512,28 @@ $(document).ready(function() {
             	$('#today').html(html).clearQueue().fadeIn(200);
             }
 
+            var remind_toggle = false;
             $('#today_snooze').click(function(){
         		$('#today').html(html).fadeOut(400).clearQueue();
 				$.fn.thooClock.clearAlarm();
+				alarm_toggle = false;
 
+				//show option to turn off reminder
+				$('#b_reminder').fadeIn(10);
+
+				var k = 0;
             	setInterval(function(){
             		$.fn.thooClock.clearAlarm();
+					if(k++ == 0) remind_toggle = true;
+					else remind_toggle = false;
 
-            		if(alarm_toggle) remindAlarm();
+            		if(remind_toggle && !reminder_dismissed) remindAlarm();
             	}, 3600 * 1000);
             });
 
             $('#today_dismiss').click(function(){
             	alarm_toggle = false;
+            	remind_toggle = false;
 				$.fn.thooClock.clearAlarm();
 
             	$('#today').fadeOut(400).clearQueue();
@@ -1923,6 +2569,7 @@ $(document).ready(function() {
 
 	function remindAlarm(){
 		var array = priority_object.data;
+		remind_toggle = false;
 
         setTimeout(function(){
         	var html = "<font class='today_heading'><center>Today</center></font>";
@@ -1942,7 +2589,9 @@ $(document).ready(function() {
             }
 
             $('#today_dismiss').click(function(){
-            	alarm_toggle = false;
+            	reminder_dismissed = true;
+				$.fn.thooClock.clearAlarm();
+
             	$('#today').fadeOut(400).clearQueue();
             });
 
@@ -1965,10 +2614,43 @@ $(document).ready(function() {
         audioElement.addEventListener('canplay', function() {
             audioElement.loop = false;
             setInterval(function(){
-            	if(array.length > 0 && alarm_toggle) audioElement.play();
-        	}, 10000 * 60);	//10 mins
+            	if(array.length > 0 && !reminder_dismissed) audioElement.play();
+        	}, 5000);	//10 mins
         }, false);
 	}
+
+
+
+
+	//user presence
+	var awayCallback = function(){
+		console.log(new Date().toTimeString() + ": away");
+
+    	//show random yay image
+    	// var yay_id = Math.floor(Math.random() * 7) + 1;
+    	// $('#yay').attr('src', 'img/yay' + yay_id + '.png');
+	
+		$('#accentBarMover').slideUp();
+	};
+	
+	var awayBackCallback = function(){
+		console.log(new Date().toTimeString() + ": back");
+	};
+	var onVisibleCallback = function(){
+		console.log(new Date().toTimeString() + ": now looking at page");
+	};
+	
+	var onHiddenCallback = function(){
+		console.log(new Date().toTimeString() + ": not looking at page");
+	};
+	
+	var idle = new Idle({
+		onHidden: onHiddenCallback,
+		onVisible: onVisibleCallback,
+		onAway: awayCallback,
+		onAwayBack: awayBackCallback,
+		awayTimeout: 5000 //away with 5 seconds of inactivity
+	}).start();
     
 
 });

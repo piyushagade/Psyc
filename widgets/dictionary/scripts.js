@@ -197,7 +197,7 @@ $(document).ready(function(){
 
 		$("#word").focus();
 
-	} 
+	}
 
 
 });

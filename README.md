@@ -58,6 +58,8 @@ Description            | Keys
 -----------------------| -----------------------
 Focus on the input textbox            | <kbd>Tab</kbd> or <kbd>Alt</kbd>
 Add new item   | <kbd>Enter</kbd>
+Toggle 'Delete item mode'   | <kbd>Alt</kbd> <kbd>D</kbd>
+Undo latest deletion   | <kbd>Alt</kbd> <kbd>Z</kbd>
 
 Widgets shortcuts
 ---

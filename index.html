@@ -16,6 +16,7 @@
     <script src="assets/markdown.js"></script>
     <script src="assets/mousetrap.js"></script>
     <script src='assets/sortable.js'></script>
+    <script src='assets/idle.js'></script>
   </head>
   <body>
     <div class="container">
@@ -39,7 +40,6 @@
 
       <!-- Expanded Menu -->
       <div class="expanded_menu" id="expanded_menu">
-
         <input class="menu_icon" type="image" src="img/more.png" id="b_more_expanded_menu" height="18px" />
         <input class="menu_icon" type="image" src="img/add.png" id="b_add_expanded_menu" height="20px" />
         <input class="menu_icon" type="image" src="img/edit.png" id="b_edit_expanded_menu" height="20px" />
@@ -50,24 +50,27 @@
 
       </div>
 
-      <!-- Edit -->
-      <div class="color_picker hidden" id="color_picker_div">
-        <input type="color" class="menu_icon" id="b_edit_menu_color" class="color_picker" height="12px" /> 
-      </div>
+      <!-- edit menu -->
       <div class="menu hidden" id="edit_menu_div">
         <input type="image" class="menu_icon" src="img/save.png" id="b_edit_menu_save"  height="20px"/> 
         <input type="image" class="menu_icon" src="img/delete.png" id="b_edit_menu_delete"  height="20px"/> 
         <input class="menu_icon" type="image" src="img/sync.png" id="b_sync" height="20px" />
         <input class="menu_icon" type="image" src="img/delete_item.png" id="b_todo_delete_item" height="20px" />
         <input class="menu_icon" type="image" src="img/insert.png" id="b_insert" height="24px" />
+        <div class="color_picker hidden" id="color_picker_div">
+          <input type="color" class="menu_icon" id="b_edit_menu_color" class="color_picker" height="12px" /> 
+        </div>
       </div>
 
-      <!-- mode menu -->
+      <!-- mode menu / status bar menu-->
       <div class="mode_menu" id="mode_menu">
         <input class="mode_menu_icon" type="image" src="img/text.png" id="b_text_mode" height="18px" />
         <input class="mode_menu_icon" type="image" src="img/todo.png" id="b_todo_mode" height="20px" />
         <input class="mode_menu_icon" type="image" src="img/secure.png" id="b_secure" height="20px" />
+        <input class="mode_menu_icon" type="image"  src="img/alarm.png" id="b_alarm"  height="22px">
+        <input class="mode_menu_icon" type="image"  src="img/reminder.png" id="b_reminder"  height="22px">
         <input class="mode_menu_icon hidden anim_rock" type="image"  src="img/pencil.png" id="b_mode_menu_saved"  height="20px">
+        <input class="mode_menu_icon hidden" type="image"  src="img/undo.png" id="b_undo"  height="20px">
       </div>
 
       <!-- template menu -->
@@ -161,7 +164,7 @@
       <div id="todo_note" style="z-index: 2;" class="todo_note">
         
         <ol id="ol" class="todo_ol"></ol>
-        <div id="empty_ol" class="empty_ol"><center><br><br>Hurray! nothing to do today.<br><br><br><br><img style="width: 200px; height: 200px;" src="img/yay.png"></center></div>
+        <div id="empty_ol" class="empty_ol"><center><br><br>Hurray! nothing to do today.<br><br><br><br><img style="width: auto; height: 200px;" id="yay" src="img/yay1.png"></center></div>
         
 
       </div>
@@ -173,28 +176,41 @@
           <input type="image" name="add_li" id="add_li" class="todo_button" src="img/add_item.png" width="18px" height="20px"></input>
       </div>
 
-      <!-- user meanu -->
+      <!-- user menu -->
       <div id="user_menu" class="user_menu hidden">
           <center>
               <br><br>
-              <img src="img/user.png" height="140px" width="140px"><br><br>
-              <i><font size="2px" color="#DDDDDD">logged in as:</font></i><br>
-              <span style="font-weight: bold;" id="user_id">user@usermail.com</span><br><br>
+              <img src="img/user.png" style="opacity: 0.1" height="140px" width="140px"><br><br>
+              <i><font size="2px" color="#888">logged in as:</font></i><br>
+              <span style="font-weight: bold;"  style="opacity: 0.8" id="user_id">user@usermail.com</span><br><br>
+
+              <i><font size="2px" color="#888">number of notes:</font></i><br>
+              <span style="font-weight: bold;"  style="opacity: 0.8" id="number_notes">1</span><br><br>
+          </center>
+          <div class="footer_box">
+            <center>
               <button class="alt_button" id="b_user_menu_log_out">Log Out</button>
               <button class="alt_button" id="b_user_menu_back">Back</button>
-          </center>
+            </center>
+          </div>
       </div>
 
       <!-- user login menu -->
       <div id="user_login_menu" class="user_menu hidden">
           <center>
               <br><br>
-              <img src="img/user.png" height="140px" width="140px"><br><br>
-              <i><font size="2px" color="#DDDDDD">Click below to sign in with your account. Signing in enables syncing to the cloud.</font></i><br>
+              <img src="img/user.png" style="opacity: 0.1" height="140px" width="140px"><br><br>
+              <i><font size="2px" color="#888">You are not signed in. Signing in enables syncing to the cloud.</font></i><br>
+          </center>
+          <div class="footer_box">
+            <center>
               <button class="alt_button" id="b_user_login_menu_log_in">Sign In</button>
               <button class="alt_button" id="b_user_login_menu_back">Later</button>
-          </center>
+            </center>
+          </div>
       </div>
+
+
 
       <!-- loading screen -->
       <div id="loading" class="loading"><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
@@ -208,16 +224,33 @@
       <div id="today" class="today"></div>
 
       <!-- curtain -->
-      <div id="curtain" class="curtain">
+      <div id="curtain" class="today">
         <div>  
           <center>
-            <input align="center" type="password" id="pin_code" placeholder="Enter 4-digit PIN to unlock" class="login_input"/>
-            <button id="pin_unlock">Unlock</button><br><br><br>
-            <a style="font-family: Ubuntu; font-size: 12px;" id="security_menu_delete">or, delete the note</a>
+            <img style="margin-top: 40px; width: 180px; height: 180px; opacity: 0.07;" src="img/locked.png"><br><br>
+            <font style="font-size: 10px; color: #999; margin-bottom: 6px;">Enter 4-digit PIN to unlock</font>
+            <input align="center" style="text-align: center;" type="password" id="pin_code" placeholder="" class="login_input"/><br><br>
+            <p style="color: #AAA;">If you forgot the PIN, </p>
+            <a style="font-family: Ubuntu; font-size: 12px; margin-right: 20px;" id="security_menu_delete">delete the note</a>
+            <font style="font-size: 11px; color: #999; margin-bottom: 6px;">or,</font> 
+            <a style="font-family: Ubuntu; font-size: 12px; margin-left: 20px;" id="security_menu_delete">add a new note</a>
           </center>
+        </div>
+
+        <div style="" class="footer_box">
+            <center>
+              <button id="pin_unlock">Unlock</button>
+            </center>
         </div>
       </div>
 
+
+      <!-- tooltip -->
+      <div id="tooltip_container" class="tooltip_container">
+        <center>
+          <div id="statusbar" class="statusbar">Psyc v1.0</div>
+        </center> 
+      </div>
     </div>
 
 

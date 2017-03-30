@@ -155,12 +155,6 @@ body{
     box-shadow:         0px -4px 10px rgba(50, 50, 50, 0.20);
 }
 
-.mode_menu .mode_menu_icon{
-
-	-webkit-user-select: none;
-}
-
-
 .template_menu{
 	position: absolute; 
 	padding : 4px 4px 6px 6px;
@@ -169,7 +163,7 @@ body{
 	float: left; 
 	height: auto; 
 	width: auto; 
-	z-index: 10;
+	z-index: 12;
 	opacity: 0.92;
 	border: 1px solid #BBB;
 	background-color: #ECE5DD;
@@ -258,6 +252,11 @@ body{
 	text-align: center;
 }
 
+#pin_code{
+	letter-spacing: 20px;
+	width: 140px;
+}
+
 .menu_icon{
 	margin-right: 6px;
 	margin-left: 6px;
@@ -269,19 +268,30 @@ body{
 
 
 .mode_menu_icon{
-	margin-right: 10px;
+	margin-right: 4px;
 	margin-top: 4px;
 	margin-bottom: 4px;
 	float: left; 
 	padding: 10px;
+
+	-webkit-user-select: none;
 }
 
 .color_picker{
-	position: absolute;
-	bottom: 6px;
-	right: 6px;
+	width: 20px;
+	position: relative;
+	top: -5px;
+	margin-right: 10px;
+	float: right; 
+
 	-webkit-user-select: none;
-	z-index: 11;
+	opacity: 0.90;
+	background: url('../img/color.png') no-repeat center right;
+	background-size: 20px 20px;
+}
+
+.sp-replacer{
+	opacity: 0.0;
 }
 
 .rotate {
@@ -457,7 +467,7 @@ button:hover {
 	font-size: 12px;
 	padding: 16px;
 	font-family: Ubuntu;
-	z-index: 200;
+	z-index: 301;
 	position: absolute; 
 	bottom: 0px;
 	left: 0px;
@@ -470,8 +480,8 @@ button:hover {
 .user_menu{
 	font-family: Ubuntu;
 	position: absolute;
-	background: #128C7E;
-	opacity: 0.9;
+	background: #ECE5DD;
+	opacity: 0.98;
 	top: 0;
 	left: 0;
 	width: 100%;
@@ -520,6 +530,10 @@ button:hover {
 	width: 180px;
 }
 
+
+#pin_code{
+
+}
 
 /*scrollbar*/
 .scrollbar
@@ -742,6 +756,25 @@ p{
 	color: #333;
 }
 
+
+.today_ol_li_marked{
+	font-size: 15px;
+	margin: 8px;
+	padding: 10px;
+	padding-left: 20px;
+	padding-right: 32px;
+	border: 1px dashed #AAA;
+	display: inline-block;
+	opacity: 0.94;
+	top: 20px;
+	color: #333;
+
+	background: url('../img/today_marked.png') right no-repeat;
+	background-size: auto 12px;
+	height: auto;
+	opacity: 0.99;
+}
+
 .grid{	
 	display: inline-block;
 }
@@ -823,4 +856,71 @@ p{
 
 .anim_rock{
 	animation: swing 1s infinite ease;
+}
+
+@keyframes delete {
+	0%{transform: rotate(0deg)}
+	33%{transform: rotate(-3deg)}
+	66%{transform: rotate(3deg) scale(1.0) }
+	99.99%{transform: rotate(0deg)}
+}
+
+.anim_dance{
+	animation: delete 0.4s infinite ease;
+}
+
+
+@keyframes fadeAndScale {
+    from {
+        opacity: 1;
+        transform: scale(1, 1);
+    }
+    to {
+        opacity: 0;
+        display: none;
+        transform: scale(3, 3);
+    }
+}
+
+.anim_fade_and_scale{
+	animation: fadeAndScale 0.3s  normal cubic-bezier(.71,.55,.62,1.57);
+}
+
+
+.statusbar{
+	padding: 10px;
+	z-index: 11;
+	color: #888;
+	font-size: 12px;
+	font-family: Ubuntu;
+	background: #ECE5DD;
+
+	-webkit-user-select: none;
+	width: auto;
+	display: inline-block;
+
+	border: 1px solid #ccc;
+	-webkit-box-shadow: 0px -1px 4px rgba(50, 50, 50, 0.10);
+    -moz-box-shadow:    0px -1px 4px rgba(50, 50, 50, 0.10);
+    box-shadow:         0px -1px 4px rgba(50, 50, 50, 0.10);
+}
+
+.tooltip_container{
+	position: absolute;
+	bottom: 108px;
+
+	width: 100%; 
+	height: auto; 
+	z-index: 11;
+}
+
+.footer_box{
+	position: fixed; 
+	z-index: 203; 
+	background: #222; 
+	opacity:0.96; 
+	bottom: 0px; 
+	padding-bottom: 16px; 
+	left: 0px; 
+	width: 100%;
 }
