@@ -75,7 +75,7 @@ We would love to have collaborators contribute to this project or any other of o
 
 Download
 ---
-Get it [here](http://github.com/piyushagade/Psyc/download/Pysc-linux.zip).
+Get it [here](https://github.com/piyushagade/Psyc/raw/master/download/Psyc-linux.zip).
 
 Instructions
 ---
