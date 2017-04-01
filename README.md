@@ -75,7 +75,15 @@ We would love to have collaborators contribute to this project or any other of o
 
 Download
 ---
-Since, the app is still under development and is improving on daily basis, making an executable available for download at this time seems inappropriate. However, if someone wishes to try out the app, please email me, and I will generate a package and email it back.
+Get it [here](http://github.com/piyushagade/Psyc/download/Pysc-linux.zip).
+
+Instructions
+---
+1. Extract the zip file.
+2. Open 'Psyc' folder.
+3. Make 'Psyc' file executable in terminal.
+4. Run it using terminal with command './Psyc'.
+5. And done!
 
 Screenshots
 ---

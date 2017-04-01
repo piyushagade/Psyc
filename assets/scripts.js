@@ -77,6 +77,9 @@ $(document).ready(function() {
 	//show version info on startup
 	$('#statusbar').delay(8000).fadeOut(200);
 
+	//hide today screen on startup
+	$('#today').fadeOut(0);
+
 	//handle all links and open them in external browser
 	$(document).on('click', 'a[href^="http"]', function(event) {
 	    event.preventDefault();
@@ -503,7 +506,7 @@ $(document).ready(function() {
 			setTimeout(function() {	
 				$('#expanded_menu').fadeOut(200);
 			}, 200);
-			$('#color_picker_div').fadeOut(200);
+			// $('#color_picker_div').fadeOut(200);
 			toggle_menu = false;
 		}
 	}
@@ -516,6 +519,15 @@ $(document).ready(function() {
 		$('#b_mode_menu_saved').fadeIn(0).delay(2000).fadeOut(600);
 	}
 
+
+
+
+	//remove all items animation
+	function removeAllItemAnimations(){
+		$('#ol li').removeClass('anim_wobble');
+		$('#ol li').removeClass('anim_scared');
+	}
+
 	//turn off delete item mode in todo mode
 	function turnDeleteModeOff(){
 		if(mode === 'todo'){
@@ -523,7 +535,7 @@ $(document).ready(function() {
 			$('#b_todo_delete_item').attr("src","img/delete_item.png");
 
 			//stop delete item animation
-			$('#ol li').removeClass('anim_dance');
+			removeAllItemAnimations();
 
 		}
 	}
@@ -565,10 +577,13 @@ $(document).ready(function() {
     function goGrid(){
     	if(mode === 'todo') {
 	    	$('.todo_note li').css('display','inline-block');
+
+	    	$('.todo_note li').css('width','auto');
 	    	// $('ol li').css('float','left');
 			$('.todo_note li span').css('background-position','center right 26px');
 			$('.todo_note li span').css('padding-right','32px');
-			grid_toggle = true; 		
+			grid_toggle = true; 	
+
 		}
     }
 
@@ -705,7 +720,7 @@ $(document).ready(function() {
 	});
 
 
-	// add new list item in todo mode
+	// add a new list item in todo mode
 	$('#add_li').click(function (e) {
 
 		var d = new Date();
@@ -729,9 +744,9 @@ $(document).ready(function() {
 			if($('#new_li').val().trim().charAt(0) === '!') important = true;
 
 			//setup ui accordingly
-			if(!important) $('#ol').append('<li><span class="un_item_unimportant">' + $('#new_li').val() + '</span></li>');
+			if(!important) $('#ol').append('<li class="anim_pulsate"><span class="un_item_unimportant">' + $('#new_li').val() + '</span></li>');
 			else {
-				$('#ol').append('<li><span class="un_item_important"><font style="display: none;">!</font>' + $('#new_li').val().slice(1) + '</span></li>');
+				$('#ol').append('<li class="anim_pulsate"><span class="un_item_important"><font style="display: none;">!</font>' + $('#new_li').val().slice(1) + '</span></li>');
 				
 				//push entry to priority list if important
 				priority_object.data.push({
@@ -739,7 +754,6 @@ $(document).ready(function() {
 					'item' : $('#new_li').val().slice(1),
 					'marked' : false
 				});
-
 			}
 
 			//reset todo input
@@ -768,7 +782,7 @@ $(document).ready(function() {
 			turnDeleteModeOff();
 
 			//stop delete item animation
-			$('#ol li').removeClass('anim_dance');
+			removeAllItemAnimations();
 
 			//exit edit mode
 			exitEditMode();
@@ -912,14 +926,16 @@ $(document).ready(function() {
 			popup("Click on the items you wish to delete. <br><br>When done, click on the icon again to turn 'Delete mode' off.");
 
 			//turn on delete item animations
-			$('#ol li').addClass('anim_dance');
+      		$('#ol li').removeClass('anim_pulsate');
+			if(grid_toggle) $('#ol li').addClass('anim_wobble');
+			else $('#ol li').addClass('anim_scared');
 		}
 		else {
 			clicked_once = false;
 			$('#b_todo_delete_item').attr("src","img/delete_item.png");
 
 			//stop delete item animation
-			$('#ol li').removeClass('anim_dance');
+			removeAllItemAnimations();
 		}
 	});
 
@@ -946,6 +962,7 @@ $(document).ready(function() {
 	//hide all menus when todo note body is clicked
 	$('#todo_note').click(function(){
 		hideAuxMenus();
+		toggle_menu = !toggle_menu;
 	});
 
 
@@ -1375,16 +1392,21 @@ $(document).ready(function() {
 
 	//log out from user menu
 	$('#b_user_menu_log_out').click(function (e) {
-		$('#user_menu').fadeOut(200);
-		
-		setTimeout(function(){
-		 	var remote = require('electron').remote;
+		popupPersistent("Are you sure you want to logout?", true, function(result){
+			if(result){
 
-			remote.getGlobal('logout').initiate = true;
-			var ipcRenderer = require('electron').ipcRenderer;   
-			ipcRenderer.send('logout');
+				$('#user_menu').fadeOut(200);
+				
+				setTimeout(function(){
+				 	var remote = require('electron').remote;
 
-		}, 200);
+					remote.getGlobal('logout').initiate = true;
+					var ipcRenderer = require('electron').ipcRenderer;   
+					ipcRenderer.send('logout');
+
+				}, 200);
+			}
+		});
 	});
 
 	//log in from user login menu (login post)
@@ -1450,6 +1472,10 @@ $(document).ready(function() {
 		createNote();
 	});
 
+	//add from unlock ui
+	$('#security_menu_add').click(function (e) {
+		createNote();
+	});
 
 
 	/*
@@ -1472,7 +1498,7 @@ $(document).ready(function() {
 
 	//accentbar mover
 	$('#accentBarMover').mouseover(function() {
-	  updateStatusBar('Move window');
+	  // updateStatusBar('Move window');
   	});
 
 	// edit button
@@ -1878,7 +1904,7 @@ $(document).ready(function() {
 		undoDeleteItem();
 		$('#b_undo').fadeOut(200);
 
-      	$('#ol li').removeClass('anim_dance');
+      	removeAllItemAnimations();
 	});
 
 
@@ -1922,7 +1948,7 @@ $(document).ready(function() {
 		popup_toggle = true;
 
 		$("#popup").css('display','none');
-		$("#popup").slideDown();
+		$("#popup").clearQueue().finish().slideDown();
 
 		$("#proceedPopup").click(function(){
 			$("#popup").slideDown().delay(100).slideUp();
@@ -2210,12 +2236,17 @@ $(document).ready(function() {
 		if(delete_item_mode){ 
 			$('#b_todo_delete_item').attr("src","img/delete_item_mode_on.png");
 			popup("Click on the items you wish to delete. <br><br>Press <b>Alt + D</b> again to turn 'Delete item mode' off.");
-      		$('#ol li').addClass('anim_dance');
+      		
+			//turn on delete item animations
+      		$('#ol li').removeClass('anim_pulsate');
+			if(grid_toggle) $('#ol li').addClass('anim_wobble');
+			else $('#ol li').addClass('anim_scared');
 
 		}
 		else {
 			$('#b_todo_delete_item').attr("src","img/delete_item.png");
-	      	$('#ol li').removeClass('anim_dance');
+			removeAllItemAnimations();
+	      	
 		}
       }
     });
@@ -2226,7 +2257,7 @@ $(document).ready(function() {
       	undoDeleteItem();
 		$('#b_undo').fadeOut(200);
 
-		$('#ol li').removeClass('anim_dance');
+		removeAllItemAnimations();
       }
     });
 
@@ -2338,9 +2369,9 @@ $(document).ready(function() {
 				var local_important = false;
 				if($('#new_li').val().trim().charAt(0) === '!') local_important = true;
 				
-				if(!local_important) $('#ol').append('<li><span class="un_item_unimportant">' + $('#new_li').val() + '</span></li>');
+				if(!local_important) $('#ol').append('<li class="anim_pulsate"><span class="un_item_unimportant">' + $('#new_li').val() + '</span></li>');
 				else {
-					$('#ol').append('<li><span class="un_item_important"><font style="display: none;">!</font>' + $('#new_li').val().slice(1) + '</span></li>');
+					$('#ol').append('<li class="anim_pulsate"><span class="un_item_important"><font style="display: none;">!</font>' + $('#new_li').val().slice(1) + '</span></li>');
 					
 					priority_object.data.push({
 						'id' : r(),
@@ -2370,8 +2401,7 @@ $(document).ready(function() {
 				turnDeleteModeOff();
 
 				//stop delete item animation
-				$('#ol li').removeClass('anim_dance');
-
+				removeAllItemAnimations();
 				//exit edit mode
 				exitEditMode();
 
@@ -2483,10 +2513,13 @@ $(document).ready(function() {
 
 
 
-	var alarm_time = '10:30';
+	var alarm_time = '09:30';
 	var reminder_dismissed = false;
 
 	function fireAlarm(){
+
+		$('#today').fadeIn(200);
+
 		var array = priority_object.data;
 		if(array.length <= 0) {
             	$('#today').html('').clearQueue().fadeOut(00);
@@ -2538,6 +2571,7 @@ $(document).ready(function() {
 
             	$('#today').fadeOut(400).clearQueue();
             });
+
 
             //change appearence
             applyCSS();

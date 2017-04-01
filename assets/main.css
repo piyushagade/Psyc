@@ -15,6 +15,7 @@ body{
 	position: absolute;
 	top: 0px;
 	left: 0px;
+	right: 0px;
 	width: 100%;
 	height: 100%;
 }
@@ -343,11 +344,12 @@ body{
 	z-index: 10;
 
 	position: absolute;
-	width:98%;
+	width:96%;
 	height:30px;
 	padding:4px;
 	padding-left: 10px;
 	margin-top: 0;
+	margin-right: 10px;
 	background: none;
 	border: 0px;
 	border-bottom: 1px solid #aaa;
@@ -776,7 +778,8 @@ p{
 }
 
 .grid{	
-	display: inline-block;
+	display: inline-flex;
+	word-wrap: break-word;
 }
 
 
@@ -788,6 +791,7 @@ p{
 	height: auto;
 	opacity: 0.99;
 	display: inline-block;
+	word-wrap: break-word;
 }
 
 
@@ -798,6 +802,7 @@ p{
 	height: auto;
 	opacity: 0.99;
 	display: inline-block;
+	word-wrap: break-word;
 }
 
 .marked_item_unimportant{
@@ -807,6 +812,7 @@ p{
 	height: auto;
 	opacity: 0.99;
 	display: inline-block;
+	word-wrap: break-word;
 }
 
 /*unmarked*/
@@ -817,6 +823,7 @@ p{
 	height: auto;
 	opacity: 0.99;
 	display: inline-block;
+	word-wrap: break-word;
 }
 
 .todo_note{
@@ -837,6 +844,7 @@ p{
 .todo_note ol li{
 	cursor: default;
 	transition: all 0.7s ease;
+	word-wrap: break-word;
 }
 
 
@@ -854,19 +862,27 @@ p{
   80% {transform:scale(.98);}
 }
 
-.anim_rock{
-	animation: swing 1s infinite ease;
+
+@-webkit-keyframes pulsate {
+    0% {-webkit-transform: scale(0.1, 0.1); opacity: 0.1;}
+    50% {-webkit-transform: scale(1.08, 1.08); opacity: 0.8;}
+    100% {opacity: 1.0;}
 }
 
-@keyframes delete {
+
+
+@-webkit-keyframes scared {
+    0% {-webkit-transform: scale(0.99, 0.99); opacity: 0.98;}
+    25% {-webkit-transform: scale(1.0, 1.0); opacity: 1.0;}
+    75% {-webkit-transform: scale(1.02, 1.02); opacity: 0.98;}
+    100% {-webkit-transform: scale(1.0, 1.0); opacity: 1.0;}
+}
+
+@keyframes wobble {
 	0%{transform: rotate(0deg)}
 	33%{transform: rotate(-3deg)}
 	66%{transform: rotate(3deg) scale(1.0) }
 	99.99%{transform: rotate(0deg)}
-}
-
-.anim_dance{
-	animation: delete 0.4s infinite ease;
 }
 
 
@@ -880,6 +896,22 @@ p{
         display: none;
         transform: scale(3, 3);
     }
+}
+
+.anim_rock{
+	animation: swing 1s infinite ease;
+}
+
+.anim_scared{
+	animation: scared 0.4s infinite ease;
+}
+
+.anim_wobble{
+	animation: wobble 0.4s infinite ease;
+}
+
+.anim_pulsate{
+	animation: pulsate 0.4s normal ease;
 }
 
 .anim_fade_and_scale{
