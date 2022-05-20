@@ -75,7 +75,7 @@ We would love to have collaborators contribute to this project or any other of o
 
 Download
 ---
-Get it [here](https://github.com/piyushagade/Psyc/raw/master/download/Psyc-linux.zip).
+Get it [here](https://github.com/PlanetRenox/psyc-d11/raw/master/download/Psyc-Debian11.zip).
 
 Instructions
 ---
